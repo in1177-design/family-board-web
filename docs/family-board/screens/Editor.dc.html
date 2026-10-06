@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>הכנסת שגרה</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2459D6}a:hover{color:#1A43A6}
+</style>
+</helmet>
+<div dir="rtl" style="width: 1280px; min-height: 1700px; box-sizing: border-box; background: #F3F4F6; font-family: 'Rubik', sans-serif; color: #1B2130; padding: 40px 48px; display: flex; flex-direction: column; gap: 24px">
+
+<div style="display: flex; align-items: center; justify-content: space-between">
+<h1 style="margin: 0; font-size: 30px; font-weight: 600">שגרה חדשה</h1>
+<a href="Main.dc.html" style="font-size: 15px; text-decoration: none">חזרה למלוח השגרות</a>
+</div>
+
+<div style="display: flex; gap: 24px; align-items: flex-start">
+
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+
+<section style="background: #FFFFFF; border: 1px solid #DDE1E7; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-size: 18px; font-weight: 600">1. למי השגרה</h2>
+<div style="display: flex; gap: 12px; flex-wrap: wrap">
+<sc-for list="{{kidItems}}" as="k" hint-placeholder-count="2">
+<button type="button" onClick="{{k.pick}}" style="{{k.style}}">
+<span style="{{k.avatarStyle}}">{{k.initial}}</span>
+<span>{{k.label}}</span>
+</button>
+</sc-for>
+</div>
+<sc-if value="{{multiKids}}" hint-placeholder-val="{{ false }}">
+<p style="margin: 0; font-size: 14px; color: #5B6474">תיווצר שגרה נפרדת לכל ילד, ואפשר לערוך כל אחת בנפרד.</p>
+</sc-if>
+</section>
+
+<section style="background: #FFFFFF; border: 1px solid #DDE1E7; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-size: 18px; font-weight: 600">2. מתי ביום</h2>
+<div style="display: flex; gap: 12px; flex-wrap: wrap">
+<sc-for list="{{timeItems}}" as="t" hint-placeholder-count="3">
+<button type="button" onClick="{{t.pick}}" style="{{t.style}}">{{t.label}}</button>
+</sc-for>
+</div>
+<sc-if value="{{notFlex}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; gap: 12px; align-items: center; font-size: 15px; color: #5B6474">
+<span>חלון זמן: {{windowText}}</span>
+<a href="#" style="font-size: 15px">שנה שעות</a>
+</div>
+</sc-if>
+<sc-if value="{{isFlex}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 14px; padding: 16px; border-radius: 12px; background: #F7F8FA; border: 1px solid #E3E6EB">
+<p style="margin: 0; font-size: 14px; color: #5B6474">הילד בוחר בעצמו מתי לבצע, בתוך הטווח שתגדירו.</p>
+<div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: center">
+<label style="display: flex; align-items: center; gap: 10px; font-size: 15px">טווח מותר: מ-
+<input type="time" defaultValue="15:00" style="min-height: 44px; box-sizing: border-box; padding: 0 10px; border: 1px solid #C3C9D3; border-radius: 10px; font-family: inherit; font-size: 16px"></label>
+<label style="display: flex; align-items: center; gap: 10px; font-size: 15px">עד
+<input type="time" defaultValue="20:00" style="min-height: 44px; box-sizing: border-box; padding: 0 10px; border: 1px solid #C3C9D3; border-radius: 10px; font-family: inherit; font-size: 16px"></label>
+</div>
+<div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: center">
+<label style="display: flex; align-items: center; gap: 10px; font-size: 15px">דחיות מותרות
+<input type="number" defaultValue="2" min="0" style="width: 72px; min-height: 44px; box-sizing: border-box; padding: 0 10px; border: 1px solid #C3C9D3; border-radius: 10px; font-family: inherit; font-size: 16px"></label>
+<label style="display: flex; align-items: center; gap: 10px; font-size: 15px">כל דחייה
+<select style="min-height: 44px; padding: 0 10px; border: 1px solid #C3C9D3; border-radius: 10px; font-family: inherit; font-size: 16px; background: #FFFFFF"><option>15 דקות</option><option>30 דקות</option></select></label>
+</div>
+<p style="margin: 0; font-size: 14px; color: #5B6474">אם הילד לא בחר שעה, תישלח תזכורת שעה לפני סוף הטווח.</p>
+</div>
+</sc-if>
+</section>
+
+<section style="background: #FFFFFF; border: 1px solid #DDE1E7; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+<h2 style="margin: 0; font-size: 18px; font-weight: 600">3. באילו ימים</h2>
+<div style="display: flex; gap: 10px; flex-wrap: wrap">
+<sc-for list="{{presetItems}}" as="p" hint-placeholder-count="4">
+<button type="button" onClick="{{p.pick}}" style="{{p.style}}">{{p.label}}</button>
+</sc-for>
+<sc-if value="{{isCustom}}" hint-placeholder-val="{{ false }}">
+<span style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 22px; background: #E8EEFC; color: #1A43A6; font-size: 15px">מותאם אישית</span>
+</sc-if>
+</div>
+<div style="display: flex; gap: 8px">
+<sc-for list="{{dayItems}}" as="d" hint-placeholder-count="7">
+<button type="button" onClick="{{d.toggle}}" disabled="{{d.disabled}}" aria-pressed="{{d.on}}" style="{{d.style}}">{{d.label}}</button>
+</sc-for>
+</div>
+<sc-if value="{{isBefore}}" hint-placeholder-val="{{ false }}">
+<p style="margin: 0; font-size: 14px; color: #5B6474">יופיע בערב שלפני כל יום לימודים, לפי לוח החופשות. אין צורך לבחור ימים.</p>
+</sc-if>
+</section>
+
+<section style="background: #FFFFFF; border: 1px solid #DDE1E7; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: baseline">
+<h2 style="margin: 0; font-size: 18px; font-weight: 600">4. צעדים</h2>
+<span style="{{countStyle}}">{{countText}}</span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{stepItems}}" as="st" hint-placeholder-count="5">
+<div style="display: flex; flex-direction: column; gap: 12px; padding: 12px 16px; border: 1px solid #DDE1E7; border-radius: 12px; background: #FFFFFF">
+<div style="display: flex; align-items: center; gap: 12px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9AA1AD" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01"/></svg>
+<span style="width: 40px; height: 40px; border-radius: 10px; background: #F3F4F6; color: #5B6474; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600">{{st.initial}}</span>
+<span style="flex: 1; font-size: 16px">{{st.label}}</span>
+<button type="button" onClick="{{st.toggleOpen}}" style="{{st.tagStyle}}">
+<span>{{st.ruleText}}</span>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>
+</button>
+<button type="button" onClick="{{st.remove}}" aria-label="הסר צעד" style="width: 44px; height: 44px; border-radius: 10px; border: none; background: transparent; color: #5B6474; cursor: pointer; display: inline-flex; align-items: center; justify-content: center">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+</button>
+</div>
+<sc-if value="{{st.open}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 12px; padding-top: 12px; border-top: 1px solid #EEF0F3">
+<span style="font-size: 14px; color: #5B6474">מתי הצעד הזה מופיע?</span>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<sc-for list="{{st.ruleChips}}" as="rc" hint-placeholder-count="3">
+<button type="button" onClick="{{rc.pick}}" style="{{rc.style}}">{{rc.label}}</button>
+</sc-for>
+</div>
+<sc-if value="{{st.isCustom}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; gap: 8px">
+<sc-for list="{{st.dayItems}}" as="sd" hint-placeholder-count="7">
+<button type="button" onClick="{{sd.toggle}}" disabled="{{sd.disabled}}" aria-pressed="{{sd.on}}" style="{{sd.style}}">{{sd.label}}</button>
+</sc-for>
+</div>
+<span style="font-size: 13px; color: #5B6474">ימים אפורים: השגרה עצמה לא חלה בהם.</span>
+</div>
+</sc-if>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 10px; padding-top: 6px">
+<span style="font-size: 14px; color: #5B6474">הוסף מהספרייה</span>
+<div style="display: flex; gap: 8px; flex-wrap: wrap">
+<sc-for list="{{libItems}}" as="lb" hint-placeholder-count="4">
+<button type="button" onClick="{{lb.add}}" style="display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px; border-radius: 22px; border: 1px dashed #A9B1BD; background: #FFFFFF; color: #1B2130; font-family: inherit; font-size: 15px; cursor: pointer">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+<span>{{lb.label}}</span>
+</button>
+</sc-for>
+<button type="button" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 22px; border: none; background: transparent; color: #2459D6; font-family: inherit; font-size: 15px; cursor: pointer">צעד חדש…</button>
+</div>
+</div>
+</section>
+
+<section style="background: #FFFFFF; border: 1px solid #DDE1E7; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-size: 18px; font-weight: 600">5. נקודות <span style="font-size: 14px; font-weight: 400; color: #5B6474">(לא חובה)</span></h2>
+<div style="display: flex; align-items: center; gap: 10px">
+<input type="checkbox" id="pts" checked="{{pointsOn}}" onChange="{{togglePoints}}" style="width: 22px; height: 22px; accent-color: #2459D6">
+<label for="pts" style="font-size: 16px">נקודות על השלמת השגרה</label>
+</div>
+<sc-if value="{{pointsOn}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; gap: 24px; flex-wrap: wrap; padding-right: 32px">
+<label style="display: flex; align-items: center; gap: 10px; font-size: 15px">נקודות לכל השלמה
+<input type="number" defaultValue="2" min="0" style="width: 72px; min-height: 44px; box-sizing: border-box; padding: 0 10px; border: 1px solid #C3C9D3; border-radius: 10px; font-family: inherit; font-size: 16px"></label>
+<label style="display: flex; align-items: center; gap: 10px; font-size: 15px">בונוס על 5 ימים ברצף
+<input type="number" defaultValue="5" min="0" style="width: 72px; min-height: 44px; box-sizing: border-box; padding: 0 10px; border: 1px solid #C3C9D3; border-radius: 10px; font-family: inherit; font-size: 16px"></label>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; padding-right: 32px">
+<input type="checkbox" id="appr" checked="{{approvalOn}}" onChange="{{toggleApproval}}" style="width: 22px; height: 22px; accent-color: #2459D6">
+<label for="appr" style="font-size: 15px">הנקודות ניתנות רק אחרי אישור הורה</label>
+</div>
+</sc-if>
+</section>
+
+</div>
+
+<aside style="width: 360px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px">
+<div style="background: #FFFFFF; border: 1px solid #DDE1E7; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 16px">
+<h2 style="margin: 0; font-size: 18px; font-weight: 600">איך הילד יראה את זה</h2>
+<div style="display: flex; gap: 4px; justify-content: space-between">
+<sc-for list="{{previewDayItems}}" as="pd" hint-placeholder-count="7">
+<button type="button" onClick="{{pd.pick}}" aria-pressed="{{pd.on}}" style="{{pd.style}}">{{pd.label}}</button>
+</sc-for>
+</div>
+<div style="font-size: 15px; font-weight: 500">{{previewTitle}}</div>
+<sc-if value="{{previewOff}}" hint-placeholder-val="{{ false }}">
+<div style="padding: 24px 16px; border-radius: 12px; background: #F3F4F6; color: #5B6474; font-size: 15px; text-align: center">אין שגרה ביום הזה</div>
+</sc-if>
+<sc-if value="{{previewOn}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{previewSteps}}" as="ps" hint-placeholder-count="4">
+<div style="display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 14px; border-radius: 12px; background: #F7F8FA; border: 1px solid #E3E6EB">
+<span style="width: 26px; height: 26px; border-radius: 13px; border: 2px solid #A9B1BD; box-sizing: border-box"></span>
+<span style="font-size: 16px">{{ps.label}}</span>
+</div>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{hiddenAny}}" hint-placeholder-val="{{ true }}">
+<p style="margin: 0; font-size: 13px; color: #5B6474">{{hiddenText}}</p>
+</sc-if>
+</div>
+</aside>
+
+</div>
+
+<div style="background: #FFFFFF; border: 1px solid #DDE1E7; border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 13px; color: #5B6474">סיכום</span>
+<span style="font-size: 17px; font-weight: 500">{{summary}}</span>
+</div>
+<div style="display: flex; gap: 12px">
+<a href="Main.dc.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; border-radius: 12px; border: 1px solid #C3C9D3; color: #1B2130; text-decoration: none; font-size: 16px">ביטול</a>
+<a href="Main.dc.html" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 28px; border-radius: 12px; background: #2459D6; color: #FFFFFF; text-decoration: none; font-size: 16px; font-weight: 500">שמור שגרה</a>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1700}}'>
+var DAYS = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ש'];
+var DAY_NAMES = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+var LIB = ['לסדר חדר', 'שיעורי בית', 'לקרוא 15 דקות', 'להכין בקבוק מים'];
+var TIMES = [
+  { id: 'morning', label: 'בוקר', win: '06:30–07:45' },
+  { id: 'noon', label: 'צהריים', win: '14:00–17:00' },
+  { id: 'evening', label: 'ערב', win: '19:00–20:30' },
+  { id: 'flex', label: 'גמיש, הילד בוחר', name: 'גמישה', win: 'הילד בוחר שעה בין 15:00–20:00' }
+];
+var PRESETS = [
+  { id: 'every', label: 'כל יום' },
+  { id: 'school', label: 'ימי לימודים' },
+  { id: 'weekend', label: 'סופ״ש' },
+  { id: 'before', label: 'לפני יום לימודים' }
+];
+var KIDS = [
+  { id: 'noa', label: 'נועה', initial: 'נ', bg: '#E8EEFC', fg: '#2459D6' },
+  { id: 'itai', label: 'איתי', initial: 'א', bg: '#FDF0E3', fg: '#9A4508' }
+];
+function allDays() { return [true, true, true, true, true, true, true]; }
+function isSchool(d) { return d <= 4; }
+function isBeforeSchool(d) { return isSchool((d + 1) % 7); }
+function chipStyle(on) {
+  var base = 'display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 22px; font-family: inherit; font-size: 15px; cursor: pointer; ';
+  return base + (on ? 'background: #2459D6; color: #FFFFFF; border: 1px solid #2459D6' : 'background: #FFFFFF; color: #1B2130; border: 1px solid #C3C9D3');
+}
+function dayStyle(on, disabled, size) {
+  var base = 'width: ' + size + 'px; height: ' + size + 'px; border-radius: ' + (size / 2) + 'px; font-family: inherit; font-size: 16px; font-weight: 500; padding: 0; ';
+  if (disabled) return base + 'cursor: default; background: #F3F4F6; color: #9AA1AD; border: 1px solid #E3E6EB';
+  return base + 'cursor: pointer; ' + (on ? 'background: #2459D6; color: #FFFFFF; border: 1px solid #2459D6' : 'background: #FFFFFF; color: #1B2130; border: 1px solid #C3C9D3');
+}
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      kids: { noa: true, itai: false },
+      time: 'evening',
+      preset: 'every',
+      days: allDays(),
+      steps: [
+        { id: 1, label: 'מקלחת', rule: 'inherit', days: allDays() },
+        { id: 2, label: 'להכין בגדים למחר', rule: 'before', days: allDays() },
+        { id: 3, label: 'לסדר תיק', rule: 'before', days: allDays() },
+        { id: 4, label: 'לצחצח שיניים', rule: 'inherit', days: allDays() },
+        { id: 5, label: 'להטעין מכשיר מחוץ לחדר', rule: 'inherit', days: allDays() }
+      ],
+      openId: 3,
+      nextId: 6,
+      previewDay: 4,
+      pointsOn: true,
+      approvalOn: true
+    };
+  }
+  routineOn(d) {
+    var p = this.state.preset;
+    if (p === 'every') return true;
+    if (p === 'school') return isSchool(d);
+    if (p === 'weekend') return !isSchool(d);
+    if (p === 'before') return isBeforeSchool(d);
+    return this.state.days[d];
+  }
+  stepOn(st, d) {
+    if (!this.routineOn(d)) return false;
+    if (st.rule === 'before') return isBeforeSchool(d);
+    if (st.rule === 'custom') return st.days[d];
+    return true;
+  }
+  patchStep(id, patch) {
+    this.setState({ steps: this.state.steps.map(function (s) { return s.id === id ? Object.assign({}, s, patch) : s; }) });
+  }
+  ruleText(st) {
+    if (st.rule === 'before') return 'לפני יום לימודים';
+    if (st.rule === 'custom') {
+      var self = this;
+      var list = DAYS.filter(function (_, i) { return st.days[i] && self.routineOn(i); });
+      return list.length ? 'ימים: ' + list.join(' ') : 'אף יום';
+    }
+    return 'כמו השגרה';
+  }
+  daysText() {
+    var p = this.state.preset;
+    var found = PRESETS.filter(function (x) { return x.id === p; })[0];
+    if (found) return found.label;
+    var self = this;
+    var list = DAYS.filter(function (_, i) { return self.routineOn(i); });
+    return list.length ? 'ימים ' + list.join(', ') : 'אף יום';
+  }
+  renderVals() {
+    var self = this;
+    var s = this.state;
+    var time = TIMES.filter(function (t) { return t.id === s.time; })[0];
+    var selectedKids = KIDS.filter(function (k) { return s.kids[k.id]; });
+
+    var kidItems = KIDS.map(function (k) {
+      var on = !!s.kids[k.id];
+      return {
+        label: k.label, initial: k.initial,
+        style: chipStyle(on) + '; padding: 0 18px 0 8px',
+        avatarStyle: 'width: 32px; height: 32px; border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; background: ' + (on ? '#FFFFFF' : k.bg) + '; color: ' + k.fg,
+        pick: function () {
+          var next = Object.assign({}, s.kids);
+          next[k.id] = !on;
+          if (!next.noa && !next.itai) return;
+          self.setState({ kids: next });
+        }
+      };
+    });
+
+    var timeItems = TIMES.map(function (t) {
+      return { label: t.label, style: chipStyle(t.id === s.time) + '; min-width: 96px; justify-content: center', pick: function () { self.setState({ time: t.id }); } };
+    });
+    var tName = time.name || time.label;
+
+    var presetItems = PRESETS.map(function (p) {
+      return { label: p.label, style: chipStyle(p.id === s.preset), pick: function () { self.setState({ preset: p.id }); } };
+    });
+
+    var isBefore = s.preset === 'before';
+    var dayItems = DAYS.map(function (label, i) {
+      var on = self.routineOn(i);
+      return {
+        label: label, on: on, disabled: isBefore,
+        style: dayStyle(on, isBefore, 48),
+        toggle: function () {
+          if (isBefore) return;
+          var cur = DAYS.map(function (_, j) { return self.routineOn(j); });
+          cur[i] = !cur[i];
+          self.setState({ preset: 'custom', days: cur });
+        }
+      };
+    });
+
+    var stepItems = s.steps.map(function (st) {
+      var special = st.rule !== 'inherit';
+      var rules = [
+        { id: 'inherit', label: 'כמו השגרה' },
+        { id: 'before', label: 'לפני יום לימודים' },
+        { id: 'custom', label: 'ימים מסוימים' }
+      ];
+      return {
+        label: st.label,
+        initial: st.label.charAt(0),
+        ruleText: self.ruleText(st),
+        tagStyle: 'display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border-radius: 18px; font-family: inherit; font-size: 13px; cursor: pointer; border: 1px solid ' + (special ? '#BCCCF5; background: #E8EEFC; color: #1A43A6' : '#E3E6EB; background: #F7F8FA; color: #5B6474'),
+        open: s.openId === st.id,
+        isCustom: st.rule === 'custom',
+        toggleOpen: function () { self.setState({ openId: s.openId === st.id ? null : st.id }); },
+        remove: function () { self.setState({ steps: s.steps.filter(function (x) { return x.id !== st.id; }) }); },
+        ruleChips: rules.map(function (r) {
+          return {
+            label: r.label, style: chipStyle(st.rule === r.id),
+            pick: function () {
+              var patch = { rule: r.id };
+              if (r.id === 'custom' && st.rule !== 'custom') patch.days = DAYS.map(function (_, j) { return self.routineOn(j); });
+              self.patchStep(st.id, patch);
+            }
+          };
+        }),
+        dayItems: DAYS.map(function (label, i) {
+          var dis = !self.routineOn(i);
+          var on = st.days[i] && !dis;
+          return {
+            label: label, on: on, disabled: dis, style: dayStyle(on, dis, 44),
+            toggle: function () {
+              if (dis) return;
+              var d2 = st.days.slice();
+              d2[i] = !d2[i];
+              self.patchStep(st.id, { days: d2 });
+            }
+          };
+        })
+      };
+    });
+
+    var labels = s.steps.map(function (x) { return x.label; });
+    var libItems = LIB.filter(function (l) { return labels.indexOf(l) < 0; }).map(function (l) {
+      return {
+        label: l,
+        add: function () {
+          self.setState({ steps: s.steps.concat([{ id: s.nextId, label: l, rule: 'inherit', days: allDays() }]), nextId: s.nextId + 1 });
+        }
+      };
+    });
+
+    var n = s.steps.length;
+    var pd = s.previewDay;
+    var previewOn = this.routineOn(pd);
+    var shown = s.steps.filter(function (st) { return self.stepOn(st, pd); });
+    var hidden = previewOn ? n - shown.length : 0;
+
+    var previewDayItems = DAYS.map(function (label, i) {
+      var on = i === pd;
+      return {
+        label: label, on: on,
+        style: 'width: 44px; height: 44px; border-radius: 10px; padding: 0; font-family: inherit; font-size: 15px; cursor: pointer; ' + (on ? 'background: #1B2130; color: #FFFFFF; border: 1px solid #1B2130' : 'background: #FFFFFF; color: #1B2130; border: 1px solid #DDE1E7'),
+        pick: function () { self.setState({ previewDay: i }); }
+      };
+    });
+
+    var kidNames = selectedKids.map(function (k) { return k.label; }).join(' ו');
+
+    return {
+      kidItems: kidItems,
+      multiKids: selectedKids.length > 1,
+      timeItems: timeItems,
+      windowText: time.win,
+      isFlex: s.time === 'flex',
+      notFlex: s.time !== 'flex',
+      presetItems: presetItems,
+      isCustom: s.preset === 'custom',
+      isBefore: isBefore,
+      dayItems: dayItems,
+      stepItems: stepItems,
+      libItems: libItems,
+      countText: n + ' צעדים' + (n > 6 ? ' · שגרה ארוכה קשה לביצוע' : ''),
+      countStyle: 'font-size: 14px; color: ' + (n > 6 ? '#9A4508' : '#5B6474'),
+      pointsOn: s.pointsOn,
+      approvalOn: s.approvalOn,
+      togglePoints: function () { self.setState({ pointsOn: !s.pointsOn }); },
+      toggleApproval: function () { self.setState({ approvalOn: !s.approvalOn }); },
+      previewDayItems: previewDayItems,
+      previewTitle: 'יום ' + DAY_NAMES[pd] + ' · שגרה ' + (s.time === 'flex' ? 'גמישה' : 'של ה' + tName),
+      previewOn: previewOn,
+      previewOff: !previewOn,
+      previewSteps: shown.map(function (x) { return { label: x.label }; }),
+      hiddenAny: hidden > 0,
+      hiddenText: hidden === 1 ? 'צעד אחד לא מופיע ביום הזה לפי הגדרת הימים שלו.' : hidden + ' צעדים לא מופיעים ביום הזה לפי הגדרת הימים שלהם.',
+      summary: (s.time === 'flex' ? 'שגרה גמישה' : 'שגרת ' + tName) + ' של ' + kidNames + ' · ' + n + ' צעדים · ' + this.daysText() + ' · ' + time.win
+    };
+  }
+}
+</script>
+</body>
+</html>

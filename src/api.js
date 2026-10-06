@@ -1,4 +1,4 @@
-const BASE_URL = 'https://my-family-board.onrender.com'
+export const BASE_URL = import.meta.env.VITE_API_URL || 'https://my-family-board.onrender.com'
 
 function getToken() {
   return localStorage.getItem('family_token')

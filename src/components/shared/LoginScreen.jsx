@@ -1,17 +1,15 @@
 import React, { useState } from 'react'
-
-const BASE_URL = 'https://my-family-board.onrender.com'
+import { BASE_URL } from '../../api'
 
 const ERROR_MESSAGES = {
   invalid_credentials: 'שם משפחה או סיסמה שגויים',
-  family_not_found:    'משפחה לא נמצאה — אולי כדאי ליצור משפחה חדשה?',
+  family_not_found:    'משפחה לא נמצאה',
   wrong_password:      'סיסמה שגויה',
   family_exists:       'שם משפחה כבר קיים, אפשר להיכנס עם הכניסה הרגילה',
   name_taken:          'שם משפחה כבר קיים'
 }
 
 export default function LoginScreen({ onLogin }) {
-  const [tab, setTab]           = useState('login')
   const [name, setName]         = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading]   = useState(false)
@@ -22,7 +20,7 @@ export default function LoginScreen({ onLogin }) {
     setLoading(true)
     setError('')
     try {
-      const endpoint = tab === 'register' ? '/api/auth/setup' : '/api/auth/login'
+      const endpoint = '/api/auth/login'
       const res = await fetch(BASE_URL + endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -51,19 +49,6 @@ export default function LoginScreen({ onLogin }) {
           <div style={{ fontSize: '3.5rem', marginBottom: '.5rem' }}>🏠</div>
           <h1 style={{ color: 'var(--purple)' }}>Family Board</h1>
           <p style={{ color: 'var(--text-3)' }}>הלוח המשפחתי שלכם</p>
-        </div>
-
-        <div style={{ display: 'flex', gap: '.5rem', marginBottom: '1.5rem' }}>
-          {[['login', 'כניסה'], ['register', 'משפחה חדשה']].map(([val, label]) => (
-            <button
-              key={val}
-              className={`btn ${tab === val ? 'btn-primary' : 'btn-ghost'}`}
-              style={{ flex: 1 }}
-              onClick={() => { setTab(val); setError('') }}
-            >
-              {label}
-            </button>
-          ))}
         </div>
 
         <label className="label">שם המשפחה</label>
@@ -96,7 +81,7 @@ export default function LoginScreen({ onLogin }) {
           onClick={handle}
           disabled={loading || !name.trim() || !password.trim()}
         >
-          {loading ? '...' : tab === 'login' ? '🔓 כניסה' : '🚀 יצירת משפחה'}
+          {loading ? '...' : '🔓 כניסה'}
         </button>
       </div>
     </div>
