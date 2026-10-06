@@ -6,6 +6,7 @@ import ParentView from './components/ParentView/ParentView'
 import SetupWizard from './components/shared/SetupWizard'
 import LoginScreen from './components/shared/LoginScreen'
 import Loader from './components/shared/Loader'
+import ViewSwitcher from './components/shared/ViewSwitcher'
 import { ToastProvider } from './components/shared/Toast'
 
 function AppContent() {
@@ -32,9 +33,16 @@ function AppContent() {
   if (initializing)  return <Loader message="טוען את לוח המשפחה..." />
   if (!hasToken)     return <LoginScreen onLogin={handleLogin} />
   if (!members.length) return <SetupWizard familyExists />
-  if (activeView === 'kid')    return <KidsView />
-  if (activeView === 'parent') return <ParentView />
-  return <HomeScreen />
+
+  const view = activeView === 'kid'    ? <KidsView />
+             : activeView === 'parent' ? <ParentView />
+             : <HomeScreen />
+  return (
+    <>
+      <ViewSwitcher />
+      <div style={{ flex: 1, minHeight: 0 }}>{view}</div>
+    </>
+  )
 }
 
 export default function App() {

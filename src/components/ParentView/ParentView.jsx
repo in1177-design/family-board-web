@@ -1,21 +1,25 @@
 import React, { useEffect, useState } from 'react'
 import { useStore } from '../../store'
-import TaskManager from './TaskManager'
 import PointsManager from './PointsManager'
 import Settings from './Settings'
 import FamilyOverview from './FamilyOverview'
 import ParentCalendar from './ParentCalendar'
+import RoutinesBoard from '../Routines/RoutinesBoard'
+import MyDay from '../MyDay/MyDay'
+import TodosBoard from '../MyDay/TodosBoard'
 
 const TABS = [
   { id: 'overview',  label: '🏠 סקירה' },
   { id: 'calendar',  label: '📅 יומן' },
-  { id: 'tasks',     label: '📝 משימות' },
+  { id: 'myday',     label: 'היום שלי' },
+  { id: 'routines',  label: 'הרגלים' },
+  { id: 'todos',     label: 'משימות' },
   { id: 'points',    label: '⭐ נקודות' },
   { id: 'settings',  label: '⚙️ הגדרות' }
 ]
 
 export default function ParentView() {
-  const { setActiveView, loadTasks, members, logout } = useStore()
+  const { setActiveView, loadTasks, members, logout, activeMemberId } = useStore()
   const [tab, setTab] = useState('overview')
 
   useEffect(() => {
@@ -26,19 +30,20 @@ export default function ParentView() {
 
   return (
     <div style={{
-      height: '100vh', display: 'flex', flexDirection: 'column',
+      height: '100%', display: 'flex', flexDirection: 'column',
       background: 'var(--bg)', overflow: 'hidden'
     }}>
       {/* Header */}
       <header style={{
         padding: '1rem 1.5rem',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        // שלוש עמודות: הכותרת תמיד באמצע
+        display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: '.75rem',
         background: 'linear-gradient(135deg, #1A1A2E 0%, #16213E 100%)',
         boxShadow: '0 4px 20px rgba(0,0,0,.3)'
       }}>
         <button
           className="btn btn-ghost btn-sm"
-          style={{ color: 'rgba(255,255,255,.7)' }}
+          style={{ color: 'rgba(255,255,255,.7)', justifySelf: 'start' }}
           onClick={() => setActiveView('home')}
         >
           ← חזרה
@@ -54,7 +59,7 @@ export default function ParentView() {
         </div>
         <button
           className="btn btn-ghost btn-sm"
-          style={{ color: 'rgba(255,255,255,.5)', fontSize: '.8rem' }}
+          style={{ color: 'rgba(255,255,255,.5)', fontSize: '.8rem', justifySelf: 'end' }}
           onClick={logout}
           title="יציאה"
         >
@@ -90,7 +95,9 @@ export default function ParentView() {
       <div style={{ flex: 1, overflow: 'auto', padding: '1.5rem' }}>
         {tab === 'overview'  && <FamilyOverview />}
         {tab === 'calendar'  && <ParentCalendar />}
-        {tab === 'tasks'     && <TaskManager />}
+        {tab === 'myday'     && activeMemberId && <MyDay memberId={activeMemberId} />}
+        {tab === 'routines'  && <RoutinesBoard />}
+        {tab === 'todos'     && <TodosBoard />}
         {tab === 'points'    && <PointsManager />}
         {tab === 'settings'  && <Settings />}
       </div>

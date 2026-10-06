@@ -56,7 +56,7 @@ Oct 6, 2026 · @inna
 | --- | --- | --- |
 | `every_day` | כל יום | תמיד |
 | `school_days` | ימי לימודים | היום הוא יום לימודים |
-| `weekend` | סופ״ש | שישי ושבת |
+| `weekend` | סופ״ש | כל יום שאינו יום לימודים: שישי, שבת וחופשות (הוחלט 2026-10-06) |
 | `before_school_day` | לפני יום לימודים | מחר הוא יום לימודים |
 | `custom` | מותאם אישית | היום מסומן ב-`days_custom` |
 | `inherit` | כמו השגרה | רק לצעד: משתמש בכלל של השגרה |
@@ -236,7 +236,7 @@ Oct 6, 2026 · @inna
 
 ### כללי הצגה
 
-- **מה שהושלם מתקפל** לשורה אחת עם ✓.
+- **מה שהושלם נשאר במקומו**, עם קו על הטקסט ו-✓ (הוחלט 2026-10-07, במקום "מתקפל"). סקציה שהושלמה כולה מתקפלת לכותרת עם חץ (2026-10-07).
 - **שגרה שלא הושלמה עד סוף החלון** נשארת עד סוף היום ונסגרת כ"חלקית". למחרת היא לא מופיעה.
 - **משימה שלא בוצעה** עוברת ליום הבא. אחרי היעד היא מסומנת כבאיחור.
 - **משימה מצורפת שלא בוצעה** עוברת ל"משימות פתוחות" ביום שאחרי.
@@ -437,7 +437,7 @@ function ruleApplies(rule, custom, date): boolean {
   switch (rule) {
     case 'every_day':         return true;
     case 'school_days':       return isSchoolDay(date);
-    case 'weekend':           return weekday(date) >= 5;
+    case 'weekend':           return !isSchoolDay(date);
     case 'before_school_day': return isSchoolDay(addDays(date, 1));
     case 'custom':            return custom.includes(weekday(date));
   }

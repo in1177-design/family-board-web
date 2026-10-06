@@ -53,6 +53,26 @@ export const liveApi = {
     uncomplete:({ taskId, memberId }) => req('POST', `/api/tasks/${taskId}/uncomplete`, { memberId }),
     delete:    (id) => req('DELETE', `/api/tasks/${id}`)
   },
+  routines: {
+    getAll:  () => req('GET', '/api/routines'),
+    library: () => req('GET', '/api/routines/library'),
+    addStep:    (s) => req('POST', '/api/routines/steps', s),
+    updateStep: ({ id, ...data }) => req('PUT', `/api/routines/steps/${id}`, data),
+    moveStep:   ({ id, dir }) => req('POST', `/api/routines/steps/${id}/move`, { dir }),
+    deleteStep: (id) => req('DELETE', `/api/routines/steps/${id}`)
+  },
+  todos: {
+    getAll:  () => req('GET', '/api/todos'),
+    create:  (t) => req('POST', '/api/todos', t),
+    update:  ({ id, ...data }) => req('PUT', `/api/todos/${id}`, data),
+    setDone: ({ id, done }) => req('POST', `/api/todos/${id}/done`, { done }),
+    delete:  (id) => req('DELETE', `/api/todos/${id}`)
+  },
+  day: {
+    get:      (memberId) => req('GET', `/api/day/${memberId}`),
+    markStep: ({ runId, stepId, done }) => req('POST', `/api/day/runs/${runId}/steps/${stepId}`, { done }),
+    setTime:  ({ runId, stepId, time }) => req('POST', `/api/day/runs/${runId}/steps/${stepId}/time`, { time })
+  },
   points: {
     addManual:  ({ memberId, points, reason }) => req('POST', '/api/points/manual', { memberId, points, reason }),
     getHistory: (memberId) => req('GET', `/api/points/history${memberId ? `?memberId=${memberId}` : ''}`)

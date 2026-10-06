@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useStore } from '../../store'
+import { memberPhoto } from './memberPhoto'
 
 const ROLE_LABEL = { parent: 'הורה', child: 'ילד/ה' }
 
@@ -45,7 +46,7 @@ export default function HomeScreen() {
 
   return (
     <div style={{
-      height: '100vh',
+      height: '100%',
       background: 'linear-gradient(160deg, #667eea 0%, #a18cd1 50%, #fbc2eb 100%)',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       padding: '2rem', gap: '2rem', overflow: 'auto'
@@ -127,7 +128,9 @@ function MemberCard({ member, delay, onClick }) {
         marginBottom: '.75rem',
         animation: 'float 3s ease-in-out infinite'
       }}>
-        {member.avatar || '👤'}
+        {memberPhoto(member)
+          ? <img src={memberPhoto(member)} alt="" style={{ width: 120, height: 120, borderRadius: '50%', objectFit: 'cover' }} />
+          : member.avatar || '👤'}
       </div>
 
       {/* Name */}

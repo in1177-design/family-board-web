@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useStore } from '../../store'
 import WeeklyCalendar from './WeeklyCalendar'
-import TaskList from './TaskList'
 import PointsDisplay from './PointsDisplay'
+import MyDay from '../MyDay/MyDay'
+import { memberPhoto } from '../shared/memberPhoto'
 
 const TABS = [
-  { id: 'tasks',    label: '✅ משימות',   emoji: '✅' },
+  { id: 'myday',    label: 'היום שלי' },
   { id: 'calendar', label: '📅 יומן',     emoji: '📅' },
   { id: 'points',   label: '⭐ נקודות',   emoji: '⭐' }
 ]
@@ -13,7 +14,13 @@ const TABS = [
 export default function KidsView() {
   const { getActiveMember, setActiveView, activeMemberId, loadTasks, loadCalendarEvents, members } = useStore()
   const member = getActiveMember()
-  const [tab, setTab] = useState('tasks')
+  const [tab, setTab] = useState('myday')
+  // השעה ב-hero, מתעדכנת כל 30 שניות
+  const [now, setNow] = useState(() => new Date())
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 30000)
+    return () => clearInterval(timer)
+  }, [])
 
   useEffect(() => {
     if (activeMemberId) loadTasks(activeMemberId)
@@ -34,7 +41,7 @@ export default function KidsView() {
 
   return (
     <div style={{
-      height: '100vh',
+      height: '100%',
       display: 'flex', flexDirection: 'column',
       background: `linear-gradient(160deg, ${member.color}22 0%, var(--bg) 60%)`,
       overflow: 'hidden'
@@ -42,24 +49,29 @@ export default function KidsView() {
       {/* ── Header ── */}
       <header style={{
         padding: '1rem 1.5rem',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        // שלוש עמודות: ה-Hero תמיד באמצע, גם כשהכפתורים בצדדים ברוחב שונה
+        display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: '.75rem',
         background: member.color,
         boxShadow: `0 4px 20px ${member.color}55`
       }}>
         <button
           className="btn btn-ghost btn-sm"
-          style={{ color: '#fff' }}
+          style={{ color: '#fff', justifySelf: 'start' }}
           onClick={() => setActiveView('home')}
         >
           ← חזרה
         </button>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '.75rem' }}>
-          <span style={{ fontSize: '2rem' }}>{member.avatar}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          {memberPhoto(member)
+            ? <img src={memberPhoto(member)} alt="" style={{ width: 88, height: 88, borderRadius: '50%', objectFit: 'cover', border: '3px solid #fff' }} />
+            : <span style={{ fontSize: '3rem' }}>{member.avatar}</span>}
           <div>
             <h2 style={{ color: '#fff', margin: 0 }}>{member.name}</h2>
-            <div style={{ color: 'rgba(255,255,255,.8)', fontSize: '.85rem' }}>
-              ⭐ {member.points} נקודות
+            <div style={{ color: 'rgba(255,255,255,.85)', fontSize: '.95rem' }}>
+              {now.toLocaleDateString('he-IL', { timeZone: 'Asia/Jerusalem', weekday: 'long', day: 'numeric', month: 'long' })}
+              {' · '}
+              {now.toLocaleTimeString('he-IL', { timeZone: 'Asia/Jerusalem', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })}
             </div>
           </div>
         </div>
@@ -67,9 +79,9 @@ export default function KidsView() {
         {/* Points pill */}
         <div style={{
           background: 'rgba(255,255,255,.25)', borderRadius: 'var(--r-full)',
-          padding: '.4rem 1rem', color: '#fff', fontWeight: 700, fontSize: '1rem'
+          padding: '.4rem 1rem', color: '#fff', fontWeight: 700, fontSize: '1rem', whiteSpace: 'nowrap', justifySelf: 'end'
         }}>
-          🏆 {member.points}
+          ⭐ {member.points || 0}
         </div>
       </header>
 
@@ -99,7 +111,7 @@ export default function KidsView() {
 
       {/* ── Content ── */}
       <div style={{ flex: 1, overflow: 'auto', padding: '1.25rem' }}>
-        {tab === 'tasks'    && <TaskList member={member} />}
+        {tab === 'myday'    && <MyDay memberId={member.id} hideHero />}
         {tab === 'calendar' && <WeeklyCalendar member={member} />}
         {tab === 'points'   && <PointsDisplay member={member} />}
       </div>
