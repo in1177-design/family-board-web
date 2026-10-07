@@ -75,7 +75,8 @@ export const liveApi = {
   },
   points: {
     addManual:  ({ memberId, points, reason }) => req('POST', '/api/points/manual', { memberId, points, reason }),
-    getHistory: (memberId) => req('GET', `/api/points/history${memberId ? `?memberId=${memberId}` : ''}`)
+    getHistory: (memberId) => req('GET', `/api/points/history${memberId ? `?memberId=${memberId}` : ''}`),
+    today:      () => req('GET', '/api/points/today')
   },
   google: {
     getAuthUrl:    (memberId) => req('GET', `/api/google/auth-url/${memberId}`),

@@ -19,8 +19,13 @@ function windowOf(time, windows) {
 
 // "היום שלי": שלושת החלונות של היום עם ההרגלים שחלים היום, ומתחתם המשימות.
 // מתרענן כשחוזרים למסך וכל 30 שניות, כדי שסימון בטלפון יופיע גם במחשב
-// hideHero: במסך הילד ה-hero נמצא בפס העליון, אז כאן לא מציגים אותו
-export default function MyDay({ memberId, hideHero }) {
+// hideHero: במסך הילד ה-hero נמצא בפס העליון, אז כאן לא מציגים אותו.
+// viewerId: מי מסתכל, אם זה לא בעל היום. החלטה 2026-10-07: הורה שצופה ביום של ילד
+// מסמן ומזיז שעות כמו הילד, עורך כל הרגל, וקובע נקודות להרגל שהוא מוסיף לילד
+export default function MyDay({ memberId, viewerId, hideHero }) {
+  const { members } = useStore()
+  const viewer = viewerId && viewerId !== memberId && members.find(m => m.id === viewerId)
+  const parentViewing = viewer?.role === 'parent'
   const [day, setDay] = useState(null)
   const [error, setError] = useState('')
   // החלטה 2026-10-07: כל בן משפחה מוסיף לעצמו הרגלים ומשימות, בלי אישור
@@ -86,11 +91,12 @@ export default function MyDay({ memberId, hideHero }) {
   }
 
   if (editTodo) {
-    return <TodoForm {...editTodo} memberId={memberId} byId={memberId} today={day.date} onClose={() => { setEditTodo(null); load() }} />
+    return <TodoForm {...editTodo} memberId={memberId} byId={viewer ? viewer.id : memberId} today={day.date} onClose={() => { setEditTodo(null); load() }} />
   }
 
   if (editing) {
-    return <StepForm {...editing} selfId={memberId} memberId={memberId} onClose={() => { setEditing(null); load() }} />
+    // הורה שמוסיף לילד: כמו מלוח ההרגלים (בלי selfId), ולכן יכול לקבוע נקודות
+    return <StepForm {...editing} selfId={parentViewing ? undefined : memberId} memberId={memberId} onClose={() => { setEditing(null); load() }} />
   }
 
   if (error && !day) return <div className="pl"><p className="pl-error">{error}</p></div>
@@ -132,6 +138,7 @@ export default function MyDay({ memberId, hideHero }) {
             streak={streak}
             windowOver={day.now >= day.windows[t.id].end}
             memberId={memberId}
+            canEditAll={parentViewing}
             onMark={mark}
             onSetTime={setTime}
             now={day.now}
@@ -154,7 +161,7 @@ export default function MyDay({ memberId, hideHero }) {
 
 // חלון אחד: כותרת עם מונה, והרגל בכל כרטיס. הרגל שבוצע נשאר במקומו עם קו עליו.
 // החלטה 2026-10-07: חלון שהכל בו בוצע מתקפל לכותרת עם חץ, ולחיצה על הכותרת פותחת וסוגרת
-function WindowCard({ label, window: w, steps, todos, today, onToggleTodo, onEditTodo, streak, windowOver, memberId, onMark, onSetTime, now, onAdd, onEdit }) {
+function WindowCard({ label, window: w, steps, todos, today, onToggleTodo, onEditTodo, streak, windowOver, memberId, canEditAll, onMark, onSetTime, now, onAdd, onEdit }) {
   const [expanded, setExpanded] = useState(false)
   const total = steps.length + todos.length
   const doneCount = steps.filter(s => s.done).length + todos.filter(t => t.done_at).length
@@ -191,7 +198,7 @@ function WindowCard({ label, window: w, steps, todos, today, onToggleTodo, onEdi
         ? <TodoCard key={s.id} todo={s} today={today} onToggle={onToggleTodo} onEdit={onEditTodo} />
         : <StepCard key={s.id} step={s} window={w} now={now} onChange={() => onMark(s)}
             onSetTime={time => onSetTime(s, time)}
-            onEdit={s.created_by === memberId ? () => onEdit(s) : null} />
+            onEdit={canEditAll || s.created_by === memberId ? () => onEdit(s) : null} />
       )}
       <button className="pl-link" style={{ alignSelf: 'flex-start' }} onClick={onAdd}>+ הוסף הרגל</button>
       </>}

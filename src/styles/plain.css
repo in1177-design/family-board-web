@@ -324,6 +324,22 @@
 .pl-fold-head > :first-child { flex: 1; }
 .pl-fold-arrow { color: var(--pl-muted); font-size: 1.1em; }
 
+/* טבלת הובלה יומית: שורה לכל בן משפחה. השורה של מי שמסתכל מודגשת */
+.pl-board-row {
+  display: flex;
+  align-items: center;
+  gap: var(--pl-gap-lg);
+  padding: 10px 14px;
+  background: var(--pl-card);
+  border: 1px solid var(--pl-line);
+  border-radius: var(--pl-r-box);
+}
+.pl-board-me { border-color: var(--pl-accent); background: var(--pl-accent-soft); }
+.pl-board-rank { width: 28px; text-align: center; font-size: 20px; font-weight: 600; }
+
+/* תפריט בפס העליון: בלי הרקע והריווח של דף */
+.pl.pl-bare { background: none; padding: 0; width: auto; margin: 0; }
+
 /* Hero בראש "היום שלי": תמונה של בן המשפחה, ולידה השם והתאריך */
 .pl-hero {
   display: flex;
