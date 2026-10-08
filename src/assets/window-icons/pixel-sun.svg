@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" fill="none" shape-rendering="crispEdges" role="img" aria-labelledby="title">
+  <title id="title">שמש בסגנון פיקסל ארט</title>
+  <defs>
+    <pattern id="pixels" width="4" height="4" patternUnits="userSpaceOnUse"><path d="M0 0H4M0 0V4" stroke="#FFF4BA" stroke-opacity=".45" stroke-width=".6"/></pattern>
+  </defs>
+  <!-- Stepped outline and warm centre -->
+  <path d="M36 24H60V28H68V36H72V60H68V68H60V72H36V68H28V60H24V36H28V28H36Z" fill="#EE4E96"/>
+  <path d="M36 28H60V32H64V36H68V60H64V64H60V68H36V64H32V60H28V36H32V32H36Z" fill="#FFCC68"/>
+  <path d="M36 28H60V32H36V36H32V60H28V36H32V32H36Z" fill="#FFE994"/>
+  <path d="M64 36H68V60H64V64H60V68H36V64H60V60H64Z" fill="#FFB66C"/>
+  <path d="M36 28H60V32H64V36H68V60H64V64H60V68H36V64H32V60H28V36H32V32H36Z" fill="url(#pixels)"/>
+  <!-- Eight distinct pixel rays -->
+  <path d="M42 4H54V16H42ZM42 80H54V92H42ZM4 42H16V54H4ZM80 42H92V54H80Z" fill="#FF83B4"/>
+  <path d="M46 8H50V12H46ZM46 84H50V88H46ZM8 46H12V50H8ZM84 46H88V50H84Z" fill="#FFD8CD"/>
+  <path d="M44 20H52V24H44ZM44 72H52V76H44ZM20 44H24V52H20ZM72 44H76V52H72Z" fill="#FF71A8"/>
+  <path d="M16 16H24V20H28V28H20V24H16ZM72 16H80V24H76V28H68V20H72ZM16 72H20V68H28V76H24V80H16ZM68 68H76V72H80V80H72V76H68Z" fill="#FA69A5"/>
+  <path d="M16 16H20V20H16ZM76 16H80V20H76ZM16 76H20V80H16ZM76 76H80V80H76Z" fill="#FFA6C8"/>
+</svg>

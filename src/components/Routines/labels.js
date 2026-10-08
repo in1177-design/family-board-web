@@ -3,9 +3,16 @@
 
 export const TIMES = [
   { id: 'morning', label: 'בוקר' },
-  { id: 'noon',    label: 'צהריים' },
+  { id: 'noon',    label: 'אחר הצהריים' },
   { id: 'evening', label: 'ערב' }
 ]
+
+// משפט קבוע מתחת לשם החלון ב"היום שלי" (wireframe, 2026-10-07)
+export const TAGLINES = {
+  morning: 'מתחילים את היום באנרגיה טובה',
+  noon:    'ממשיכים בקצב שלך',
+  evening: 'מסיימים את היום ברוגע'
+}
 
 export const DEFAULT_WINDOWS = {
   morning: { start: '06:30', end: '07:45' },
@@ -53,5 +60,6 @@ export const ERRORS = {
   step_without_label:  'צריך לתת להרגל שם',
   invalid_time:        'השעה לא תקינה',
   invalid_windows:     'שעת הסיום צריכה להיות אחרי שעת ההתחלה',
-  invalid_points:      'מספר הנקודות לא תקין'
+  invalid_points:      'מספר הנקודות לא תקין',
+  invalid_duration:    'משך הזמן צריך להיות בין 1 ל-600 דקות'
 }

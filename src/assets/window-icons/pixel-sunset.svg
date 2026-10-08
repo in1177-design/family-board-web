@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 96 96" fill="none" shape-rendering="crispEdges" role="img" aria-labelledby="title">
+  <title id="title">שקיעה בסגנון פיקסל ארט</title>
+  <defs><pattern id="pixels" width="4" height="4" patternUnits="userSpaceOnUse"><path d="M0 0H4M0 0V4" stroke="#FFF0C0" stroke-opacity=".5" stroke-width=".6"/></pattern></defs>
+  <!-- Rays -->
+  <path d="M46 4H50V16H46ZM24 12H28V20H32V24H28V20H24ZM68 12H72V20H68V24H64V20H68ZM8 32H16V36H20V40H12V36H8ZM80 32H88V36H84V40H76V36H80Z" fill="#F668AC"/>
+  <path d="M46 4H50V8H46ZM24 12H28V16H24ZM68 12H72V16H68" fill="#FFA4CE"/>
+  <!-- Stepped half sun -->
+  <path d="M40 24H56V28H64V32H68V40H72V56H24V40H28V32H32V28H40Z" fill="#483076"/>
+  <path d="M40 28H56V32H64V40H68V56H28V40H32V32H40Z" fill="#FFC48E"/>
+  <path d="M40 28H56V32H40V36H36V40H32V52H28V40H32V32H40Z" fill="#FFE0A1"/>
+  <path d="M28 48H68V56H28Z" fill="#F89BAF"/>
+  <path d="M40 28H56V32H64V40H68V56H28V40H32V32H40Z" fill="url(#pixels)"/>
+  <!-- Horizon and pixel reflection -->
+  <path d="M8 56H88V60H8Z" fill="#432675"/>
+  <path d="M4 64H92V68H4ZM12 68H84V72H12ZM20 72H76V76H20" fill="#FB91C4"/>
+  <path d="M16 64H80V68H16ZM28 72H68V76H28ZM32 80H64V84H32" fill="#F576B5"/>
+  <path d="M32 64H64V68H32ZM40 72H56V76H40" fill="#FFD2CC"/>
+  <path d="M4 64H92V68H4ZM12 68H84V72H12ZM20 72H76V76H20ZM32 80H64V84H32Z" fill="url(#pixels)"/>
+</svg>

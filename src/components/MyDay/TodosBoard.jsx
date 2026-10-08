@@ -18,10 +18,6 @@ export default function TodosBoard() {
   const load = () => api.todos.getAll().then(setTodos).catch(e => setError(e.message))
   useEffect(() => { load() }, [])
 
-  if (editing) {
-    return <TodoForm {...editing} byId={activeMemberId} today={today} onClose={() => { setEditing(null); load() }} />
-  }
-
   const toggle = async (todo, done) => {
     await api.todos.setDone({ id: todo.id, done }).catch(e => setError(e.message))
     load()
@@ -64,6 +60,9 @@ export default function TodosBoard() {
           </div>
         )
       })}
+
+      {/* חלון מודאלי מעל הלוח */}
+      {editing && <TodoForm {...editing} byId={activeMemberId} today={today} onClose={() => { setEditing(null); load() }} />}
     </div>
   )
 }

@@ -15,7 +15,8 @@ function slots(window, ...times) {
 
 // בחירת שעה להיום בלבד (רפרנס: צילום המסך "מתי תקרא היום?").
 // משימה עם שעה קבועה: מזיזים אותה. משימה בלי שעה: קובעים לה שעה להיום
-export default function TimePicker({ step, window: w, now, onPick, onCancel }) {
+// onReset: רק כשהשעה הוזזה להיום. חוזר לשעה הקבועה, או מסיר שעה שנקבעה להיום
+export default function TimePicker({ step, window: w, now, onPick, onReset, onCancel }) {
   const options = slots(w, step.exact_time, step.time_today)
   // אי אפשר לבחור חצי שעה שכבר עברה
   const past = (t) => toMin(t) + 30 <= toMin(now)
@@ -53,6 +54,11 @@ export default function TimePicker({ step, window: w, now, onPick, onCancel }) {
       <button className="pl-primary" disabled={!chosen} onClick={() => onPick(chosen === step.exact_time ? null : chosen)}>
         {chosen ? `קבע ל-${chosen}` : 'כל השעות בחלון כבר עברו'}
       </button>
+      {onReset && (
+        <button onClick={onReset}>
+          {step.exact_time ? `חזרה לשעה הקבועה (${step.exact_time})` : 'הסר שעה'}
+        </button>
+      )}
       <button className="pl-link pl-muted" style={{ alignSelf: 'flex-start' }} onClick={onCancel}>ביטול</button>
     </div>
   )

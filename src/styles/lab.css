@@ -1,0 +1,162 @@
+/* מסגרת לכרטיסים מהמעבדה (מעבדת הסגנונות, 2026-10-07). ארבע דרכים, עם אותם כללים בשלושה מקומות:
+   - .lab-fr-<דרך>: הדוגמאות במעבדה.
+   - "נסה במדריך": רק על החלונות במדריך הסגנון (.lab-trial-<דרך> על הרשת של החלונות).
+   - "החל בכל האפליקציה": רק על PixelCard (.px-card: החלונות ו"המשימות שלי"), רק בעיצוב החדש (data-frame="<דרך>" על <html>, frame.js).
+     חוץ מהחלונות שבניסיון במדריך, שמקבלים את הניסיון.
+   המשתנים מ-frameVars: --px-b עובי, --px-c צבע מסגרת, --fr-bg רקע, --px-sh ו---px-so הצל (0 כשאין צל),
+   ולדרכים 3 ו-4 גם --fr-clip, --fr-bw, --fr-bi, --fr-extra, --fr-head-clip */
+
+/* דוגמה במעבדה: ריווח. ראשונה בקובץ, כדי שכללי המסגרת שאחריה יגברו עליה */
+.lab-sample { padding: 18px; background: var(--pl-card); }
+
+/* 1. מסגרת מעוגלת */
+.lab-fr-round,
+.lab-trial-round .pl-section.px-card,
+:root[data-theme="pixel"][data-frame="round"] .px-card:not(.lab-trial .px-card) {
+  border: var(--px-b) solid var(--px-c);
+  border-radius: 12px;
+  background: var(--fr-bg);
+  box-shadow: var(--px-so) var(--px-so) 0 0 var(--px-sh);
+}
+
+/* 2. מדרגה אחת, מצללים: ארבעה צללים בלי טשטוש, אחד לכל צד, והצל המוסט אחריהם */
+.lab-fr-shadow,
+.lab-trial-shadow .pl-section.px-card,
+:root[data-theme="pixel"][data-frame="shadow"] .px-card:not(.lab-trial .px-card) {
+  border: none;
+  border-radius: 0;
+  background: var(--fr-bg);
+  box-shadow:
+    0 calc(-1 * var(--px-b)) 0 0 var(--px-c),
+    0 var(--px-b) 0 0 var(--px-c),
+    calc(-1 * var(--px-b)) 0 0 0 var(--px-c),
+    var(--px-b) 0 0 0 var(--px-c),
+    var(--px-so) var(--px-so) 0 0 var(--px-sh);
+}
+
+/* 3. מדרגות, מחיתוך: שתי שכבות מתחת לתוכן, בלי עטיפות. ::before בצבע המסגרת, ::after ברקע,
+   עובי אחד פנימה. הצל על הכרטיס עצמו (הוא לא חתוך), ועוקב אחרי הצורה של השכבות */
+.lab-fr-clip,
+.lab-trial-clip .pl-section.px-card,
+:root[data-theme="pixel"][data-frame="clip"] .px-card:not(.lab-trial .px-card) {
+  position: relative;
+  isolation: isolate;
+  border: none;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  filter: drop-shadow(var(--px-so) var(--px-so) 0 var(--px-sh));
+}
+:is(.lab-fr-clip, .lab-trial-clip .pl-section.px-card)::before,
+:root[data-theme="pixel"][data-frame="clip"] .px-card:not(.lab-trial .px-card)::before,
+:is(.lab-fr-clip, .lab-trial-clip .pl-section.px-card)::after,
+:root[data-theme="pixel"][data-frame="clip"] .px-card:not(.lab-trial .px-card)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--px-c);
+  clip-path: var(--fr-clip);
+}
+:is(.lab-fr-clip, .lab-trial-clip .pl-section.px-card)::after,
+:root[data-theme="pixel"][data-frame="clip"] .px-card:not(.lab-trial .px-card)::after {
+  inset: var(--px-b);
+  background: var(--fr-bg);
+}
+
+/* 4. מדרגות, מתמונה: border-image. בלי רקע, הפנים מהתמונה, וצל שעוקב אחרי הצורה */
+.lab-fr-img,
+.lab-trial-img .pl-section.px-card,
+:root[data-theme="pixel"][data-frame="img"] .px-card:not(.lab-trial .px-card) {
+  border-style: solid;
+  border-width: var(--fr-bw);
+  border-image: var(--fr-bi);
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  filter: drop-shadow(var(--px-so) var(--px-so) 0 var(--px-sh));
+}
+
+/* בחלונות במדריך: בלי הרווח מלמעלה של כרטיס רגיל */
+.lab-trial .px-card { margin-top: 0; }
+
+/* כותרת החלון בעיצוב החדש (על כל הרוחב): פינות לפי המסגרת */
+:root[data-theme="pixel"] .lab-trial .pl-win .pl-fold-head,
+:root[data-theme="pixel"][data-frame] .pl-win:not(.lab-trial .pl-win) .pl-fold-head { border-radius: 0; }
+:root[data-theme="pixel"] .lab-trial-round .pl-win .pl-fold-head,
+:root[data-theme="pixel"][data-frame="round"] .pl-win:not(.lab-trial .pl-win) .pl-fold-head {
+  border-radius: calc(12px - var(--px-b)) calc(12px - var(--px-b)) 0 0;
+}
+/* בדרכים 3 ו-4 הכותרת מגיעה בדיוק עד הקו (--fr-extra), ונחתכת במדרגות שבפנים */
+:root[data-theme="pixel"] :is(.lab-trial-clip, .lab-trial-img) .pl-win,
+:root[data-theme="pixel"]:is([data-frame="clip"], [data-frame="img"]) .pl-win:not(.lab-trial .pl-win) { --win-extra: var(--fr-extra); }
+:root[data-theme="pixel"] :is(.lab-trial-clip, .lab-trial-img) .pl-win .pl-fold-head,
+:root[data-theme="pixel"]:is([data-frame="clip"], [data-frame="img"]) .pl-win:not(.lab-trial .pl-win) .pl-fold-head {
+  margin-top: calc(-1 * var(--fr-extra));
+  clip-path: var(--fr-head-clip);
+}
+
+/* הפקדים במדריך: הדרך שנבחרה */
+.lab-frame-panel { padding: 12px; border-radius: 8px; background: var(--pl-soft); }
+.pl button.lab-chosen { outline: 2px solid var(--pl-accent-dark); font-weight: 700; }
+
+/* דפי העיצוב: רשת דוגמאות */
+.lab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 28px; align-items: start; }
+.lab-code { direction: ltr; text-align: left; font-size: 12px; background: var(--pl-soft); padding: 8px; border-radius: 6px; overflow-x: auto; white-space: pre; }
+.lab-swatch { width: 100%; height: 44px; border: 1px solid var(--pl-line); border-radius: 6px; }
+
+/* מדריך הסגנון: אייקונים ופס קוביות מוצגים תמיד, גם בעיצוב הרגיל */
+.lab-icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 16px; }
+.lab-icons .pl-icon { display: inline-flex; width: var(--pl-icon-size); height: var(--pl-icon-size); color: var(--px-frame, var(--pl-text)); }
+.lab-icons .pl-icon svg { width: 100%; height: 100%; }
+
+/* המעבדה בחלון מודאלי, מתוך מדריך הסגנון */
+.lab-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 32px 12px;
+  overflow-y: auto;
+  background: rgba(30, 20, 60, .45);
+}
+.lab-modal {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  border-radius: 16px;
+  background: var(--pl-page);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .25);
+}
+.lab-modal .pl { background: transparent; }
+.pl button.lab-modal-close, .lab-modal button.lab-modal-close {
+  position: absolute;
+  top: 10px;
+  inset-inline-end: 10px;
+  z-index: 1;
+  min-height: 36px;
+  min-width: 36px;
+  border: none;
+  background: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* מדריך הסגנון: טבלת סוגי הכפתורים */
+.lab-buttons { display: flex; flex-direction: column; }
+.lab-buttons-row {
+  display: grid;
+  grid-template-columns: 140px 200px minmax(200px, 1fr) minmax(220px, 1.4fr);
+  gap: 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--pl-line);
+}
+.lab-buttons-head { font-weight: 700; color: var(--pl-muted); font-size: var(--pl-size-sm); }
+.lab-buttons-css { direction: ltr; text-align: left; font-size: 12px; background: var(--pl-soft); padding: 4px 6px; border-radius: 4px; }
+@media (max-width: 900px) {
+  .lab-buttons-row { grid-template-columns: 1fr; gap: 6px; }
+  .lab-buttons-head { display: none; }
+}

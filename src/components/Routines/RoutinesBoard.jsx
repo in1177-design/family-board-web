@@ -14,8 +14,6 @@ export default function RoutinesBoard() {
   const load = () => api.routines.getAll().then(setRoutines).catch(e => setError(e.message))
   useEffect(() => { load() }, [])
 
-  if (editing) return <StepForm {...editing} onClose={() => { setEditing(null); load() }} />
-
   // כל ההרגלים של בן משפחה בחלון, גם אם נשמרו בכמה מיכלים
   const stepsOf = (memberId, timeOfDay) => (routines || [])
     .filter(r => r.member_id === memberId && r.timing_type === 'window' && r.time_of_day === timeOfDay)
@@ -54,6 +52,9 @@ export default function RoutinesBoard() {
           </tbody>
         </table>
       )}
+
+      {/* הוספה ועריכה של הרגל: חלון מודאלי מעל הלוח (2026-10-08) */}
+      {editing && <StepForm {...editing} onClose={() => { setEditing(null); load() }} />}
     </div>
   )
 }
