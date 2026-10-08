@@ -129,7 +129,7 @@ function MemberCard({ member, delay, onClick }) {
         animation: 'float 3s ease-in-out infinite'
       }}>
         {memberPhoto(member)
-          ? <img src={memberPhoto(member)} alt="" style={{ width: 120, height: 120, borderRadius: '50%', objectFit: 'cover' }} />
+          ? <img className="home-photo" src={memberPhoto(member)} alt="" />
           : member.avatar || '👤'}
       </div>
 

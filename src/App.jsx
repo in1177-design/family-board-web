@@ -8,9 +8,12 @@ import LoginScreen from './components/shared/LoginScreen'
 import Loader from './components/shared/Loader'
 import ViewSwitcher from './components/shared/ViewSwitcher'
 import { ToastProvider } from './components/shared/Toast'
+import { useThemeName } from './components/shared/ThemeToggle'
 
 function AppContent() {
   const { members, loadFamily, activeView } = useStore()
+  // מחליפים עיצוב: הכל מצויר מחדש (אווטרים בפיקסלים בעיצוב החדש)
+  useThemeName()
   const [initializing, setInitializing] = useState(true)
   const [hasToken, setHasToken]         = useState(!!localStorage.getItem('family_token'))
 

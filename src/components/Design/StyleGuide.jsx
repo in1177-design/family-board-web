@@ -3,7 +3,7 @@ import { StepCard, WindowCard, Progress } from '../MyDay/MyDay'
 import { TodoCard } from '../MyDay/TodosSection'
 import { TAGLINES } from '../Routines/labels'
 import Icon, { ICON_NAMES } from '../shared/Icon'
-import { Blocks, DaySummary } from '../shared/MemberHero'
+import { Blocks } from '../shared/MemberHero'
 import PixelCard from '../shared/PixelCard'
 import PixelButton, { PIXEL_BUTTON_DEFAULTS, PIXEL_BUTTON_VARIANTS, pixelButtonVars } from '../shared/PixelButton'
 import StyleLab, { FrameControls, frameParams } from './StyleLab'
@@ -41,8 +41,8 @@ const BUTTONS = [
     sample: <><button>ביטול</button><button disabled>מושבת</button></>,
     where: 'פעולה משנית ליד הראשי: "ביטול" ו"מחק" בטופס הרגל, "חזרה לברירת המחדל" בלוח ההרגלים, חזרה לשעה הקבועה בבורר השעה, - ו-+ של הנקודות, ופריטי התפריט של ההורה.' },
   { title: 'קישור', name: 'Link', css: '.pl-link',
-    sample: <button className="pl-link">+ הוספת הרגל</button>,
-    where: 'פעולה קלה בתוך הטקסט: "+ הוספת הרגל" בתחתית חלון, "+ הוסף משימה ל…" בלוח המשימות, שם הרגל בלוח ההרגלים.' },
+    sample: <button className="pl-link">+ הוספה</button>,
+    where: 'פעולה קלה בתוך הטקסט: "+ הוספה" בתחתית חלון (פותח בחירה: הרגל או משימה), "+ הוסף משימה ל…" בלוח המשימות, שם הרגל בלוח ההרגלים.' },
   { title: 'קישור משני', name: 'MutedLink', css: '.pl-link.pl-muted',
     sample: <button className="pl-link pl-muted">הסר</button>,
     where: 'פעולה שקטה: "הסר" בתוספות של טופס המשימה, "ביטול" בבורר השעה, החיצים ↑↓ ושינוי שעות החלונות בלוח ההרגלים.' },
@@ -256,7 +256,7 @@ export default function StyleGuide({ trial, onClearTrial, onTry }) {
               label={['בוקר', 'אחר הצהריים', 'ערב'][i]} tagline={TAGLINES[id]}
               window={WINDOW} steps={i === 0 ? steps : []} todos={i === 1 ? [todos[0]] : []}
               today={TODAY} now="07:00" windowOver={false} streak={i === 0 ? 12 : 0}
-              onToggleTodo={toggleTodo} onEditTodo={noop} onMark={toggleStep} onSetTime={noop} onAdd={noop}
+              onToggleTodo={toggleTodo} onEditTodo={noop} onMark={toggleStep} onSetTime={noop} onAdd={noop} onAddTodo={noop}
             />
           ))}
         </div>
@@ -271,14 +271,28 @@ export default function StyleGuide({ trial, onClearTrial, onTry }) {
         </div>
       </Section>
 
+      {/* תצוגה ב' לבדיקה (2026-10-08): ההרגלים כרשימה בלי מסגרת, והמשימות בכרטיס, כדי להבדיל ביניהם */}
+      <Section title="חלון · תצוגה ב': הרגלים כרשימה">
+        <p className="pl-muted">לבדיקה, עוד לא באפליקציה. ההרגלים בלי מסגרת, עם קו דק ביניהם. המשימות נשארות בכרטיס עם מסגרת.</p>
+        <div className="pl-cols3">
+          {['morning', 'noon', 'evening'].map((id, i) => (
+            <WindowCard
+              key={id} id={id} habitList
+              label={['בוקר', 'אחר הצהריים', 'ערב'][i]} tagline={TAGLINES[id]}
+              window={WINDOW} steps={i === 0 ? steps : i === 2 ? steps.slice(0, 2) : []} todos={i < 2 ? [todos[0]] : []}
+              today={TODAY} now="07:00" windowOver={false} streak={i === 0 ? 12 : 0}
+              onToggleTodo={toggleTodo} onEditTodo={noop} onMark={toggleStep} onSetTime={noop} onAdd={noop} onAddTodo={noop}
+            />
+          ))}
+        </div>
+      </Section>
+
       <Section title="התקדמות">
         <div className="pl-col" style={{ maxWidth: 420, gap: 14 }}>
           <span className="pl-muted">פס בחלון (Progress), 2 מתוך 3:</span>
           <Progress done={2} total={3} />
           <span className="pl-muted">10 קוביות ב-Hero (Blocks), 70%. מוצג רק בעיצוב החדש בתוך ה-Hero, וכאן תמיד:</span>
           <Blocks percent={70} />
-          <span className="pl-muted">שורת הסיכום (DaySummary):</span>
-          <DaySummary summary={{ done: 7, total: 10 }} />
         </div>
       </Section>
 

@@ -9,7 +9,7 @@ import StepForm from '../Routines/StepForm'
 import MyDay from '../MyDay/MyDay'
 import TodosBoard from '../MyDay/TodosBoard'
 import TodoForm from '../MyDay/TodoForm'
-import MemberHero, { AppBar, DaySummary } from '../shared/MemberHero'
+import MemberHero, { AppBar } from '../shared/MemberHero'
 import { memberPhoto } from '../shared/memberPhoto'
 import DailyLeaderboard from '../Points/DailyLeaderboard'
 import StyleLab from '../Design/StyleLab'
@@ -76,7 +76,7 @@ export default function ParentView() {
         {!opened && <>
           {tab === 'overview'  && <FamilyOverview />}
           {tab === 'calendar'  && <ParentCalendar />}
-          {tab === 'myday'     && activeMemberId && <DayOf viewerId={activeMemberId} summary={summary} onSummary={setSummary} />}
+          {tab === 'myday'     && activeMemberId && <DayOf viewerId={activeMemberId} onSummary={setSummary} />}
           {tab === 'points'    && <><DailyLeaderboard currentId={activeMemberId} /><PointsManager /></>}
         </>}
         {addStep && <StepForm onClose={() => setAddStep(false)} />}
@@ -89,7 +89,7 @@ export default function ParentView() {
 
 // "היום שלי" בפאנל ההורים, עם בורר של כל בני המשפחה (החלטה 2026-10-07):
 // ההורה רואה את היום של כל ילד בלי לצאת מהפאנל. ברירת המחדל: היום של ההורה עצמו
-function DayOf({ viewerId, summary, onSummary }) {
+function DayOf({ viewerId, onSummary }) {
   const { members } = useStore()
   const [memberId, setMemberId] = useState(viewerId)
   const own = memberId === viewerId
@@ -110,7 +110,6 @@ function DayOf({ viewerId, summary, onSummary }) {
         ))}
       </div>
       {/* key: יום חדש לכל בן משפחה, בלי טפסים פתוחים מהקודם */}
-      {own && <DaySummary summary={summary} />}
       <MyDay key={memberId} memberId={memberId} viewerId={viewerId} hideHero onSummary={own ? onSummary : undefined} />
     </>
   )

@@ -3,7 +3,7 @@ import { useStore } from '../../store'
 import WeeklyCalendar from './WeeklyCalendar'
 import PointsDisplay from './PointsDisplay'
 import MyDay from '../MyDay/MyDay'
-import MemberHero, { AppBar, DaySummary } from '../shared/MemberHero'
+import MemberHero, { AppBar } from '../shared/MemberHero'
 import DailyLeaderboard from '../Points/DailyLeaderboard'
 
 const TABS = [
@@ -47,7 +47,7 @@ export default function KidsView() {
       <div className="pl-under-tabs" style={{ flex: 1, overflow: 'auto' }}>
         <MemberHero member={member} summary={tab === 'myday' ? summary : null} />
         <div style={{ padding: '1.25rem' }}>
-          {tab === 'myday'    && <><DaySummary summary={summary} /><MyDay memberId={member.id} hideHero onSummary={setSummary} /></>}
+          {tab === 'myday'    && <MyDay memberId={member.id} hideHero onSummary={setSummary} />}
           {tab === 'calendar' && <WeeklyCalendar member={member} />}
           {tab === 'points'   && <><DailyLeaderboard currentId={member.id} /><PointsDisplay member={member} /></>}
         </div>

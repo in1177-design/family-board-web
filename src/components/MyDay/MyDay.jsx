@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { api, useStore } from '../../store'
 import { TIMES, TAGLINES, rulesText } from '../Routines/labels'
 import StepForm from '../Routines/StepForm'
@@ -162,6 +162,7 @@ export default function MyDay({ memberId, viewerId, hideHero, onSummary }) {
             onSetTime={setTime}
             now={day.now}
             onAdd={() => setEditing({ timeOfDay: t.id })}
+            onAddTodo={time => setEditTodo({ defaultTime: time })}
           />
         )
       })}
@@ -186,9 +187,10 @@ export default function MyDay({ memberId, viewerId, hideHero, onSummary }) {
 }
 
 // חלון אחד (wireframe, 2026-10-07): כותרת עם שם, משפט, שעות ומונה, פס התקדמות, הרגל בכל שורה,
-// ובתחתית "+ הוספת הרגל" והרצף. הרגל שבוצע נשאר במקומו עם קו עליו.
+// ובתחתית "+ הוספה" (הרגל או משימה) והרצף. הרגל שבוצע נשאר במקומו עם קו עליו.
 // כל חלון מתקפל בלחיצה על הכותרת. חלון שהכל בו בוצע מתקפל מעצמו
-export function WindowCard({ id, label, tagline, window: w, steps, todos, today, onToggleTodo, onEditTodo, streak, windowOver, onMark, onSetTime, now, onAdd }) {
+// habitList: תצוגה ב' לבדיקה (2026-10-08): ההרגלים כרשימה בלי מסגרת, והמשימות נשארות בכרטיס (lab.css, .pl-win-list)
+export function WindowCard({ id, label, tagline, window: w, steps, todos, today, onToggleTodo, onEditTodo, streak, windowOver, onMark, onSetTime, now, onAdd, onAddTodo, habitList }) {
   // null: לפי המצב (פתוח, ומקופל כשהכל בוצע). true/false: מה שבן המשפחה בחר
   const [open, setOpen] = useState(null)
   const total = steps.length + todos.length
@@ -206,7 +208,7 @@ export function WindowCard({ id, label, tagline, window: w, steps, todos, today,
   const folded = open === null ? complete : !open
 
   return (
-    <PixelCard className={'pl-col pl-win pl-win-' + id} style={{ gap: 10 }}>
+    <PixelCard className={'pl-col pl-win pl-win-' + id + (habitList ? ' pl-win-list' : '')} style={{ gap: 10 }}>
       <FoldHead foldable folded={folded} onToggle={() => setOpen(folded)}>
         {/* האייקון מוסתר בעיצוב הרגיל. העטיפה נשארת הילד הראשון, כדי שהכותרת תתמתח כמו קודם */}
         <div className="pl-win-head">
@@ -229,11 +231,38 @@ export function WindowCard({ id, label, tagline, window: w, steps, todos, today,
             onSetTime={time => onSetTime(s, time)} />
       )}
       <div className="pl-row" style={{ justifyContent: 'space-between' }}>
-        <button className="pl-link" onClick={onAdd}>+ הוספת הרגל</button>
+        <AddMenu onAddStep={onAdd} onAddTodo={onAddTodo ? () => onAddTodo(w.start) : null} />
         {streak > 0 && <span className="pl-muted" style={{ fontSize: 'var(--pl-size-sm)' }}>🔥 רצף של {streak} {streak === 1 ? 'יום' : 'ימים'}</span>}
       </div>
       </>}
     </PixelCard>
+  )
+}
+
+// "+ הוספה" בתחתית חלון (2026-10-08): בחלון יש הרגלים ומשימות, אז לחיצה פותחת בחירה ביניהם.
+// בלי onAddTodo: רק "+ הוספת הרגל", כמו קודם
+function AddMenu({ onAddStep, onAddTodo }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+  useEffect(() => {
+    if (!open) return
+    const onDown = (e) => { if (!ref.current?.contains(e.target)) setOpen(false) }
+    document.addEventListener('pointerdown', onDown)
+    return () => document.removeEventListener('pointerdown', onDown)
+  }, [open])
+
+  if (!onAddTodo) return <button className="pl-link" onClick={onAddStep}>+ הוספת הרגל</button>
+  const pick = (fn) => { setOpen(false); fn() }
+  return (
+    <div className="pl-add-menu" ref={ref}>
+      <button className="pl-link" onClick={() => setOpen(v => !v)} aria-expanded={open}>+ הוספה</button>
+      {open && (
+        <div className="pl-add-menu-list">
+          <button onClick={() => pick(onAddStep)}><Icon name="sparkles" />הרגל</button>
+          <button onClick={() => pick(onAddTodo)}><Icon name="note" />משימה</button>
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -255,15 +284,15 @@ export function StepCard({ step, window: w, now, onChange, onSetTime }) {
   return (
     <div className="pl-col" style={{ gap: 6 }}>
       {/* pl-step-row: בעיצוב החדש המסגרת על כל השורה, כולל השעה והעיפרון, ברוחב קבוע */}
-      <div className={'pl-row pl-step-row' + (step.done ? ' pl-step-row-done' : '')} style={{ flexWrap: 'nowrap' }}>
+      <div className={'pl-row pl-step-row pl-step-row-habit' + (step.done ? ' pl-step-row-done' : '')} style={{ flexWrap: 'nowrap' }}>
         <label className={'pl-step' + (step.done ? ' pl-step-done' : '')} style={{ flex: 1 }}>
           <input type="checkbox" checked={step.done} onChange={onChange} />
           <Icon name={stepIcon(step)} className="pl-item-icon" />
           <span className="pl-step-name" style={{ flex: 1 }}>
             <span className="pl-step-title">{step.label}</span>
             <span className="pl-sub">
-              {rulesText(step.days_rule, step.days_custom)}
-              {step.duration_minutes ? ` · ⏱ ${step.duration_minutes} דק׳` : ''}
+              <span className="pl-step-days">{rulesText(step.days_rule, step.days_custom)}</span>
+              {step.duration_minutes ? <span className="pl-step-duration"><span className="pl-step-sep"> · </span>⏱ {step.duration_minutes} דק׳</span> : null}
             </span>
           </span>
           {step.points > 0 && <span className="pl-chip pl-chip-points">+{step.points} ★</span>}

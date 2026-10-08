@@ -45,7 +45,7 @@ export default function MemberHero({ member, summary, end }) {
         <div>
           <div className="mh-kicker">היום של {member.name}</div>
           <h2 className="mh-title">{greeting}, {member.name}!</h2>
-          <div className="mh-sub">יום חדש, הזדמנות חדשה להצליח</div>
+          <div className="mh-sub">{summaryText(summary)}</div>
           {/* בעיצוב החדש: פס קוביות עם האחוז. בעיצוב הרגיל מוסתר */}
           {percent !== null && (
             <div className="px-only mh-bar">
@@ -96,18 +96,14 @@ export function Blocks({ percent }) {
   )
 }
 
-// שורת הסיכום מתחת ל-Hero, רק ב"היום שלי": כמה בוצע היום וכמה נשאר
-export function DaySummary({ summary }) {
-  if (!summary?.total) return null
+// המשפט ב-Hero, ב"היום שלי": כמה נשאר (החלטה 2026-10-08: במקום שורת סיכום נפרדת, שחזרה על האחוז והפס).
+// בלי סיכום: המשפט הקבוע
+function summaryText(summary) {
+  if (!summary?.total) return 'יום חדש, הזדמנות חדשה להצליח'
   const left = summary.total - summary.done
-  return (
-    <div className="pl pl-summary">
-      <div className="pl-muted">כבר השלמת {summary.done} {summary.done === 1 ? 'דבר' : 'דברים'} היום</div>
-      <strong>
-        {left === 0 ? 'סיימת הכל להיום!' : `נשאר${left === 1 ? '' : 'ו'} רק ${left}, עוד קצת וסיימת!`}
-      </strong>
-    </div>
-  )
+  if (left === 0) return 'סיימת הכל להיום!'
+  if (summary.done === 0) return `${summary.total === 1 ? 'דבר אחד מחכה' : summary.total + ' דברים מחכים'} לך היום. בהצלחה!`
+  return `נשאר${left === 1 ? '' : 'ו'} רק ${left}, עוד קצת וסיימת!`
 }
 
 // פס האפליקציה: במחשב למעלה עם "המשפחה שלנו" והלשוניות, בטלפון הלשוניות בתחתית (plain.css)

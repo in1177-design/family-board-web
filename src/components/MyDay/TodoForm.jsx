@@ -26,20 +26,21 @@ const UNITS = [
 // הוספה או עריכה של משימה (רפרנס: Microsoft To Do), בחלון מודאלי (מגירה מלמטה בטלפון).
 // מוצג תמיד (2026-10-08): מה, למי, מתי. מתחת כפתורים קטנים שפותחים את השאר: שעה, חזרתיות, מיקום.
 // memberId: למי כברירת מחדל. byId: מי מוסיף (נרשם ב-created_by)
-export default function TodoForm({ todo, memberId, byId, today, onClose }) {
+// defaultTime: שעה התחלתית למשימה חדשה (מ"+ הוספה" בחלון: שעת תחילת החלון, כדי שתופיע בו)
+export default function TodoForm({ todo, memberId, byId, today, defaultTime, onClose }) {
   const { members } = useStore()
   const isNew = !todo
   const [assignee, setAssignee] = useState(todo?.member_id || memberId || '')
   const [calendar, setCalendar] = useState(false)
   const [title, setTitle] = useState(todo?.title || '')
   const [date, setDate] = useState(isNew ? today : todo.due_date)
-  const [time, setTime] = useState(todo?.due_time || '')
+  const [time, setTime] = useState(todo?.due_time || defaultTime || '')
   const [repeat, setRepeat] = useState(todo?.repeat || null)
   const [location, setLocation] = useState(todo?.location || '')
   const [icon, setIcon] = useState(todo?.icon || '')
   const [custom, setCustom] = useState(false)
   // אילו תוספות פתוחות. במשימה קיימת: מה שכבר יש בה
-  const [open, setOpen] = useState({ time: !!todo?.due_time, repeat: !!todo?.repeat, location: !!todo?.location })
+  const [open, setOpen] = useState({ time: !!(todo?.due_time || defaultTime), repeat: !!todo?.repeat, location: !!todo?.location })
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useSyncExternalStore } from 'react'
 
 // מעבר בין העיצוב הרגיל לעיצוב החדש (פיקסלים פסטל, החלטה 2026-10-07).
 // העיצוב החדש = data-theme="pixel" על <html>, והכללים שלו ב-theme-pixel.css.
@@ -8,6 +8,16 @@ const PIXEL = 'pixel'
 
 export function readTheme() {
   try { return localStorage.getItem(KEY) === PIXEL ? PIXEL : null } catch { return null }
+}
+
+// העיצוב הנוכחי, ומתעדכן כשמחליפים. App משתמש בזה כדי לצייר הכל מחדש (למשל אווטרים שונים בכל עיצוב)
+export function useThemeName() {
+  return useSyncExternalStore(subscribeTheme, () => document.documentElement.dataset.theme || null)
+}
+function subscribeTheme(onChange) {
+  const obs = new MutationObserver(onChange)
+  obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+  return () => obs.disconnect()
 }
 
 export function applyTheme(theme) {

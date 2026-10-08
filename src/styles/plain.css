@@ -458,8 +458,6 @@
   white-space: nowrap;
 }
 
-/* שורת הסיכום מתחת ל-Hero: כמה בוצע וכמה נשאר */
-.pl-summary { max-width: var(--pl-page-max); margin-bottom: var(--pl-gap-lg); }
 
 /* טבלת הובלה יומית: שורה לכל בן משפחה. השורה של מי שמסתכל מודגשת */
 .pl-board-row {
@@ -699,3 +697,36 @@
 .pl button.pl-extra { display: inline-flex; align-items: center; gap: 6px; }
 .pl button.pl-extra .pl-icon { display: inline-flex; flex-shrink: 0; width: 18px; height: 18px; }
 .pl-extra .pl-icon svg { width: 100%; height: 100%; }
+
+/* תמונה בכרטיס במסך הבית */
+.home-photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; }
+
+/* "+ הוספה" בתחתית חלון: בחירה בין הרגל למשימה (2026-10-08) */
+.pl-add-menu { position: relative; }
+.pl-add-menu-list {
+  position: absolute;
+  inset-inline-start: 0;
+  bottom: calc(100% + 6px);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+  padding: 4px;
+  border: 1px solid var(--pl-line);
+  border-radius: var(--pl-r-input);
+  background: var(--pl-card);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .15);
+}
+.pl .pl-add-menu-list button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: none;
+  background: none;
+  text-align: start;
+}
+.pl .pl-add-menu-list button:hover { background: var(--pl-soft); }
+.pl-add-menu-list .pl-icon { display: inline-flex; flex-shrink: 0; width: 18px; height: 18px; color: var(--px-frame, var(--pl-text)); }
+.pl-add-menu-list .pl-icon svg { width: 100%; height: 100%; }

@@ -108,12 +108,10 @@
 .px-blocks > span.on { background: #2CC5B0; }
 
 /* ── כרטיסים ומסגרות ── */
-:root[data-theme="pixel"] .pl-section,
-:root[data-theme="pixel"] .pl-summary {
+:root[data-theme="pixel"] .pl-section {
   border: 2px solid var(--px-frame);
   box-shadow: 4px 4px 0 var(--px-shadow);
 }
-:root[data-theme="pixel"] .pl-summary { background: var(--pl-card); }
 :root[data-theme="pixel"] .pl.pl-day { background: transparent; }
 
 /* כותרת חלון בצבע משלו, על כל הרוחב של הכרטיס (שוליים שליליים כגודל הריפוד), עם ציור צבעוני.
@@ -269,3 +267,6 @@
   border-color: var(--card-c, var(--px-frame));
   background: var(--card-bg, var(--pl-card));
 }
+
+/* אווטרים בפיקסלים, מרובעים (2026-10-08) */
+:root[data-theme="pixel"] :is(.mh-photo, .pl-hero-photo, .pl-who-photo, .pl-switcher-photo, .home-photo) { border-radius: 0; }

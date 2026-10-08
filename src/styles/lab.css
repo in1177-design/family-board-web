@@ -160,3 +160,25 @@
   .lab-buttons-row { grid-template-columns: 1fr; gap: 6px; }
   .lab-buttons-head { display: none; }
 }
+
+/* תצוגה ב' של חלון (2026-10-08, לבדיקה במדריך): הרגלים כרשימה בלי מסגרת, עם קו דק ביניהם.
+   המשימות (TodoCard) נשארות בכרטיס. בסוף הקובץ, כדי לגבור על המסגרת של השורה בשני העיצובים */
+.pl-win-list .pl-step-row.pl-step-row-habit {
+  border: none;
+  border-bottom: 1px solid var(--pl-line);
+  border-radius: 0;
+  background: none;
+}
+.pl-win-list .pl-step-row.pl-step-row-habit:hover { border-color: var(--pl-line); }
+.pl-win-list .pl-step-row-habit .pl-step { border: none; background: none; padding-inline-start: 0; }
+.pl-win-list .pl-step-row-habit .pl-step:hover { border-color: transparent; }
+/* בתצוגה ב' בלי "כל יום" / "ימי לימודים" בהרגל: לא קריטי לתצוגה (משך הזמן נשאר) */
+.pl-win-list .pl-step-row-habit .pl-step-days { display: none; }
+.pl-win-list .pl-step-row-habit .pl-step-sep { display: none; }
+/* משימה בתצוגה ב': כרטיס בטורקיז בהיר, כדי שתיבדל מההרגלים */
+.pl-win-list .pl-step-row:not(.pl-step-row-habit) {
+  border-color: var(--pl-accent);
+  background: var(--pl-accent-soft);
+}
+.pl-win-list .pl-step-row:not(.pl-step-row-habit) .pl-step { background: none; border-color: transparent; }
+.pl-win-list .pl-step-row:not(.pl-step-row-habit) .pl-chip { background: var(--pl-card); border-color: var(--pl-accent); color: var(--pl-accent-dark); }
