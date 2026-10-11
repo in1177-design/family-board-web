@@ -134,8 +134,8 @@
    ככה גם הרקע הצהוב של מה שבוצע ממלא את כל הרוחב, באותם קצוות כמו הקווים (המשתמשת, 2026-10-11) */
 :root[data-theme="pixel"] .pp-listfix .pl-win-list .pl-step-row.pl-step-row-habit {
   min-height: 52px;
-  margin-inline: calc(-1 * var(--win-base));
-  padding-inline: var(--win-base);
+  margin-inline: calc(-1 * var(--win-pad));
+  padding-inline: var(--win-pad);
   border-bottom: 2px dashed var(--pl-line);
 }
 :root[data-theme="pixel"] .pp-listfix .pl-win-list .pl-step-row.pl-step-row-habit:hover { border-color: var(--pl-line); }
