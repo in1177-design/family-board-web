@@ -507,7 +507,7 @@
 :root[data-theme="pixel"] .pl-win.pl-win { gap: 0 !important; } /* הרווח בא מ-style ב-WindowCard */
 :root[data-theme="pixel"] .pl-win > .pl-col { gap: 0; }
 :root[data-theme="pixel"] .pl-win > .pl-muted { margin-block: 10px; }
-:root[data-theme="pixel"] .pl-win > .pl-row:last-child { margin-top: 10px; }
+:root[data-theme="pixel"] .pl-win > .pl-row:last-child { padding-top: 10px; }
 :root[data-theme="pixel"] .pl-win .pl-step-row.pl-step-row-habit {
   min-height: 52px;
   margin-inline: calc(-1 * var(--win-pad));

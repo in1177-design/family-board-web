@@ -950,3 +950,11 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
 .pl .pl-add-menu-list button:hover { background: var(--pl-soft); }
 .pl-add-menu-list .pl-icon { display: inline-flex; flex-shrink: 0; width: 18px; height: 18px; color: var(--px-frame, var(--pl-text)); }
 .pl-add-menu-list .pl-icon svg { width: 100%; height: 100%; }
+
+/* "היום שלי" במחשב (2026-10-12): שלושת החלונות באותו גובה, ו"+ הוספה" והרצף בתחתית כל חלון,
+   כדי שהשורה התחתונה תהיה מיושרת גם כשבחלון אחד יש הרבה יותר. חלון מקופל לא נמתח */
+@media (min-width: 901px) {
+  .pl-cols3.pl-wins { align-items: stretch; }
+  .pl-wins > .pl-win:has(> .pl-fold-head[aria-expanded="false"]) { align-self: start; }
+  .pl-wins > .pl-win.pl-win > .pl-row:last-child { margin-top: auto; }
+}

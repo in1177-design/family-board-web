@@ -17,6 +17,29 @@ const REFRESH_MS = 30000
 const WINDOW_LINE_ICONS = { morning: 'sun', noon: 'sunset', evening: 'moon' }
 
 // החלון של שעה: החלון האחרון שהתחיל עד אותה שעה. לפני הבוקר: בוקר
+// החלון של עכשיו (2026-10-12, לטלפון): החלון האחרון שהתחיל ועוד לא נגמר. בין חלונות: הבא בתור. אחרי האחרון: האחרון
+export function currentWindow(now, windows) {
+  let cur = null
+  for (const t of TIMES) if (now >= windows[t.id].start && now < windows[t.id].end) cur = t.id
+  if (cur) return cur
+  const next = TIMES.find(t => now < windows[t.id].start)
+  return next ? next.id : TIMES[TIMES.length - 1].id
+}
+
+// מסך צר: החלונות אחד מתחת לשני (כמו pl-cols3 עד 900px)
+function useNarrow() {
+  const q = '(max-width: 900px)'
+  const [narrow, setNarrow] = useState(() => window.matchMedia?.(q).matches ?? false)
+  useEffect(() => {
+    const m = window.matchMedia?.(q)
+    if (!m) return
+    const on = () => setNarrow(m.matches)
+    m.addEventListener('change', on)
+    return () => m.removeEventListener('change', on)
+  }, [])
+  return narrow
+}
+
 function windowOf(time, windows) {
   let out = 'morning'
   for (const t of TIMES) if (time >= windows[t.id].start) out = t.id
@@ -55,6 +78,8 @@ export default function MyDay({ memberId, viewerId, hideHero, onSummary }) {
   // החלטה 2026-10-07: כל בן משפחה מוסיף לעצמו הרגלים ומשימות, בלי אישור
   const [editing, setEditing] = useState(null)   // הרגל: { step } או { timeOfDay }
   const [editTodo, setEditTodo] = useState(null) // משימה: { todo } או {}
+  // בטלפון רק החלון של עכשיו פתוח (2026-10-12)
+  const narrow = useNarrow()
 
   const load = useCallback(() =>
     api.day.get(memberId).then(d => { setDay(d); setError('') }).catch(e => setError(e.message)),
@@ -144,6 +169,7 @@ export default function MyDay({ memberId, viewerId, hideHero, onSummary }) {
 
   // החלטה 2026-10-07: משימה של היום עם שעה מופיעה בתוך החלון שלה, לפי השעה, יחד עם ההרגלים.
   // משימה בלי שעה, באיחור או בלי תאריך נשארת באזור "משימות"
+  const nowWindow = currentWindow(day.now, day.windows)
   const timed = (day.todos?.today || []).filter(t => t.due_date === day.date && t.due_time)
   const timedIds = new Set(timed.map(t => t.id))
   const restTodos = day.todos && { ...day.todos, today: day.todos.today.filter(t => !timedIds.has(t.id)) }
@@ -159,8 +185,8 @@ export default function MyDay({ memberId, viewerId, hideHero, onSummary }) {
       </div>}
       {error && <p className="pl-error">{error}</p>}
 
-      {/* במחשב שלוש עמודות, בטלפון אחד מתחת לשני */}
-      <div className="pl-cols3">
+      {/* במחשב שלוש עמודות באותו גובה (pl-wins), בטלפון אחד מתחת לשני, ורק החלון של עכשיו פתוח */}
+      <div className="pl-cols3 pl-wins">
       {TIMES.map(t => {
         const runs = day.routines.filter(r => r.time_of_day === t.id)
         const steps = runs.flatMap(r => r.steps.map(s => ({ ...s, run_id: r.run_id })))
@@ -186,6 +212,7 @@ export default function MyDay({ memberId, viewerId, hideHero, onSummary }) {
             onAdd={() => setEditing({ timeOfDay: t.id })}
             onAddTodo={time => setEditTodo({ defaultTime: time })}
             role={day.member.role}
+            isCurrent={narrow ? t.id === nowWindow : undefined}
           />
         )
       })}
@@ -215,7 +242,8 @@ export default function MyDay({ memberId, viewerId, hideHero, onSummary }) {
 // כל חלון מתקפל בלחיצה על הכותרת. חלון שהכל בו בוצע מתקפל מעצמו
 // habitList: תצוגה ב' לבדיקה (2026-10-08): ההרגלים כרשימה בלי מסגרת, והמשימות נשארות בכרטיס (lab.css, .pl-win-list)
 // onDeleteTodo: מחיקת משימה מה-⋮ בשורה (2026-10-12)
-export function WindowCard({ id, label, tagline, window: w, steps, todos, today, onToggleTodo, onEditTodo, onDeleteTodo, streak, windowOver, onMark, onSetTime, now, onAdd, onAddTodo, habitList, role }) {
+// isCurrent (רק בטלפון, 2026-10-12): false = חלון שאינו של עכשיו, מקופל כברירת מחדל. undefined = כמו קודם
+export function WindowCard({ id, label, tagline, window: w, steps, todos, today, onToggleTodo, onEditTodo, onDeleteTodo, streak, windowOver, onMark, onSetTime, now, onAdd, onAddTodo, habitList, role, isCurrent }) {
   // null: לפי המצב (פתוח, ומקופל כשהכל בוצע). true/false: מה שבן המשפחה בחר
   const [open, setOpen] = useState(null)
   const total = steps.length + todos.length
@@ -243,7 +271,7 @@ export function WindowCard({ id, label, tagline, window: w, steps, todos, today,
     }
     wasComplete.current = complete
   }, [complete])
-  const folded = open === null ? complete && !levelUp : !open
+  const folded = open === null ? (complete && !levelUp) || isCurrent === false : !open
 
   return (
     <PixelCard className={'pl-col pl-win pl-win-' + id + (habitList ? ' pl-win-list' : '') + (levelUp ? ' pl-levelup' : '')} style={{ gap: 10 }}>
