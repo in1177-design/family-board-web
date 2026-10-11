@@ -455,3 +455,12 @@
    #127567 על הקרם 5.5:1 (הטורקיז הרגיל 3:1) */
 :root[data-theme="pixel"] .pl button.pl-add-link { color: #127567; font-weight: 700; }
 :root[data-theme="pixel"] .pl button.pl-add-link:hover { color: #0B5C51; }
+
+/* פריט שבוצע: צהוב, בלי קו על השם (המשתמשת, 2026-10-11: "אני אוהבת שזה לא מוחק את המשימה, תחליף את הצבע לצהוב").
+   השורה נשארת במקומה וקריאה: רקע צהוב בהיר, משבצת האייקון והנקודות בצהוב-זהב. ניגודיות: השם 6.5:1, הנקודות 6.2:1 */
+:root[data-theme="pixel"] .pl-step-row-done { background: #FFF3C4; border-color: #F2CF5B; }
+:root[data-theme="pixel"] .pl-step-row .pl-step-done { color: var(--pl-text); }
+:root[data-theme="pixel"] .pl-step-done .pl-step-title { text-decoration: none; color: #5E4E80; }
+:root[data-theme="pixel"] .pl-step-row-done .pl-item-icon { background: #FFE38A; border-color: #E8B730; color: #7A5300; }
+:root[data-theme="pixel"] .pl-step-row-done .pl-chip-points { color: #7A5300; }
+:root[data-theme="pixel"] .pl-step-row-done .pl-sub { color: #5E4E80; }
