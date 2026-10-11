@@ -492,3 +492,11 @@
   :root[data-theme="pixel"] :is(.pl-just .pl-step input[type=checkbox], .pl-just .pl-item-icon, .hdr-points b.hdr-points-tick) { animation: none; }
   :root[data-theme="pixel"] .pl-points-float { display: none; }
 }
+
+/* חלון מקופל: בלי פס ריק מתחת לכותרת (המשתמשת, 2026-10-12: "כשהסקשן נסגר לא אמור להיות פס תחתון").
+   בלי הקו התחתון של הכותרת, בלי הריפוד התחתון של החלון, והכותרת מעוגלת גם למטה */
+:root[data-theme="pixel"] .pl-win:has(> .pl-fold-head[aria-expanded="false"]) { padding-bottom: 0; }
+:root[data-theme="pixel"] .pl-win > .pl-fold-head[aria-expanded="false"] {
+  border-bottom: none;
+  border-radius: calc(var(--pl-r-card) - 2px);
+}
