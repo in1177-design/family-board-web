@@ -243,3 +243,10 @@
   border: 2px solid var(--px-frame, #8E70C9); border-top: none; border-radius: 0 0 6px 6px;
   background: var(--px-morning, #FFF0D2);
 }
+
+/* ── 10. החלון המאוחד: "השלב הושלם" כשמסמנים את האחרון (לפני שהחלון מתקפל) ── */
+:root[data-theme="pixel"] .pp-merged .pp-levelup .pl-win-icon { animation: pl-hop .4s steps(3, end) 2; }
+:root[data-theme="pixel"] .pp-merged .pp-levelup .pp-count { display: inline-block; animation: pl-pop .3s steps(2, end) 2; }
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="pixel"] .pp-merged .pp-levelup :is(.pl-win-icon, .pp-count) { animation: none; }
+}

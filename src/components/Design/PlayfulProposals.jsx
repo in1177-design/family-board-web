@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { StepCard, WindowCard } from '../MyDay/MyDay'
+import { TodoCard } from '../MyDay/TodosSection'
 import { TAGLINES } from '../Routines/labels'
 import Icon from '../shared/Icon'
 import { Blocks } from '../shared/MemberHero'
@@ -111,6 +112,12 @@ export default function PlayfulProposals({ theme }) {
 
       <Proposal n={9} status="לבחירה" title="המונה והחץ בכותרת החלון" text="ארבעה עיצובים למונה (&quot;2/3&quot;) ולחץ הקיפול, כל אחד על חלון שלם עם הציור והרשימה. אפשר לסמן, והמונה מתעדכן. כשהכל מסומן החלון מתקפל, ורואים את המצב של הסוף. לחיצה על הכותרת מקפלת ופותחת.">
         <CounterIdeas />
+      </Proposal>
+
+      <Proposal n={10} status="הכל ביחד, לבחירה" title="החלון המאוחד" text="כל מה שהוחלט, בחלון אחד: רשימה בלי רווחים, צהוב עד המסגרת, גל צהוב בסימון, &quot;+2&quot; שמשתחרר, מונה מטבע, ו&quot;+ הוספה&quot; בולד. המשימות בכרטיס עם תיבת יהלום, בלי התגית &quot;משימה&quot;. חדש: &quot;השלב הושלם&quot;, כשמסמנים את האחרון השמש מקפצת והמטבע קופץ עם ✓, ורק אז החלון מתקפל. לחיצה על הכותרת פותחת שוב.">
+        <div className="pp-listfix pp-wave pp-sep-shape pp-merged pp-wide" style={{ maxWidth: 440 }}>
+          <MergedWindow />
+        </div>
       </Proposal>
     </div>
   )
@@ -299,6 +306,92 @@ function IdeaWindow({ kind }) {
         </button>
         {!folded && steps.map(s => <StepCard key={s.id} step={s} window={WINDOW} now="07:00" onChange={() => toggle(s)} onSetTime={noop} />)}
       </PixelCard>
+    </div>
+  )
+}
+
+// החלון המאוחד (הצעה 10): הרגלים ומשימות בסדר של החלון האמיתי (קודם הרגלים בלי שעה, אחר כך הכל לפי שעה),
+// מונה מטבע, ו"השלב הושלם" לפני שהחלון מתקפל. רק בדף
+const MERGED_STEPS = [
+  { id: 'm1', label: 'לצחצח שיניים', library_step_id: 'lib-m-teeth', days_rule: 'every_day', points: 2, done: true, time_today: null, exact_time: null },
+  { id: 'm2', label: 'להתלבש', days_rule: 'every_day', points: 2, done: false, time_today: null, exact_time: null },
+  { id: 'm3', label: 'לקרוא 15 דקות', days_rule: 'school_days', duration_minutes: 15, points: 2, done: false, time_today: null, exact_time: null },
+  { id: 'm4', label: 'להכין תיק לבית הספר', library_step_id: 'lib-m-bag', days_rule: 'before_school_day', points: 5, done: false, time_today: '07:30', exact_time: '07:30' }
+]
+const MERGED_TODOS = [
+  { id: 'mt1', title: 'להחזיר ספר לספרייה', due_date: '2026-10-12', due_time: '07:00', done_at: null },
+  { id: 'mt2', title: 'לחתום על אישור טיול', due_date: '2026-10-12', due_time: '07:20', done_at: null },
+  { id: 'mt3', title: 'לקחת כסף לטיול', due_date: '2026-10-12', due_time: '07:40', done_at: null }
+]
+
+function MergedWindow() {
+  const [steps, setSteps] = useState(MERGED_STEPS)
+  const [todos, setTodos] = useState(MERGED_TODOS)
+  const [open, setOpen] = useState(null)
+  const [levelUp, setLevelUp] = useState(false)
+  const timer = useRef(null)
+  useEffect(() => () => clearTimeout(timer.current), [])
+
+  const done = steps.filter(s => s.done).length + todos.filter(t => t.done_at).length
+  const total = steps.length + todos.length
+  const complete = done === total
+  // בזמן "השלב הושלם" החלון עוד פתוח, ואחר כך מתקפל מעצמו
+  const folded = open === null ? complete && !levelUp : !open
+
+  const celebrateIfLast = (doneAfter) => {
+    if (doneAfter !== total) return
+    setOpen(null)
+    setLevelUp(true)
+    clearTimeout(timer.current)
+    timer.current = setTimeout(() => setLevelUp(false), 900)
+  }
+  const toggleStep = (s) => {
+    setSteps(l => l.map(x => x.id === s.id ? { ...x, done: !x.done } : x))
+    if (!s.done) celebrateIfLast(done + 1)
+  }
+  const toggleTodo = (t, isDone) => {
+    setTodos(l => l.map(x => x.id === t.id ? { ...x, done_at: isDone ? 'now' : null } : x))
+    if (isDone) celebrateIfLast(done + 1)
+  }
+  const reset = () => { setSteps(MERGED_STEPS); setTodos(MERGED_TODOS); setOpen(null); setLevelUp(false) }
+
+  const items = [
+    ...steps.filter(s => !s.time_today).map(s => ({ kind: 'step', item: s })),
+    ...[
+      ...steps.filter(s => s.time_today).map(s => ({ kind: 'step', item: s, time: s.time_today })),
+      ...todos.map(t => ({ kind: 'todo', item: t, time: t.due_time }))
+    ].sort((a, b) => a.time.localeCompare(b.time))
+  ]
+
+  return (
+    <div className="pl-col" style={{ gap: 10 }}>
+      <PixelCard className={'pl-col pl-win pl-win-morning pl-win-list' + (levelUp ? ' pp-levelup' : '')} style={{ gap: 10 }}>
+        <button className={'pl-fold-head pp-c-coin' + (folded ? ' pp-folded' : '') + (complete ? ' pp-complete' : '')}
+          onClick={() => setOpen(folded)} aria-expanded={!folded}>
+          <div className="pl-win-head">
+            <img src={WINDOW_IMAGES.morning} alt="" className="pl-win-icon px-only" />
+            <div>
+              <strong style={{ fontSize: 'var(--pl-size-h3)' }}>{complete ? '✓ ' : ''}בוקר</strong>
+              <div className="pl-muted" style={{ fontSize: 'var(--pl-size-sm)' }}>{TAGLINES.morning}</div>
+            </div>
+          </div>
+          <span className="pp-counter">
+            <span className="pp-count">{complete ? '✓' : `${done}/${total}`}</span>
+            <PixelChevron />
+          </span>
+        </button>
+        {!folded && <>
+          {items.map(({ kind, item }) => kind === 'todo'
+            ? <TodoCard key={item.id} todo={item} today="2026-10-12" inWindow onToggle={toggleTodo} onEdit={noop} />
+            : <StepCard key={item.id} step={item} window={WINDOW} now="07:00" onChange={() => toggleStep(item)} onSetTime={noop} />
+          )}
+          <div className="pl-row" style={{ justifyContent: 'space-between' }}>
+            <button className="pl-link pl-add-link">+ הוספה</button>
+            <span className="pl-muted" style={{ fontSize: 'var(--pl-size-sm)' }}>🔥 רצף של 3 ימים</span>
+          </div>
+        </>}
+      </PixelCard>
+      <button className="pl-link" style={{ alignSelf: 'flex-start' }} onClick={reset}>לאפס את ההדגמה</button>
     </div>
   )
 }
