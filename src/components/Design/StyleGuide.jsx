@@ -247,8 +247,8 @@ export default function StyleGuide({ trial, onClearTrial, onTry }) {
         </div>
       </Section>
 
-      <Section title="חלון (WindowCard)" id="guide-windows">
-        <p className="pl-muted">חלון אמיתי עם ההרגלים שלמעלה. לחיצה על הכותרת מקפלת. כשהכל מסומן, הוא מתקפל מעצמו.</p>
+      <Section title="חלונות היום (DayWindows) · חלון (WindowCard)" id="guide-windows">
+        <p className="pl-muted"><strong>חלונות היום (DayWindows)</strong>: שלושת החלונות של "היום שלי", בוקר, צהריים וערב. במחשב שלוש עמודות באותו גובה, ובטלפון אחד מתחת לשני ורק החלון של עכשיו פתוח. כל אחד מהם הוא <strong>חלון (WindowCard)</strong>. כאן חלונות אמיתיים עם ההרגלים שלמעלה. לחיצה על הכותרת מקפלת. כשהכל מסומן, החלון מתקפל מעצמו.</p>
         {onTry && <FramePanel trial={trial} onTry={onTry} onClearTrial={onClearTrial} onOpenLab={() => setLabOpen(true)} />}
         {labOpen && (
           <LabModal onClose={() => setLabOpen(false)}>

@@ -78,8 +78,6 @@ export default function MyDay({ memberId, viewerId, hideHero, onSummary }) {
   // החלטה 2026-10-07: כל בן משפחה מוסיף לעצמו הרגלים ומשימות, בלי אישור
   const [editing, setEditing] = useState(null)   // הרגל: { step } או { timeOfDay }
   const [editTodo, setEditTodo] = useState(null) // משימה: { todo } או {}
-  // בטלפון רק החלון של עכשיו פתוח (2026-10-12)
-  const narrow = useNarrow()
 
   const load = useCallback(() =>
     api.day.get(memberId).then(d => { setDay(d); setError('') }).catch(e => setError(e.message)),
@@ -169,7 +167,6 @@ export default function MyDay({ memberId, viewerId, hideHero, onSummary }) {
 
   // החלטה 2026-10-07: משימה של היום עם שעה מופיעה בתוך החלון שלה, לפי השעה, יחד עם ההרגלים.
   // משימה בלי שעה, באיחור או בלי תאריך נשארת באזור "משימות"
-  const nowWindow = currentWindow(day.now, day.windows)
   const timed = (day.todos?.today || []).filter(t => t.due_date === day.date && t.due_time)
   const timedIds = new Set(timed.map(t => t.id))
   const restTodos = day.todos && { ...day.todos, today: day.todos.today.filter(t => !timedIds.has(t.id)) }
@@ -185,38 +182,17 @@ export default function MyDay({ memberId, viewerId, hideHero, onSummary }) {
       </div>}
       {error && <p className="pl-error">{error}</p>}
 
-      {/* במחשב שלוש עמודות באותו גובה (pl-wins), בטלפון אחד מתחת לשני, ורק החלון של עכשיו פתוח */}
-      <div className="pl-cols3 pl-wins">
-      {TIMES.map(t => {
-        const runs = day.routines.filter(r => r.time_of_day === t.id)
-        const steps = runs.flatMap(r => r.steps.map(s => ({ ...s, run_id: r.run_id })))
-        const streak = runs.length === 1 ? runs[0].streak : 0
-        return (
-          <WindowCard
-            key={t.id}
-            id={t.id}
-            label={t.label}
-            tagline={TAGLINES[t.id]}
-            window={day.windows[t.id]}
-            steps={steps}
-            todos={timed.filter(x => windowOf(x.due_time, day.windows) === t.id)}
-            today={day.date}
-            onToggleTodo={toggleTodo}
-            onEditTodo={todo => setEditTodo({ todo })}
-            onDeleteTodo={deleteTodo}
-            streak={streak}
-            windowOver={day.now >= day.windows[t.id].end}
-            onMark={mark}
-            onSetTime={setTime}
-            now={day.now}
-            onAdd={() => setEditing({ timeOfDay: t.id })}
-            onAddTodo={time => setEditTodo({ defaultTime: time })}
-            role={day.member.role}
-            isCurrent={narrow ? t.id === nowWindow : undefined}
-          />
-        )
-      })}
-      </div>
+      <DayWindows
+        day={day}
+        todos={timed}
+        onToggleTodo={toggleTodo}
+        onEditTodo={todo => setEditTodo({ todo })}
+        onDeleteTodo={deleteTodo}
+        onMark={mark}
+        onSetTime={setTime}
+        onAddStep={timeOfDay => setEditing({ timeOfDay })}
+        onAddTodo={time => setEditTodo({ defaultTime: time })}
+      />
 
       <TodosSection
         todos={restTodos}
@@ -233,6 +209,47 @@ export default function MyDay({ memberId, viewerId, hideHero, onSummary }) {
 
       {/* הוספה ועריכה של משימה: בחלון מודאלי מעל היום (2026-10-08) */}
       {editTodo && <TodoForm {...editTodo} memberId={memberId} byId={viewer ? viewer.id : memberId} today={day.date} onClose={() => { setEditTodo(null); load() }} />}
+    </div>
+  )
+}
+
+// חלונות היום (DayWindows, השם נבחר 2026-10-12): שלושת החלונות של "היום שלי", בוקר, צהריים וערב.
+// במחשב שלוש עמודות באותו גובה (pl-wins), בטלפון אחד מתחת לשני, ורק החלון של עכשיו פתוח.
+// todos: המשימות של היום שיש להן שעה. כל אחת בחלון של השעה שלה
+export function DayWindows({ day, todos, onToggleTodo, onEditTodo, onDeleteTodo, onMark, onSetTime, onAddStep, onAddTodo }) {
+  const narrow = useNarrow()
+  const nowWindow = currentWindow(day.now, day.windows)
+  return (
+    <div className="pl-cols3 pl-wins">
+      {TIMES.map(t => {
+        const runs = day.routines.filter(r => r.time_of_day === t.id)
+        const steps = runs.flatMap(r => r.steps.map(s => ({ ...s, run_id: r.run_id })))
+        const streak = runs.length === 1 ? runs[0].streak : 0
+        return (
+          <WindowCard
+            key={t.id}
+            id={t.id}
+            label={t.label}
+            tagline={TAGLINES[t.id]}
+            window={day.windows[t.id]}
+            steps={steps}
+            todos={todos.filter(x => windowOf(x.due_time, day.windows) === t.id)}
+            today={day.date}
+            onToggleTodo={onToggleTodo}
+            onEditTodo={onEditTodo}
+            onDeleteTodo={onDeleteTodo}
+            streak={streak}
+            windowOver={day.now >= day.windows[t.id].end}
+            onMark={onMark}
+            onSetTime={onSetTime}
+            now={day.now}
+            onAdd={() => onAddStep(t.id)}
+            onAddTodo={onAddTodo}
+            role={day.member.role}
+            isCurrent={narrow ? t.id === nowWindow : undefined}
+          />
+        )
+      })}
     </div>
   )
 }
