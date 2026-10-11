@@ -130,16 +130,17 @@
 }
 
 /* ── 6. חלון כרשימה, מתוקן (תצוגה ב' מ-lab.css, עם התיקונים). רק בתוך .pp-listfix, רק במשחקי ── */
-/* קו מקווקו של 2px בין ההרגלים, ושורה בגובה 52 לפחות */
+/* קו מקווקו של 2px בין ההרגלים, מקצה לקצה של החלון (מעבר לריפוד שלו), ושורה בגובה 52 לפחות.
+   ככה גם הרקע הצהוב של מה שבוצע ממלא את כל הרוחב, באותם קצוות כמו הקווים (המשתמשת, 2026-10-11) */
 :root[data-theme="pixel"] .pp-listfix .pl-win-list .pl-step-row.pl-step-row-habit {
   min-height: 52px;
+  margin-inline: calc(-1 * var(--win-base));
+  padding-inline: var(--win-base);
   border-bottom: 2px dashed var(--pl-line);
 }
 :root[data-theme="pixel"] .pp-listfix .pl-win-list .pl-step-row.pl-step-row-habit:hover { border-color: var(--pl-line); }
-/* מה שבוצע: פס צהוב מלא, מקצה לקצה של החלון (מעבר לריפוד שלו) */
+/* מה שבוצע: כל השורה בצהוב */
 :root[data-theme="pixel"] .pp-listfix .pl-win-list .pl-step-row.pl-step-row-habit.pl-step-row-done {
-  margin-inline: calc(-1 * var(--win-base));
-  padding-inline: var(--win-base);
   background: #FFF3C4;
   border-bottom-color: #F2CF5B;
 }
