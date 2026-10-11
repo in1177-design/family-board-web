@@ -5,6 +5,13 @@ import { memberPhoto } from './memberPhoto'
 import Icon from './Icon'
 import ThemeToggle, { useThemeName } from './ThemeToggle'
 import ProfileModal from './ProfileModal'
+import { useCountUp } from './celebrate'
+
+// מונה הנקודות בכותרת: סופר עד הערך החדש כשמקבלים נקודות, וכל מספר "קופץ" (2026-10-11)
+function PointsValue({ value }) {
+  const [shown, ticking] = useCountUp(value || 0)
+  return <b key={shown} className={ticking ? 'hdr-points-tick' : undefined}>{shown.toLocaleString('he-IL')}</b>
+}
 
 const GREETINGS = { morning: 'בוקר טוב', noon: 'צהריים טובים', evening: 'ערב טוב' }
 
@@ -94,7 +101,7 @@ export default function MemberHero({ member, summary, end, tabs, current, onPick
           )}
           <div className="hdr-points">
             <Icon name="star" />
-            <div><b>{(member.points || 0).toLocaleString('he-IL')}</b><span className="hdr-label">הנקודות שלי</span></div>
+            <div><PointsValue value={member.points} /><span className="hdr-label">הנקודות שלי</span></div>
           </div>
         </div>
       </div>
@@ -123,7 +130,7 @@ export default function MemberHero({ member, summary, end, tabs, current, onPick
         </div>
         <div className="hdr-points">
           <Icon name="star" />
-          <b>{(member.points || 0).toLocaleString('he-IL')}</b>
+          <PointsValue value={member.points} />
         </div>
         {end}
       </div>

@@ -464,3 +464,31 @@
 :root[data-theme="pixel"] .pl-step-row-done .pl-item-icon { background: #FFE38A; border-color: #E8B730; color: #7A5300; }
 :root[data-theme="pixel"] .pl-step-row-done .pl-chip-points { color: #7A5300; }
 :root[data-theme="pixel"] .pl-step-row-done .pl-sub { color: #5E4E80; }
+
+/* אנימציה בהשלמת פעולה (המשתמשת, 2026-10-11): התיבה קופצת, האייקון מקפץ, "+2" משתחרר ועולה,
+   ומונה הנקודות בכותרת סופר (celebrate.js). תנועה במדרגות (steps), כמו במשחקים ישנים, עד חצי שנייה.
+   מי שביקש במכשיר פחות תנועה: רק שינוי הצבע */
+:root[data-theme="pixel"] .pl-step-row { position: relative; }
+:root[data-theme="pixel"] .pl-just .pl-step input[type=checkbox] { animation: pl-pop .3s steps(3, end); }
+:root[data-theme="pixel"] .pl-just .pl-item-icon { animation: pl-hop .36s steps(3, end); }
+.pl-points-float { display: none; }
+:root[data-theme="pixel"] .pl-points-float {
+  display: block;
+  position: absolute;
+  inset-inline-end: 64px;
+  top: 4px;
+  z-index: 2;
+  pointer-events: none;
+  color: #7A5300;
+  font: 400 18px var(--pl-font-time);
+  text-shadow: 2px 2px 0 #FFE38A;
+  animation: pl-rise .6s steps(5, end) forwards;
+}
+:root[data-theme="pixel"] .hdr-points b.hdr-points-tick { display: inline-block; animation: pl-pop .18s steps(2, end); }
+@keyframes pl-pop { 0% { transform: scale(1); } 50% { transform: scale(1.35); } 100% { transform: scale(1); } }
+@keyframes pl-hop { 0% { transform: translateY(0); } 50% { transform: translateY(-6px); } 100% { transform: translateY(0); } }
+@keyframes pl-rise { 0% { transform: translateY(0); opacity: 1; } 80% { opacity: 1; } 100% { transform: translateY(-32px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="pixel"] :is(.pl-just .pl-step input[type=checkbox], .pl-just .pl-item-icon, .hdr-points b.hdr-points-tick) { animation: none; }
+  :root[data-theme="pixel"] .pl-points-float { display: none; }
+}

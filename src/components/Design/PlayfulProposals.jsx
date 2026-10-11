@@ -32,7 +32,7 @@ export default function PlayfulProposals({ theme }) {
         האפליקציה עצמה לא השתנתה.
       </p>
 
-      <Proposal n={1} title="יחידת פיקסל אחת" text="כל קו, מדרגה וצל בכפולות של יחידה אחת. ב-3 זה עבה ו&quot;משחקי&quot; יותר, ב-2 עדין יותר. בחרי בעיניים, בטלפון ובמחשב.">
+      <Proposal n={1} status="עוד לא הוחלט" title="יחידת פיקסל אחת" text="כל קו, מדרגה וצל בכפולות של יחידה אחת. ב-3 זה עבה ו&quot;משחקי&quot; יותר, ב-2 עדין יותר. בחרי בעיניים, בטלפון ובמחשב.">
         <div className="pp-units">
           <span>יחידה:</span>
           {[2, 3].map(u => (
@@ -42,7 +42,7 @@ export default function PlayfulProposals({ theme }) {
         </div>
       </Proposal>
 
-      <Proposal n={2} title="בלי פינות עגולות" text="בעולם פיקסלים אין עיגול חלק. פריטים קטנים (תגיות, שעה, תיבה, פסים) בפינה ישרה, וכרטיסים במדרגה אחת בכל פינה.">
+      <Proposal n={2} status="לא עכשיו (2026-10-11)" title="בלי פינות עגולות" text="בעולם פיקסלים אין עיגול חלק. פריטים קטנים (תגיות, שעה, תיבה, פסים) בפינה ישרה, וכרטיסים במדרגה אחת בכל פינה.">
         <Pair on={on}>
           {() => (
             <WindowCard
@@ -54,7 +54,7 @@ export default function PlayfulProposals({ theme }) {
         </Pair>
       </Proposal>
 
-      <Proposal n={3} title="צבע פעולה אחד" text="טורקיז = אפשר ללחוץ: הכפתור הראשי, המסך הנוכחי ו&quot;+ הוספה&quot;. הירוק של הלשונית יוצא. הטורקיז כהה יותר, כדי שטקסט לבן עליו יהיה קריא (היום 3:1, מוצע 4.75:1).">
+      <Proposal n={3} status="לא עכשיו. נכנס רק &quot;+ הוספה&quot; בטורקיז כהה ובולד" title="צבע פעולה אחד" text="טורקיז = אפשר ללחוץ: הכפתור הראשי, המסך הנוכחי ו&quot;+ הוספה&quot;. הירוק של הלשונית יוצא. הטורקיז כהה יותר, כדי שטקסט לבן עליו יהיה קריא (היום 3:1, מוצע 4.75:1).">
         <Pair on={on}>
           {() => (
             <div className="pl-col" style={{ gap: 14 }}>
@@ -75,13 +75,13 @@ export default function PlayfulProposals({ theme }) {
         </Pair>
       </Proposal>
 
-      <Proposal n={4} title="מה שבוצע &quot;נאסף&quot;" text="במקום קו ואפור: רקע חם, האייקון והנקודות בזהב, והשם נשאר קריא (היום 2.4:1). לחצי על התיבות כדי לראות את שני המצבים.">
+      <Proposal n={4} status="נכנס לאפליקציה, בצהוב" title="מה שבוצע &quot;נאסף&quot;" text="במקום קו ואפור: רקע חם, האייקון והנקודות בזהב, והשם נשאר קריא (היום 2.4:1). לחצי על התיבות כדי לראות את שני המצבים.">
         <Pair on={on}>
           {() => <StepList />}
         </Pair>
       </Proposal>
 
-      <Proposal n={5} title="אנימציה בסימון" text="התיבה קופצת, האייקון מקפץ, &quot;+2&quot; עולה, והמונה סופר. תנועה במדרגות (כמו במשחקים ישנים), עד חצי שנייה, ולא חוסמת את הסימון הבא. מי שביקש במכשיר פחות תנועה מקבל רק את שינוי הצבע.">
+      <Proposal n={5} status="נכנס לאפליקציה" title="אנימציה בסימון" text="התיבה קופצת, האייקון מקפץ, &quot;+2&quot; עולה, והמונה סופר. תנועה במדרגות (כמו במשחקים ישנים), עד חצי שנייה, ולא חוסמת את הסימון הבא. מי שביקש במכשיר פחות תנועה מקבל רק את שינוי הצבע.">
         <div className={on + " pp-wide"} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <span className="pp-tag pp-tag-new">מוצע</span>
           <AnimatedDemo />
@@ -93,10 +93,10 @@ export default function PlayfulProposals({ theme }) {
 
 const noop = () => {}
 
-function Proposal({ n, title, text, children }) {
+function Proposal({ n, title, text, status, children }) {
   return (
     <div className="pl-col" style={{ gap: 12 }}>
-      <h3 style={{ margin: 0 }}>{n}. {title}</h3>
+      <h3 style={{ margin: 0 }}>{n}. {title}{status && <span className="pl-muted" style={{ fontSize: 14, fontWeight: 400 }}> · {status}</span>}</h3>
       <p className="pl-muted" style={{ margin: 0, maxWidth: '65ch' }}>{text}</p>
       {children}
     </div>
@@ -169,10 +169,9 @@ function AnimatedDemo() {
       {steps.map(s => (
         <div key={s.id} className={'pp-anim-row' + (just === s.id ? ' pp-just' : '')}>
           <StepCard step={s} window={WINDOW} now="07:00" onChange={() => toggle(s)} onSetTime={noop} />
-          {just === s.id && <span className="pp-float">+{s.points}</span>}
         </div>
       ))}
-      <button className="pl-link" style={{ alignSelf: 'flex-start' }} onClick={reset}>להתחיל מחדש</button>
+      <button className="pl-link" style={{ alignSelf: 'flex-start' }} onClick={reset}>לאפס את ההדגמה</button>
     </div>
   )
 }

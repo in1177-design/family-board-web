@@ -78,17 +78,7 @@
   background: var(--pp-act); border-color: var(--pp-act-shade); box-shadow: none;
 }
 
-/* ── 4. פריט שבוצע = נאסף ── */
-:root[data-theme="pixel"] .pp-on .pl-step-row-done { background: var(--pp-done-bg); border-color: #F3E3C8; }
-:root[data-theme="pixel"] .pp-on .pl-step-done { color: var(--pl-text); }
-:root[data-theme="pixel"] .pp-on .pl-step-done .pl-step-title { text-decoration: none; color: var(--pl-muted); }
-:root[data-theme="pixel"] .pp-on .pl-step-row-done .pl-item-icon { background: var(--pp-gold-soft); border-color: var(--pp-gold); color: var(--pp-gold-text); }
-:root[data-theme="pixel"] .pp-on .pl-step-row-done .pl-chip-points {
-  padding: 0 6px;
-  border: var(--pp-u) solid var(--pp-gold);
-  background: var(--pp-gold-soft);
-  color: var(--pp-gold-text);
-}
+/* ── 4. פריט שבוצע: נכנס לאפליקציה בצהוב (theme-pixel.css), אז אין כאן כללים משלו ── */
 
 /* ── 5. אנימציה בסימון (רק בהדגמה, רק במשחקי). תנועה במדרגות, כמו במשחקים ישנים ── */
 .pp-anim-row { position: relative; }

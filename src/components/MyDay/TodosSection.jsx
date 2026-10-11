@@ -4,6 +4,7 @@ import { dateText, repeatText } from './todoLabels'
 import FoldHead from './FoldHead'
 import Icon from '../shared/Icon'
 import { todoIcon } from './icons'
+import { useJustChecked } from '../shared/celebrate'
 
 // "המשימות שלי" ב"היום שלי", מתחת לחלונות (wireframe, 2026-10-07): שלוש עמודות, באיחור · להיום · בלי תאריך.
 // משימות עתידיות לא מוצגות כאן (הן בלוח המשימות). משימה שבוצעה היום נשארת במקומה עם קו עליה.
@@ -68,10 +69,12 @@ export default function TodosSection({ todos, today, onToggle, onAdd, onEdit }) 
 export function TodoCard({ todo, today, late, inWindow, onToggle, onEdit, onDelete }) {
   const done = !!todo.done_at
   const when = [todo.due_date && dateText(todo.due_date, today), todo.due_time].filter(Boolean).join(' · ')
+  // רגע אחרי סימון: התיבה קופצת, כמו בשורת הרגל (למשימה אין נקודות, אז בלי "+")
+  const [just, markJust] = useJustChecked()
   return (
-    <div className={'pl-row pl-step-row' + (done ? ' pl-step-row-done' : '')} style={{ flexWrap: 'nowrap' }}>
+    <div className={'pl-row pl-step-row' + (done ? ' pl-step-row-done' : '') + (just ? ' pl-just' : '')} style={{ flexWrap: 'nowrap' }}>
       <label className={'pl-step' + (done ? ' pl-step-done' : '')} style={{ flex: 1 }}>
-        <input type="checkbox" checked={done} onChange={() => onToggle(todo, !done)} />
+        <input type="checkbox" checked={done} onChange={() => { markJust(done); onToggle(todo, !done) }} />
         <Icon name={todoIcon(todo)} className="pl-item-icon" />
         <span className="pl-step-name" style={{ flex: 1 }}>
           <span className="pl-step-title">{todo.title}</span>

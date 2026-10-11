@@ -10,6 +10,7 @@ import Icon from '../shared/Icon'
 import { stepIcon, WINDOW_IMAGES } from './icons'
 import { memberPhoto } from '../shared/memberPhoto'
 import PixelCard from '../shared/PixelCard'
+import { useJustChecked } from '../shared/celebrate'
 
 const REFRESH_MS = 30000
 // אייקון לכל חלון בעיצוב המעודן, כמו הציורים במשחקי: שמש, שקיעה, ירח
@@ -293,13 +294,16 @@ export function StepCard({ step, window: w, now, onChange, onSetTime, role }) {
   // שעה שנקבעה או הוזזה להיום בלבד
   const today = step.time_today && step.time_today !== step.exact_time
   const showDays = !['every_day', 'inherit'].includes(step.days_rule)
+  // רגע אחרי סימון: התיבה קופצת והנקודות "משתחררות" (2026-10-11)
+  const [just, markJust] = useJustChecked()
 
   return (
     <div className="pl-col" style={{ gap: 6 }}>
       {/* pl-step-row: בעיצוב החדש המסגרת על כל השורה, כולל השעה והעיפרון, ברוחב קבוע */}
-      <div className={'pl-row pl-step-row pl-step-row-habit' + (step.done ? ' pl-step-row-done' : '')} style={{ flexWrap: 'nowrap' }}>
+      <div className={'pl-row pl-step-row pl-step-row-habit' + (step.done ? ' pl-step-row-done' : '') + (just ? ' pl-just' : '')} style={{ flexWrap: 'nowrap' }}>
+        {just && step.points > 0 && <span className="pl-points-float" aria-hidden="true">+{step.points}</span>}
         <label className={'pl-step' + (step.done ? ' pl-step-done' : '')} style={{ flex: 1 }}>
-          <input type="checkbox" checked={step.done} onChange={onChange} />
+          <input type="checkbox" checked={step.done} onChange={() => { markJust(step.done); onChange() }} />
           <Icon name={stepIcon(step)} className="pl-item-icon" />
           <span className="pl-step-name" style={{ flex: 1 }}>
             <span className="pl-step-title">{step.label}</span>
