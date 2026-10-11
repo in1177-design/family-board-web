@@ -554,3 +554,43 @@
   background: linear-gradient(135deg, var(--pl-card) 50%, #F7DF8A 50%);
   border-color: #E8B730;
 }
+
+/* מונה "מטבע" וחץ פיקסלים בכותרת החלון (הדמיה 9–10, אושר 2026-10-12).
+   14px בין המונה לחץ, והחץ 22px מהמסגרת ("החץ קרוב מדי למסגרת, והמספור קרוב מדי לחץ") */
+:root[data-theme="pixel"] .pl-coin {
+  flex-shrink: 0;
+  padding: 5px 14px;
+  border: 2px solid #E8B730;
+  background: #FFE38A;
+  color: #7A5300;
+  box-shadow: 2px 2px 0 #E8B730;
+  font: 400 13px var(--pl-font-time);
+}
+:root[data-theme="pixel"] .pl-chev {
+  flex-shrink: 0;
+  width: 20px;
+  height: 12px;
+  margin-inline: 6px 8px;
+  color: var(--px-frame);
+  transition: transform .2s steps(2, end);
+}
+:root[data-theme="pixel"] .pl-fold-head[aria-expanded="false"] .pl-chev { transform: rotate(90deg); } /* מקופל: מצביע לצד, כמו ◂ */
+:root[data-theme="pixel"] .pl-fold-head:not([aria-expanded="false"]):is(:hover, :active) .pl-chev { animation: pl-hop .36s steps(3, end); }
+
+/* "השלב הושלם": כשמסמנים את האחרון, השמש מקפצת פעמיים והמטבע קופץ עם ✓, ואז החלון מתקפל (WindowCard) */
+:root[data-theme="pixel"] .pl-levelup .pl-win-icon { animation: pl-hop .4s steps(3, end) 2; }
+:root[data-theme="pixel"] .pl-levelup .pl-coin { animation: pl-pop .3s steps(2, end) 2; }
+
+/* גל צהוב בסימון (הרעיון של המשתמשת): הצהוב נכנס מצד התיבה עד הקצה, בשמונה קפיצות, ואז נשאר */
+:root[data-theme="pixel"] .pl-win .pl-step-row.pl-step-row-done.pl-just {
+  background-color: transparent;
+  background-image: linear-gradient(to left, #FFF3C4 50%, transparent 50%);
+  background-size: 200% 100%;
+  animation: pl-wave .4s steps(8, end) both;
+}
+@keyframes pl-wave { from { background-position: 0% 0; } to { background-position: 100% 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="pixel"] :is(.pl-levelup .pl-win-icon, .pl-levelup .pl-coin, .pl-fold-head .pl-chev) { animation: none; }
+  :root[data-theme="pixel"] .pl-win .pl-step-row.pl-step-row-done.pl-just { animation: none; background-image: none; background-color: #FFF3C4; }
+}

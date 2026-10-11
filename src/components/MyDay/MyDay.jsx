@@ -110,6 +110,17 @@ export default function MyDay({ memberId, viewerId, hideHero, onSummary }) {
     load()
   }
 
+  // מחיקת משימה מה-⋮ בשורה (2026-10-12), עם אישור כמו בטופס המשימה
+  const deleteTodo = async (todo) => {
+    if (!confirm(`למחוק את "${todo.title}"?`)) return
+    try {
+      await api.todos.delete(todo.id)
+    } catch (e) {
+      setError(e.message)
+    }
+    load()
+  }
+
   const toggleTodo = async (todo, done) => {
     // מיד במסך, ואחר כך מהשרת
     const doneAt = done ? new Date().toISOString() : null
@@ -166,6 +177,7 @@ export default function MyDay({ memberId, viewerId, hideHero, onSummary }) {
             today={day.date}
             onToggleTodo={toggleTodo}
             onEditTodo={todo => setEditTodo({ todo })}
+            onDeleteTodo={deleteTodo}
             streak={streak}
             windowOver={day.now >= day.windows[t.id].end}
             onMark={mark}
@@ -185,6 +197,7 @@ export default function MyDay({ memberId, viewerId, hideHero, onSummary }) {
         onToggle={toggleTodo}
         onAdd={() => setEditTodo({})}
         onEdit={todo => setEditTodo({ todo })}
+        onDelete={deleteTodo}
       />
 
       {/* הוספת הרגל: בחלון מודאלי מעל היום (2026-10-08).
@@ -201,7 +214,8 @@ export default function MyDay({ memberId, viewerId, hideHero, onSummary }) {
 // ובתחתית "+ הוספה" (הרגל או משימה) והרצף. הרגל שבוצע נשאר במקומו עם קו עליו.
 // כל חלון מתקפל בלחיצה על הכותרת. חלון שהכל בו בוצע מתקפל מעצמו
 // habitList: תצוגה ב' לבדיקה (2026-10-08): ההרגלים כרשימה בלי מסגרת, והמשימות נשארות בכרטיס (lab.css, .pl-win-list)
-export function WindowCard({ id, label, tagline, window: w, steps, todos, today, onToggleTodo, onEditTodo, streak, windowOver, onMark, onSetTime, now, onAdd, onAddTodo, habitList, role }) {
+// onDeleteTodo: מחיקת משימה מה-⋮ בשורה (2026-10-12)
+export function WindowCard({ id, label, tagline, window: w, steps, todos, today, onToggleTodo, onEditTodo, onDeleteTodo, streak, windowOver, onMark, onSetTime, now, onAdd, onAddTodo, habitList, role }) {
   // null: לפי המצב (פתוח, ומקופל כשהכל בוצע). true/false: מה שבן המשפחה בחר
   const [open, setOpen] = useState(null)
   const total = steps.length + todos.length
@@ -216,11 +230,24 @@ export function WindowCard({ id, label, tagline, window: w, steps, todos, today,
     ...todos.map(t => ({ kind: 'todo', item: t, time: t.due_time })).sort(byTime)
   ]
   const complete = total > 0 && doneCount === total
-  const folded = open === null ? complete : !open
+  // "השלב הושלם" (2026-10-12): כשהפריט האחרון מסומן (לא כשנכנסים לחלון שכבר הושלם), השמש מקפצת והמטבע קופץ,
+  // ורק אחרי רגע החלון מתקפל. התנועה ב-CSS, רק במשחקי
+  const [levelUp, setLevelUp] = useState(false)
+  const wasComplete = useRef(complete)
+  useEffect(() => {
+    if (complete && !wasComplete.current) {
+      setLevelUp(true)
+      const t = setTimeout(() => setLevelUp(false), 900)
+      wasComplete.current = complete
+      return () => clearTimeout(t)
+    }
+    wasComplete.current = complete
+  }, [complete])
+  const folded = open === null ? complete && !levelUp : !open
 
   return (
-    <PixelCard className={'pl-col pl-win pl-win-' + id + (habitList ? ' pl-win-list' : '')} style={{ gap: 10 }}>
-      <FoldHead foldable folded={folded} onToggle={() => setOpen(folded)}>
+    <PixelCard className={'pl-col pl-win pl-win-' + id + (habitList ? ' pl-win-list' : '') + (levelUp ? ' pl-levelup' : '')} style={{ gap: 10 }}>
+      <FoldHead foldable pixelArrow folded={folded} onToggle={() => setOpen(folded)}>
         {/* האייקון מוסתר בעיצוב הרגיל. העטיפה נשארת הילד הראשון, כדי שהכותרת תתמתח כמו קודם */}
         <div className="pl-win-head">
           <img src={WINDOW_IMAGES[id]} alt="" className="pl-win-icon px-only" />
@@ -231,14 +258,16 @@ export function WindowCard({ id, label, tagline, window: w, steps, todos, today,
             <div className="pl-muted" style={{ fontSize: 'var(--pl-size-sm)' }}>{tagline}</div>
           </div>
         </div>
-        {total > 0 && <span className="pl-chip pl-chip-accent">{doneCount}/{total}</span>}
+        {total > 0 && <span className="pl-chip pl-chip-accent plain-only">{doneCount}/{total}</span>}
+        {/* במשחקי: מונה "מטבע" (2026-10-12), ובסוף ✓ במקום המספר */}
+        {total > 0 && <span className="pl-coin px-only">{complete ? '✓' : `${doneCount}/${total}`}</span>}
       </FoldHead>
       {/* בלי פס התקדמות בחלון (2026-10-10): ההתקדמות בפס המחולק בכותרת, וכאן רק המונה */}
       {!folded && <>
       {windowOver && total > 0 && !complete && <div className="pl-muted">הזמן עבר, אבל אפשר עוד לסיים היום.</div>}
       {total === 0 && <div className="pl-muted">אין הרגלים היום.</div>}
       {items.map(({ kind, item: s }) => kind === 'todo'
-        ? <TodoCard key={s.id} todo={s} today={today} inWindow onToggle={onToggleTodo} onEdit={onEditTodo} />
+        ? <TodoCard key={s.id} todo={s} today={today} inWindow moreMenu onToggle={onToggleTodo} onEdit={onEditTodo} onDelete={onDeleteTodo} />
         : <StepCard key={s.id} step={s} window={w} now={now} role={role} onChange={() => onMark(s)}
             onSetTime={time => onSetTime(s, time)} />
       )}

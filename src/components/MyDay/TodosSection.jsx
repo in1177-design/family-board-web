@@ -9,7 +9,7 @@ import { useJustChecked } from '../shared/celebrate'
 // "המשימות שלי" ב"היום שלי", מתחת לחלונות (wireframe, 2026-10-07): שלוש עמודות, באיחור · להיום · בלי תאריך.
 // משימות עתידיות לא מוצגות כאן (הן בלוח המשימות). משימה שבוצעה היום נשארת במקומה עם קו עליה.
 // כשהכל בוצע, הסקציה מתקפלת לכותרת עם חץ
-export default function TodosSection({ todos, today, onToggle, onAdd, onEdit }) {
+export default function TodosSection({ todos, today, onToggle, onAdd, onEdit, onDelete }) {
   const [expanded, setExpanded] = useState(false)
 
   if (!todos) {
@@ -54,7 +54,7 @@ export default function TodosSection({ todos, today, onToggle, onAdd, onEdit }) 
                 <span className="pl-chip">{c.list.length}</span>
               </div>
               {c.list.length === 0 && <div className="pl-muted">אין</div>}
-              {c.list.map(t => <TodoCard key={t.id} todo={t} today={today} late={c.late} onToggle={onToggle} onEdit={onEdit} />)}
+              {c.list.map(t => <TodoCard key={t.id} todo={t} today={today} late={c.late} moreMenu onToggle={onToggle} onEdit={onEdit} onDelete={onDelete} />)}
             </div>
           ))}
         </div>
@@ -66,7 +66,7 @@ export default function TodosSection({ todos, today, onToggle, onAdd, onEdit }) 
 // שורת משימה: סימון, שם, ומתחת התאריך והשעה. ↻ למשימה חוזרת, ועיפרון לעריכה.
 // inWindow: משימה עם שעה בתוך חלון ב"היום שלי", עם תגית "משימה"
 // onDelete: מחיקה מהירה, רק בלוח המשימות של ההורה (2026-10-09)
-// moreMenu: ⋮ במקום העיפרון, שפותח "עריכה" ו"מחיקה" (מחיקה רק עם onDelete). בינתיים רק בהדמיה במדריך (2026-10-12)
+// moreMenu: ⋮ במקום העיפרון, שפותח "עריכה" ו"מחיקה" (מחיקה רק עם onDelete). ב"היום שלי" מ-2026-10-12
 export function TodoCard({ todo, today, late, inWindow, onToggle, onEdit, onDelete, moreMenu }) {
   const done = !!todo.done_at
   const when = [todo.due_date && dateText(todo.due_date, today), todo.due_time].filter(Boolean).join(' · ')
