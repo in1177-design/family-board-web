@@ -154,3 +154,12 @@
   border-color: #E8B730;
   color: #7A5300;
 }
+/* בלי רווח בין השורות של הרשימה (המשתמשת, 2026-10-11: "מרווחים בין רשומות רק מוסיפים פסים לבנים").
+   הרווח של החלון בא מ-style ב-WindowCard (gap: 10), ולכן !important. הכותרת, המשימות ו"+ הוספה" מקבלים רווח משלהם */
+:root[data-theme="pixel"] .pp-listfix .pl-win.pl-win-list { gap: 0 !important; }
+:root[data-theme="pixel"] .pp-listfix .pl-win-list > .pl-col { gap: 0; }
+:root[data-theme="pixel"] .pp-listfix .pl-win-list > .pl-step-row:not(.pl-step-row-habit) { margin-block: 8px; }
+:root[data-theme="pixel"] .pp-listfix .pl-win-list > .pl-row:last-child { margin-top: 10px; }
+/* הטקסט באמצע השורה לגובה: התוכן ממורכז, בלי ריפוד למעלה ולמטה שמזיז אותו */
+:root[data-theme="pixel"] .pp-listfix .pl-win-list .pl-step-row-habit { align-items: center; }
+:root[data-theme="pixel"] .pp-listfix .pl-win-list .pl-step-row-habit .pl-step { min-height: 52px; padding-block: 0; align-self: stretch; }
