@@ -8,6 +8,7 @@ import PixelCard from '../shared/PixelCard'
 import PixelButton, { PIXEL_BUTTON_DEFAULTS, PIXEL_BUTTON_VARIANTS, pixelButtonVars } from '../shared/PixelButton'
 import StyleLab, { FrameControls, frameParams } from './StyleLab'
 import { VARIANTS, frameVars, readFrame, saveFrame } from './frame'
+import PlayfulProposals from './PlayfulProposals'
 
 // מדריך סגנון (החלטה 2026-10-07): כל הרכיבים של "היום שלי", הרכיבים האמיתיים עם נתונים לדוגמה.
 // מציג את העיצוב שנבחר כרגע (רגיל או חדש), ומתחלף עם הכפתור בפס האפליקציה. נפתח מהתפריט של ההורה.
@@ -144,6 +145,11 @@ export default function StyleGuide({ trial, onClearTrial, onTry }) {
     <div className="pl" style={{ maxWidth: 'var(--pl-page-max)' }} key={theme}>
       <h2>מדריך סגנון</h2>
       <p>הרכיבים של "היום שלי", עם נתונים לדוגמה. עיצוב נוכחי: <strong>{theme === 'pixel' ? 'חדש (פיקסלים)' : 'רגיל'}</strong>. להחלפה: הכפתור בפס העליון.</p>
+
+      {/* ניסוי Impeccable (2026-10-11): הצעות לעיצוב המשחקי, לבחירה לפני שהן נכנסות לאפליקציה */}
+      <Section title="הצעות לעיצוב המשחקי (לבחירה)" id="guide-proposals">
+        <PlayfulProposals theme={theme} />
+      </Section>
 
       <Section title="פריסה">
         <p><strong>רוחב דף במחשב: {css.getPropertyValue('--pl-page-max').trim()}</strong>, ממורכז. כל דף פנימי חדש משתמש במשתנה <code>--pl-page-max</code>, ולא במספר משלו. בטלפון הדף ברוחב המסך.</p>

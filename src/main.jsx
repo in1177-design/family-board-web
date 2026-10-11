@@ -8,6 +8,7 @@ import './styles/global.css'
 import './styles/plain.css'
 import './styles/theme-pixel.css'
 import './styles/lab.css'
+import './styles/proposals.css'
 
 // העיצוב שנבחר במכשיר, לפני הציור הראשון, כדי שלא יהבהב
 applyTheme(readTheme())

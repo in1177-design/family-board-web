@@ -1,0 +1,140 @@
+/* הצעות לעיצוב המשחקי (ניסוי Impeccable, 2026-10-11). חלות רק בתוך .pp-on במדריך הסגנון,
+   ורק בעיצוב המשחקי. האפליקציה עצמה לא משתנה עד שהמשתמשת בוחרת מה נכנס.
+   1. יחידת פיקסל אחת (--pp-u, 2 או 3): כל קו, מדרגה וצל בכפולות שלה.
+   2. בלי פינות עגולות: פינה ישרה לפריטים קטנים, מדרגה אחת לכרטיסים.
+   3. צבע פעולה אחד: טורקיז כהה יותר, שעובר ניגודיות (לבן עליו 4.75:1, טקסט שלו על הקרם 5:1).
+   4. פריט שבוצע "נאסף": רקע חם, השם קריא, והנקודות בזהב.
+   5. אנימציה בסימון: התיבה קופצת, "+2" עולה למונה, והמונה סופר. */
+
+:root[data-theme="pixel"] .pp-on {
+  --pp-u: 3px;
+  --pp-act: #14806F;        /* מילוי של פעולה: כפתור ראשי, לשונית נוכחית */
+  --pp-act-shade: #0B5C51;  /* פס הצל של הכפתור */
+  --pp-act-text: #127567;   /* טקסט של פעולה: "+ הוספה", קישורים */
+  --pp-done-bg: #FFF7E6;    /* פריט שנאסף */
+  --pp-gold: #F5B82E;
+  --pp-gold-text: #8A5A00;
+  --pp-gold-soft: #FFF0D2;
+}
+:root[data-theme="pixel"] .pp-on.pp-u2 { --pp-u: 2px; }
+
+/* ── 1+2. כרטיסים: מדרגה אחת בכל פינה (ארבעה צללים בלי טשטוש) וצל מוסט של שתי יחידות ── */
+:root[data-theme="pixel"] .pp-on .pl-section.px-card,
+:root[data-theme="pixel"] .pp-on .pp-card {
+  border: none;
+  border-radius: 0;
+  box-shadow:
+    0 calc(-1 * var(--pp-u)) 0 0 var(--card-c, var(--px-frame)),
+    0 var(--pp-u) 0 0 var(--card-c, var(--px-frame)),
+    calc(-1 * var(--pp-u)) 0 0 0 var(--card-c, var(--px-frame)),
+    var(--pp-u) 0 0 0 var(--card-c, var(--px-frame)),
+    calc(var(--pp-u) * 2) calc(var(--pp-u) * 2) 0 var(--pp-u) var(--px-shadow);
+  filter: none;
+}
+:root[data-theme="pixel"] .pp-on .pl-section.px-card::before,
+:root[data-theme="pixel"] .pp-on .pl-section.px-card::after { content: none; }
+:root[data-theme="pixel"] .pp-on .pl-win { --win-extra: 0px; }
+:root[data-theme="pixel"] .pp-on .pl-win .pl-fold-head {
+  border-radius: 0;
+  border-bottom: var(--pp-u) solid var(--px-shadow);
+}
+
+/* שורות, משבצת אייקון, תיבת סימון: קו של יחידה אחת, פינה ישרה */
+:root[data-theme="pixel"] .pp-on :is(.pl-step-row, .pl-step) { border-width: var(--pp-u); border-radius: 0; }
+:root[data-theme="pixel"] .pp-on .pl-step-row .pl-step { border: none; }
+:root[data-theme="pixel"] .pp-on .pl-item-icon { border-width: var(--pp-u); border-radius: 0; }
+:root[data-theme="pixel"] .pp-on .pl-step input[type=checkbox] { width: 20px; height: 20px; border-width: var(--pp-u); }
+
+/* תגיות, תגית שעה, מונה החלון: ריבועים */
+:root[data-theme="pixel"] .pp-on .pl-chip { border-radius: 0; border-width: var(--pp-u); }
+:root[data-theme="pixel"] .pp-on .pl button.pl-chip-button,
+:root[data-theme="pixel"] .pp-on button.pl-chip-button { border-radius: 0; border-width: var(--pp-u); }
+:root[data-theme="pixel"] .pp-on .pl-chip-points { border-width: 0; }
+
+/* פסי התקדמות: ריבועים, קו של יחידה */
+:root[data-theme="pixel"] .pp-on :is(.px-blocks, .pl-progress, .day-progress-part) { border-radius: 0; border-width: var(--pp-u); }
+:root[data-theme="pixel"] .pp-on :is(.px-blocks, .day-progress-part) > span { border-radius: 0; }
+:root[data-theme="pixel"] .pp-on .pl-progress > div { border-radius: 0; }
+
+/* ── 3. צבע פעולה אחד ── */
+:root[data-theme="pixel"] .pp-on .px-blocks > span.on { background: var(--pp-act); }
+:root[data-theme="pixel"] .pp-on .pl button.pl-primary,
+:root[data-theme="pixel"] .pp-on button.pl-primary {
+  border: none;
+  border-radius: 0;
+  background: var(--pp-act);
+  color: #FFFDF8;
+  box-shadow: inset 0 calc(-1 * var(--pp-u)) 0 var(--pp-act-shade), 0 0 0 var(--pp-u) var(--pp-act-shade);
+}
+:root[data-theme="pixel"] .pp-on .pl button.pl-link,
+:root[data-theme="pixel"] .pp-on button.pl-link { color: var(--pp-act-text); font-weight: 700; }
+:root[data-theme="pixel"] .pp-on .pl-step input[type=checkbox]:checked { border-color: var(--pp-act-shade); background-color: var(--pp-act); }
+:root[data-theme="pixel"] .pp-on .pl-chip-accent { background: var(--pl-accent-soft); color: var(--pp-act-text); border-color: transparent; }
+
+/* שורת המסכים (כמו בכותרת): המסך הנוכחי בצבע הפעולה במקום הירוק, ובלי פינות עגולות */
+:root[data-theme="pixel"] .pp-on button.hdr-nav-btn { border-radius: 0; border-width: var(--pp-u); box-shadow: var(--pp-u) var(--pp-u) 0 var(--hdr-lilac); }
+:root[data-theme="pixel"] .pp-on button.hdr-nav-btn:hover { box-shadow: calc(var(--pp-u) * 2) calc(var(--pp-u) * 2) 0 var(--px-frame); }
+:root[data-theme="pixel"] .pp-on button.hdr-nav-btn[aria-current="page"] {
+  background: var(--pp-act); border-color: var(--pp-act-shade); box-shadow: none;
+}
+
+/* ── 4. פריט שבוצע = נאסף ── */
+:root[data-theme="pixel"] .pp-on .pl-step-row-done { background: var(--pp-done-bg); border-color: #F3E3C8; }
+:root[data-theme="pixel"] .pp-on .pl-step-done { color: var(--pl-text); }
+:root[data-theme="pixel"] .pp-on .pl-step-done .pl-step-title { text-decoration: none; color: var(--pl-muted); }
+:root[data-theme="pixel"] .pp-on .pl-step-row-done .pl-item-icon { background: var(--pp-gold-soft); border-color: var(--pp-gold); color: var(--pp-gold-text); }
+:root[data-theme="pixel"] .pp-on .pl-step-row-done .pl-chip-points {
+  padding: 0 6px;
+  border: var(--pp-u) solid var(--pp-gold);
+  background: var(--pp-gold-soft);
+  color: var(--pp-gold-text);
+}
+
+/* ── 5. אנימציה בסימון (רק בהדגמה, רק במשחקי). תנועה במדרגות, כמו במשחקים ישנים ── */
+.pp-anim-row { position: relative; }
+:root[data-theme="pixel"] .pp-on .pp-just .pl-step input[type=checkbox] { animation: pp-pop .3s steps(3, end); }
+:root[data-theme="pixel"] .pp-on .pp-just .pl-item-icon { animation: pp-hop .36s steps(3, end); }
+.pp-float {
+  position: absolute;
+  inset-inline-start: 48px;
+  top: 6px;
+  z-index: 2;
+  pointer-events: none;
+  color: var(--pp-gold-text, #8A5A00);
+  font: 400 16px var(--pl-font-time);
+  text-shadow: 2px 2px 0 var(--pp-gold-soft, #FFF0D2);
+  animation: pp-rise .6s steps(5, end) forwards;
+}
+.pp-hud {
+  display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px;
+  background: var(--pp-gold-soft, #FFF0D2); color: var(--pl-text);
+}
+.pp-hud b { font: 400 22px var(--pl-font-time); min-width: 2ch; }
+.pp-hud .pl-icon { color: var(--pp-gold, #F5B82E); }
+.pp-hud.pp-bump b { animation: pp-pop .24s steps(2, end); }
+
+@keyframes pp-pop { 0% { transform: scale(1); } 50% { transform: scale(1.35); } 100% { transform: scale(1); } }
+@keyframes pp-hop { 0% { transform: translateY(0); } 50% { transform: translateY(-6px); } 100% { transform: translateY(0); } }
+@keyframes pp-rise { 0% { transform: translateY(0); opacity: 1; } 80% { opacity: 1; } 100% { transform: translateY(-30px); opacity: 0; } }
+
+/* מי שביקש פחות תנועה במכשיר: רק שינוי הצבע, בלי קפיצות ובלי "+2" עולה */
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme="pixel"] .pp-on .pp-just :is(input, .pl-item-icon),
+  .pp-hud.pp-bump b { animation: none; }
+  .pp-float { display: none; }
+}
+
+/* פריסת ההדגמה: "היום" ו"מוצע" זה ליד זה, ואחד מתחת לשני בטלפון */
+.pp-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+.pp-pair > div { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.pp-tag { align-self: flex-start; padding: 2px 8px; font-size: 13px; font-weight: 700; background: var(--pl-soft); color: var(--pl-muted); }
+.pp-tag-new { background: #DDF6F2; color: #127567; }
+@media (max-width: 700px) { .pp-pair { grid-template-columns: 1fr; } }
+.pp-units { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+/* שורת המסכים בהדגמה: אייקון מעל הטקסט, כמו בפס התחתון בטלפון, כדי ששלושה כפתורים ייכנסו בחצי רוחב */
+:root[data-theme="pixel"] .pp-nav button.hdr-nav-btn { flex-direction: column; gap: 2px; min-height: 56px; padding: 0 4px; font-size: 14px; }
+/* בטלפון ההדגמה יוצאת מהריפוד של המדריך, כדי שהחלון יהיה ברוחב שלו באפליקציה (בערך 333px ב-375) */
+@media (max-width: 700px) {
+  #guide-proposals { padding-inline: 0; border: none; box-shadow: none; background: none; }
+  .pp-pair, .pp-wide { margin-inline: -7px; }
+}
