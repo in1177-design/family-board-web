@@ -207,13 +207,13 @@ export function WindowCard({ id, label, tagline, window: w, steps, todos, today,
   const total = steps.length + todos.length
   const doneCount = steps.filter(s => s.done).length + todos.filter(t => t.done_at).length
 
-  // קודם הרגלים בלי שעה, לפי הסדר שלהם. אחריהם כל מה שיש לו שעה, הרגלים ומשימות, לפי השעה
+  // קודם כל ההרגלים (בלי שעה לפי הסדר שלהם, אחריהם עם שעה לפי השעה), ואחריהם כל המשימות לפי השעה.
+  // לא מעורבבים (המשתמשת, 2026-10-12: "כשהם לפי שעה זה ממש מבלבל")
+  const byTime = (a, b) => (a.time || '').localeCompare(b.time || '')
   const items = [
     ...steps.filter(s => !s.time_today).map(s => ({ kind: 'step', item: s })),
-    ...[
-      ...steps.filter(s => s.time_today).map(s => ({ kind: 'step', item: s, time: s.time_today })),
-      ...todos.map(t => ({ kind: 'todo', item: t, time: t.due_time }))
-    ].sort((a, b) => a.time.localeCompare(b.time))
+    ...steps.filter(s => s.time_today).map(s => ({ kind: 'step', item: s, time: s.time_today })).sort(byTime),
+    ...todos.map(t => ({ kind: 'todo', item: t, time: t.due_time })).sort(byTime)
   ]
   const complete = total > 0 && doneCount === total
   const folded = open === null ? complete : !open
