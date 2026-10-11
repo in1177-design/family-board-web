@@ -450,3 +450,8 @@
   :root[data-theme="pixel"] .hdr-mini .hdr-points b { font: 400 16px var(--pl-font-time); }
   :root[data-theme="pixel"] .hdr-mini .day-progress-part > span { width: 9px; height: 9px; }
 }
+
+/* "+ הוספה" בתחתית חלון (המשתמשת, 2026-10-11: "טורקיז בבולד יותר"): טורקיז כהה ובולד.
+   #127567 על הקרם 5.5:1 (הטורקיז הרגיל 3:1) */
+:root[data-theme="pixel"] .pl button.pl-add-link { color: #127567; font-weight: 700; }
+:root[data-theme="pixel"] .pl button.pl-add-link:hover { color: #0B5C51; }

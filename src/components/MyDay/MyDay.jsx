@@ -262,11 +262,11 @@ function AddMenu({ onAddStep, onAddTodo }) {
     return () => document.removeEventListener('pointerdown', onDown)
   }, [open])
 
-  if (!onAddTodo) return <button className="pl-link" onClick={onAddStep}>+ הוספת הרגל</button>
+  if (!onAddTodo) return <button className="pl-link pl-add-link" onClick={onAddStep}>+ הוספת הרגל</button>
   const pick = (fn) => { setOpen(false); fn() }
   return (
     <div className="pl-add-menu" ref={ref}>
-      <button className="pl-link" onClick={() => setOpen(v => !v)} aria-expanded={open}>+ הוספה</button>
+      <button className="pl-link pl-add-link" onClick={() => setOpen(v => !v)} aria-expanded={open}>+ הוספה</button>
       {open && (
         <div className="pl-add-menu-list">
           <button onClick={() => pick(onAddStep)}><Icon name="sparkles" />הרגל</button>
