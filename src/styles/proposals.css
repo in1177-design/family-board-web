@@ -278,3 +278,5 @@
 .pl-more-menu .pl-add-menu-list { inset-inline-start: auto; inset-inline-end: 0; top: calc(100% + 4px); bottom: auto; }
 .pl button.pl-more-button { font-size: 22px; font-weight: 700; color: var(--px-frame, var(--pl-muted)); }
 .pl .pl-add-menu-list button.pl-more-delete { color: var(--pl-error); }
+/* hover על משימה שבוצעה: הצהוב מתכהה מעט, והמסגרת נשארת */
+:root[data-theme="pixel"] .pp-listfix .pl-win-list .pl-step-row.pl-step-row-done:not(.pl-step-row-habit):hover { background: #FFEDA8; border-color: #F2CF5B; }
