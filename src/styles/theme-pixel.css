@@ -500,3 +500,57 @@
   border-bottom: none;
   border-radius: calc(var(--pl-r-card) - 2px);
 }
+
+/* ── החלון כרשימה (הדמיה 10 במדריך, אושר 2026-10-12) ──
+   ההרגלים כרשימה מקצה לקצה של החלון: בלי מסגרת לשורה, קו מקווקו של 2px ביניהן, בלי רווח, שורה בגובה 52 והתוכן באמצע.
+   מה שבוצע: כל השורה צהובה. המשימות (TodoCard, ילד ישיר של החלון) בכרטיס אחרי ההרגלים. */
+:root[data-theme="pixel"] .pl-win.pl-win { gap: 0 !important; } /* הרווח בא מ-style ב-WindowCard */
+:root[data-theme="pixel"] .pl-win > .pl-col { gap: 0; }
+:root[data-theme="pixel"] .pl-win > .pl-muted { margin-block: 10px; }
+:root[data-theme="pixel"] .pl-win > .pl-row:last-child { margin-top: 10px; }
+:root[data-theme="pixel"] .pl-win .pl-step-row.pl-step-row-habit {
+  min-height: 52px;
+  margin-inline: calc(-1 * var(--win-pad));
+  padding-inline: var(--win-pad);
+  align-items: center;
+  border: none;
+  border-bottom: 2px dashed var(--pl-line);
+  border-radius: 0;
+  background: none;
+}
+:root[data-theme="pixel"] .pl-win .pl-step-row.pl-step-row-habit:hover { border-color: var(--pl-line); }
+:root[data-theme="pixel"] .pl-win .pl-step-row-habit .pl-step { min-height: 52px; padding-block: 0; padding-inline-start: 0; align-self: stretch; }
+:root[data-theme="pixel"] .pl-win .pl-step-row.pl-step-row-habit.pl-step-row-done { background: #FFF3C4; border-bottom-color: #F2CF5B; }
+/* בשורת הרגל בלי "ימי לימודים" וכו' (משך הזמן נשאר) */
+:root[data-theme="pixel"] .pl-win .pl-step-row-habit :is(.pl-step-days, .pl-step-sep) { display: none; }
+
+/* משימה בחלון: כרטיס בטורקיז בהיר עם מסגרת תכלת, 10px ביניהן, והפינה השמאלית העליונה מקופלת כמו פתק.
+   hover: רק הרקע מתכהה. בלי התגית "משימה" (הכרטיס והקיפול מבדילים) */
+:root[data-theme="pixel"] .pl-win > .pl-step-row {
+  margin-block: 5px;
+  border-color: #BDEBF2;
+  border-top-left-radius: 0;
+  background: var(--pl-accent-soft);
+}
+:root[data-theme="pixel"] .pl-win > .pl-step-row:nth-child(1 of .pl-step-row) { margin-top: 12px; }
+:root[data-theme="pixel"] .pl-win > .pl-step-row:hover { border-color: #BDEBF2; background: #C9F0EA; }
+:root[data-theme="pixel"] .pl-win > .pl-step-row .pl-step { background: none; border-color: transparent; }
+:root[data-theme="pixel"] .pl-win > .pl-step-row .pl-chip { display: none; }
+:root[data-theme="pixel"] .pl-win > .pl-step-row::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+  background: linear-gradient(135deg, var(--pl-card) 50%, #BDEBF2 50%);
+  border-right: 2px solid #BDEBF2;
+  border-bottom: 2px solid #BDEBF2;
+}
+:root[data-theme="pixel"] .pl-win > .pl-step-row.pl-step-row-done { border-color: #F2CF5B; background: #FFF3C4; }
+:root[data-theme="pixel"] .pl-win > .pl-step-row.pl-step-row-done:hover { border-color: #F2CF5B; background: #FFEDA8; }
+:root[data-theme="pixel"] .pl-win > .pl-step-row.pl-step-row-done::after {
+  background: linear-gradient(135deg, var(--pl-card) 50%, #F7DF8A 50%);
+  border-color: #E8B730;
+}
