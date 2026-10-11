@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useStore, api } from '../../store'
+import ProfileModal from '../shared/ProfileModal'
 
 const COLORS = ['#6C63FF','#FF7043','#69F0AE','#FFD740','#4FC3F7','#F48FB1','#26C6DA','#FF5252','#9C27B0','#00BCD4']
 const AVATARS = ['🦁','🐯','🦊','🐻','🐼','🦄','🐸','🐧','🦋','🐬','🐙','🦖','👦','👧','🧒','👨','👩','🧑']
@@ -33,6 +34,7 @@ function MembersSettings({ members, createMember, updateMember, deleteMember, lo
   const [editMember, setEditMember] = useState(null)
   const [form, setForm] = useState({ name: '', role: 'child', color: COLORS[0], avatar: AVATARS[0], pin: '' })
   const [saving, setSaving] = useState(false)
+  const [profileOf, setProfileOf] = useState(null)
 
   const handleSave = async () => {
     setSaving(true)
@@ -86,12 +88,15 @@ function MembersSettings({ members, createMember, updateMember, deleteMember, lo
             </div>
             <div style={{ width: 16, height: 16, borderRadius: '50%', background: m.color }} />
             <div style={{ display: 'flex', gap: '.4rem' }}>
+              {/* הורה משנה את הפרופיל של כל בן משפחה (2026-10-09) */}
+              <button className="btn btn-secondary btn-sm" onClick={() => setProfileOf(m)}>פרופיל</button>
               <button className="btn btn-ghost btn-sm btn-icon" onClick={() => startEdit(m)}>✏️</button>
               <button className="btn btn-ghost btn-sm btn-icon" style={{ color: 'var(--red)' }} onClick={() => handleDelete(m.id)}>🗑️</button>
             </div>
           </div>
         ))}
       </div>
+      {profileOf && <ProfileModal member={profileOf} onClose={() => setProfileOf(null)} />}
 
       {showAdd && (
         <div className="modal-overlay" onClick={() => setShowAdd(false)}>

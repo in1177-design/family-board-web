@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useStore, api } from '../../store'
 import TodoForm from './TodoForm'
 import { TodoCard } from './TodosSection'
+import MemberTabs from '../shared/MemberTabs'
 
 // היום לפי שעון ישראל
 const israelToday = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jerusalem' }).format(new Date())
@@ -13,6 +14,9 @@ export default function TodosBoard() {
   const [todos, setTodos] = useState(null)
   const [error, setError] = useState('')
   const [editing, setEditing] = useState(null) // { todo } או { memberId }
+  // בן משפחה אחד בכל פעם, עם בחירה למעלה (המשתמשת, 2026-10-09)
+  const [memberId, setMemberId] = useState(() => members[0]?.id)
+  const member = members.find(m => m.id === memberId) || members[0]
   const today = israelToday()
 
   const load = () => api.todos.getAll().then(setTodos).catch(e => setError(e.message))
@@ -20,6 +24,13 @@ export default function TodosBoard() {
 
   const toggle = async (todo, done) => {
     await api.todos.setDone({ id: todo.id, done }).catch(e => setError(e.message))
+    load()
+  }
+
+  // מחיקה מהירה מהלוח (2026-10-09), עם אישור אחד
+  const remove = async (todo) => {
+    if (!confirm(`למחוק את המשימה "${todo.title}"?`)) return
+    await api.todos.delete(todo.id).catch(e => setError(e.message))
     load()
   }
 
@@ -35,31 +46,34 @@ export default function TodosBoard() {
           <h2>משימות</h2>
           <p>דברים שעושים פעם אחת, או שחוזרים לפי לוח</p>
         </div>
-        <button className="pl-primary" onClick={() => setEditing({})}>משימה חדשה</button>
+        <button className="pl-primary" onClick={() => setEditing(member ? { memberId: member.id } : {})}>משימה חדשה</button>
       </div>
 
       {error && <p className="pl-error">{error}</p>}
       {!todos && !error && <p>טוען…</p>}
 
-      {todos && members.map(m => {
-        const list = todos.filter(t => t.member_id === m.id).sort(order)
+      <MemberTabs members={members} value={member?.id} onChange={setMemberId}
+        count={m => (todos || []).filter(t => t.member_id === m.id && !t.done_at).length} />
+
+      {todos && member && (() => {
+        const list = todos.filter(t => t.member_id === member.id).sort(order)
         return (
-          <div key={m.id} className="pl-section pl-col" style={{ gap: 8 }}>
+          <div className="pl-section pl-col" style={{ gap: 8, marginTop: 16 }}>
             <div className="pl-row" style={{ justifyContent: 'space-between' }}>
-              <strong>{m.name} <span className="pl-muted">{m.role === 'parent' ? 'הורה' : 'ילד/ה'}</span></strong>
+              <strong>המשימות של {member.name}</strong>
               <span className="pl-chip">{list.filter(t => !t.done_at).length} פתוחות</span>
             </div>
             {list.length === 0 && <div className="pl-muted">אין משימות פתוחות.</div>}
             {list.map(t => (
               <TodoCard key={t.id} todo={t} today={today} late={t.due_date && t.due_date < today}
-                onToggle={toggle} onEdit={todo => setEditing({ todo })} />
+                onToggle={toggle} onEdit={todo => setEditing({ todo })} onDelete={remove} />
             ))}
-            <button className="pl-link" style={{ alignSelf: 'flex-start' }} onClick={() => setEditing({ memberId: m.id })}>
-              + הוסף משימה ל{m.name}
+            <button className="pl-link" style={{ alignSelf: 'flex-start' }} onClick={() => setEditing({ memberId: member.id })}>
+              + הוסף משימה ל{member.name}
             </button>
           </div>
         )
-      })}
+      })()}
 
       {/* חלון מודאלי מעל הלוח */}
       {editing && <TodoForm {...editing} byId={activeMemberId} today={today} onClose={() => { setEditing(null); load() }} />}

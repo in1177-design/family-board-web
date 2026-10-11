@@ -55,14 +55,15 @@ export default function ParentView() {
       height: '100%', display: 'flex', flexDirection: 'column',
       background: 'var(--bg)', overflow: 'hidden'
     }}>
-      <AppBar tabs={TABS} current={opened ? null : tab} onPick={pickTab} />
+      <AppBar tabs={TABS} current={opened ? null : tab} onPick={pickTab} member={parent} />
 
       {/* Content: ה-Hero גולל יחד עם הדף, כמו אצל הילד */}
       <div className="pl-under-tabs" style={{ flex: 1, overflow: 'auto' }}>
       {parent && (
         <MemberHero
           member={parent}
-          summary={!opened && tab === 'myday' ? summary : null}
+          summary={summary}
+          tabs={TABS} current={opened ? null : tab} onPick={pickTab}
           end={<ParentMenu onPick={w => w === 'todo' ? setAddTodo(true) : w === 'step' ? setAddStep(true) : setOpened(w)} onLogout={logout} />}
         />
       )}

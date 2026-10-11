@@ -64,7 +64,8 @@ export default function TodosSection({ todos, today, onToggle, onAdd, onEdit }) 
 
 // שורת משימה: סימון, שם, ומתחת התאריך והשעה. ↻ למשימה חוזרת, ועיפרון לעריכה.
 // inWindow: משימה עם שעה בתוך חלון ב"היום שלי", עם תגית "משימה"
-export function TodoCard({ todo, today, late, inWindow, onToggle, onEdit }) {
+// onDelete: מחיקה מהירה, רק בלוח המשימות של ההורה (2026-10-09)
+export function TodoCard({ todo, today, late, inWindow, onToggle, onEdit, onDelete }) {
   const done = !!todo.done_at
   const when = [todo.due_date && dateText(todo.due_date, today), todo.due_time].filter(Boolean).join(' · ')
   return (
@@ -80,6 +81,7 @@ export function TodoCard({ todo, today, late, inWindow, onToggle, onEdit }) {
         {todo.repeat && <span className="pl-muted" title={repeatText(todo.repeat)}>↻</span>}
       </label>
       <button className="pl-icon-button" onClick={() => onEdit(todo)} aria-label="ערוך משימה" title="ערוך משימה">✎</button>
+      {onDelete && <button className="pl-icon-button pl-quick-delete" onClick={() => onDelete(todo)} aria-label={'מחק את ' + todo.title} title="מחיקה">✕</button>}
     </div>
   )
 }

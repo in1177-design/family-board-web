@@ -41,11 +41,11 @@ export default function KidsView() {
       background: `linear-gradient(160deg, ${member.color}22 0%, var(--bg) 60%)`,
       overflow: 'hidden'
     }}>
-      <AppBar tabs={TABS} current={tab} onPick={setTab} />
+      <AppBar tabs={TABS} current={tab} onPick={setTab} member={member} />
 
       {/* ── Content: ה-Hero גולל יחד עם הדף, כמו ב-wireframe ── */}
       <div className="pl-under-tabs" style={{ flex: 1, overflow: 'auto' }}>
-        <MemberHero member={member} summary={tab === 'myday' ? summary : null} />
+        <MemberHero member={member} summary={summary} tabs={TABS} current={tab} onPick={setTab} />
         <div style={{ padding: '1.25rem' }}>
           {tab === 'myday'    && <MyDay memberId={member.id} hideHero onSummary={setSummary} />}
           {tab === 'calendar' && <WeeklyCalendar member={member} />}

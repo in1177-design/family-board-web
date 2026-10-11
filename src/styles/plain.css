@@ -408,10 +408,176 @@
   .pl-day .pl-step { padding-inline: 10px; gap: var(--pl-gap); }
 }
 
-/* Hero בראש המסך של בן משפחה (MemberHero). בצבע של בן המשפחה (--member-color, נקבע בקוד) */
+/* ── הכותרת של בן משפחה (MemberHero, 2026-10-10): המבנה של 1b מ-Claude Design, בגרסה המעודנת ──
+   אותו מבנה כמו במשחקי, בלי משחקיות: פינות מעוגלות, קו דק, בלי צללי פיקסלים, טבעת בצבע בן המשפחה סביב התמונה,
+   פס התקדמות רגיל, וגופן אחד. העיצוב המשחקי דורס את כל זה ב-theme-pixel.css */
+.hdr {
+  max-width: var(--pl-page-max);
+  margin: 16px max(1.25rem, calc((100% - var(--pl-page-max)) / 2)) 0;
+  display: flex; flex-direction: column;
+  border: 1px solid var(--pl-line); border-radius: var(--pl-r-card);
+  background: var(--pl-card); color: var(--pl-text); font-family: var(--pl-font);
+}
+.hdr-top { display: flex; align-items: center; gap: 24px; padding: 16px 20px; flex-wrap: wrap; }
+button.hdr-avatar {
+  position: relative; display: flex; width: 96px; height: 96px; flex-shrink: 0; padding: 3px; cursor: pointer;
+  border: 3px solid var(--member-color, var(--pl-accent)); border-radius: 50%; background: var(--pl-card);
+}
+.hdr-avatar img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.hdr-greet { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 180px; }
+.hdr-greet h1 { margin: 0; font-size: 26px; font-weight: 700; line-height: 1.2; color: var(--pl-text); }
+.hdr-greet span { color: var(--pl-muted); font-size: var(--pl-size); }
+.hdr-clock { display: flex; flex-direction: column; gap: 2px; padding-inline: 24px; border-inline: 1px solid var(--pl-line); }
+.hdr-clock b { font-size: 28px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.hdr-label { color: var(--pl-muted); font-size: var(--pl-size-sm); font-weight: 600; }
+.hdr-progress { display: flex; flex-direction: column; gap: 6px; min-width: 170px; }
+.hdr-points {
+  display: flex; align-items: center; gap: 10px; min-height: 56px; padding: 0 16px;
+  border: 1px solid var(--pl-line); border-radius: var(--pl-r-box); background: var(--pl-soft);
+}
+.hdr-points .pl-icon { color: #E0A100; }
+.hdr-points div { display: flex; flex-direction: column; line-height: 1.15; }
+.hdr-points b { font-size: 20px; font-weight: 700; }
+/* פס ההתקדמות של היום (DayProgress, 2026-10-10): 12 שלבים, 3 לבוקר, 6 לצהריים, 3 לערב.
+   כל חלק מתמלא באופן יחסי בצבע של החלון. חלק שאין בו כלום היום: שלבים מקווקווים */
+.hdr-stats { display: contents; }
+.day-progress-row { display: flex; align-items: center; gap: 8px; }
+.day-progress-row b { font-size: var(--pl-size-sm); }
+.day-progress { display: inline-flex; gap: 6px; }
+.day-progress-part { display: inline-flex; gap: 2px; }
+.day-progress-part > span { width: 12px; height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--part-c) 18%, var(--pl-card)); }
+.day-progress-part > span.on { background: var(--part-c); }
+.day-progress-none > span { background: transparent; box-shadow: inset 0 0 0 1px var(--pl-line); }
+.day-part-morning { --part-c: #F0A63A; }
+.day-part-noon    { --part-c: #E5679A; }
+.day-part-evening { --part-c: #7C6BD9; }
+/* חץ החזרה רק בטלפון */
+.hdr-back { display: none; }
+
+/* שורת כפתורי המסכים: כפתורים שקטים, והמסך הנוכחי בצבע ההדגשה */
+.hdr-nav {
+  display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+  border-top: 1px solid var(--pl-line); background: var(--pl-soft);
+  border-radius: 0 0 var(--pl-r-card) var(--pl-r-card);
+}
+.hdr-nav nav { display: grid; gap: 10px; flex: 1; }
+button.hdr-nav-btn, .hdr-nav .pl-menu > button {
+  display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 16px;
+  border: 1px solid var(--pl-control); border-radius: var(--pl-r-control); background: var(--pl-card);
+  color: var(--pl-text); font: 600 15px var(--pl-font); cursor: pointer; transition: border-color .12s, background .12s;
+}
+button.hdr-nav-btn .pl-icon { width: 20px; height: 20px; color: var(--pl-muted); }
+button.hdr-nav-btn:hover, .hdr-nav .pl-menu > button:hover { border-color: var(--pl-accent); background: var(--pl-accent-soft); }
+button.hdr-nav-btn[aria-current="page"] { background: var(--pl-accent); border-color: var(--pl-accent); color: #FFF; cursor: default; }
+button.hdr-nav-btn[aria-current="page"] .pl-icon { color: #FFF; }
+/* ☰ של ההורה (ParentMenu): כמו כפתור. הסגנון ה-inline שלו (לבן) מתבטל */
+.hdr-nav .pl-menu > button { width: 48px; padding: 0; color: var(--pl-text) !important; font-size: 20px !important; }
+.hdr-nav .pl-menu-list { left: 0; top: calc(100% + 6px); }
+
+/* במחשב: כפתורי המסכים בכותרת, אז הפס העליון (AppBar) לא מוצג, בשני העיצובים */
+@media (min-width: 701px) {
+  .pl.pl-appbar { display: none; }
+}
+/* בטלפון (רפרנס מהמשתמשת, 2026-10-10): פס צבעוני למעלה עם → ו-☰ בצדדים ותאריך ושעה באמצע,
+   התמונה והברכה במרכז על הפס, ומתחת כרטיס אחד עם ההתקדמות והנקודות, שעולה על קצה הפס.
+   הכפתורים בפס התחתון (AppBar). במעודן הפס בצבע של בן המשפחה */
+@media (max-width: 700px) {
+  .pl-appbar > .pl-row { display: none; }
+  .hdr { --hdr-band: var(--member-color, var(--pl-accent)); position: relative; margin: 0; border: none; border-radius: 0; background: transparent; }
+  .hdr-top {
+    display: grid; grid-template-columns: 44px 1fr 44px;
+    grid-template-areas: "back clock menu" "avatar avatar avatar" "greet greet greet" "stats stats stats";
+    justify-items: center; align-items: center; gap: 10px; padding: 12px 12px 0;
+    background: linear-gradient(var(--hdr-band), var(--hdr-band)) top / 100% calc(100% - 34px) no-repeat;
+  }
+  .hdr-back {
+    grid-area: back; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px;
+    border: 1px solid var(--pl-line); border-radius: var(--pl-r-control); background: var(--pl-card);
+    color: var(--pl-text); font-size: 20px; cursor: pointer;
+  }
+  .hdr-clock { grid-area: clock; flex-direction: column-reverse; align-items: center; padding: 0; border: none; color: #FFF; }
+  .hdr-clock .hdr-label { color: #FFF; opacity: .9; }
+  .hdr-clock b { font-size: 20px; }
+  button.hdr-avatar { grid-area: avatar; width: 104px; height: 104px; }
+  .hdr-greet { grid-area: greet; align-items: center; text-align: center; min-width: 0; }
+  .hdr-greet h1 { font-size: 24px; color: #FFF; }
+  .hdr-greet span { color: #FFF; opacity: .9; }
+  .hdr-stats {
+    grid-area: stats; display: flex; align-items: center; gap: 12px; width: 100%; margin-top: 6px;
+    padding: 10px 14px; border: 1px solid var(--pl-line); border-radius: var(--pl-r-box); background: var(--pl-card);
+  }
+  .hdr-progress { flex: 1; min-width: 0; }
+  .hdr-points { min-height: 0; padding: 0 0 0 0; padding-inline-start: 12px; border: none; border-inline-start: 1px dashed var(--pl-line); border-radius: 0; background: none; }
+  .hdr-points .hdr-label { font-size: 12px; }
+  /* ☰ של ההורה: בפינה של הפס */
+  .hdr-nav { position: absolute; top: 12px; left: 12px; padding: 0; border: none; background: none; }
+  .hdr-nav nav { display: none; }
+  .hdr-nav:not(:has(.pl-menu)) { display: none; }
+  .hdr-nav .pl-menu > button { width: 44px; min-height: 44px; }
+}
+
+/* גרסה ב' לכותרת בטלפון: "תמונה גדולה" (data-mhdr="photo", בחירה בפרופיל, 2026-10-10).
+   התמונה על כל הרוחב בראש המסך, בלי פס צבעוני. → ו-☰ בפינות ושעון קטן באמצע, מעל התמונה.
+   מתחת כרטיס אחד שעולה על התמונה: ברכה ומשפט, קו מקווקו, ואז ההתקדמות והנקודות */
+@media (max-width: 700px) {
+  :root[data-mhdr="photo"] .hdr-top {
+    grid-template-rows: 56px 250px auto auto; gap: 0; padding: 0; background: none;
+  }
+  :root[data-mhdr="photo"] button.hdr-avatar {
+    grid-area: 1 / 1 / 3 / 4; width: 100%; height: 100%; padding: 0; border: none; border-radius: 0;
+    background: color-mix(in srgb, var(--member-color, var(--pl-accent)) 18%, var(--pl-card)); box-shadow: none; z-index: 0;
+  }
+  :root[data-mhdr="photo"] .hdr-avatar img { border-radius: 0; object-fit: contain; }
+  :root[data-mhdr="photo"] .hdr-avatar .mh-photo-edit { display: none; }
+  :root[data-mhdr="photo"] .hdr-back { z-index: 1; margin: 12px; align-self: start; }
+  :root[data-mhdr="photo"] .hdr-nav { z-index: 2; }
+  :root[data-mhdr="photo"] .hdr-clock {
+    z-index: 1; align-self: start; margin-top: 12px; flex-direction: column-reverse; padding: 4px 12px;
+    border: 1px solid var(--pl-line); border-radius: var(--pl-r-control); background: var(--pl-card); color: var(--pl-text);
+  }
+  :root[data-mhdr="photo"] .hdr-clock .hdr-label { color: var(--pl-text); }
+  :root[data-mhdr="photo"] .hdr-greet {
+    z-index: 1; width: calc(100% - 24px); margin-top: -44px; align-items: flex-start; text-align: start;
+    padding: 14px 16px 10px; border: 1px solid var(--pl-line); border-bottom: none;
+    border-radius: var(--pl-r-box) var(--pl-r-box) 0 0; background: var(--pl-card);
+  }
+  :root[data-mhdr="photo"] .hdr-greet h1 { color: var(--pl-text); }
+  :root[data-mhdr="photo"] .hdr-greet span { color: var(--pl-muted); opacity: 1; }
+  :root[data-mhdr="photo"] .hdr-stats {
+    width: calc(100% - 24px); margin-top: 0; border-top: 1px dashed var(--pl-line); border-radius: 0 0 var(--pl-r-box) var(--pl-r-box);
+  }
+}
+
+/* הפס הדבוק בטלפון (2026-10-10): מופיע למעלה כשכרטיס ההתקדמות יוצא מהמסך בגלילה.
+   בגובה 0 בתוך אזור הגלילה, כך שלא מזיז את הדף. במחשב לא מוצג */
+.hdr-mini-wrap { display: none; }
+@media (max-width: 700px) {
+  .hdr-mini-wrap { display: block; position: sticky; top: 0; height: 0; z-index: 30; }
+  .hdr-mini {
+    position: absolute; top: 8px; inset-inline: 8px; display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+    border: 1px solid var(--pl-line); border-radius: var(--pl-r-box); background: var(--pl-card);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .08);
+    transform: translateY(-140%); opacity: 0; pointer-events: none; transition: transform .18s, opacity .18s;
+  }
+  .hdr-mini-on .hdr-mini { transform: none; opacity: 1; pointer-events: auto; }
+  :root[data-mhdr] .hdr-mini .hdr-back { display: flex; margin: 0; align-self: center; flex-shrink: 0; width: 40px; height: 40px; }
+  .hdr-mini-body { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
+  .hdr-mini-body strong { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hdr-mini .hdr-points { display: flex; align-items: center; gap: 4px; min-height: 0; padding: 0; border: none; background: none; flex-shrink: 0; }
+  .hdr-mini .hdr-points b { font-size: 16px; }
+  .hdr-mini .pl-menu > button {
+    width: 40px; height: 40px; padding: 0; border: 1px solid var(--pl-control); border-radius: var(--pl-r-control);
+    background: var(--pl-card); color: var(--pl-text) !important; font-size: 18px !important;
+  }
+  .hdr-mini .pl-menu-list { left: 0; top: calc(100% + 6px); }
+}
+
+/* Hero הישן (לפני 2026-10-10). רוב הכללים לא בשימוש מאז הכותרת 1b (BACKLOG.md: לנקות).
+   עדיין בשימוש: .mh-photo-edit (העיפרון על התמונה) ו-.mh-avatar (אימוג'י כשאין תמונה) */
 .mh {
   position: relative;
-  padding: 1.25rem 1.5rem;
+  /* הרקע על כל הרוחב, והתוכן ברוחב הדף (--pl-page-max, 2026-10-08), כדי שלא יימתח לקצוות במסך רחב */
+  padding: 1.25rem max(1.5rem, calc((100% - var(--pl-page-max)) / 2));
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -424,6 +590,14 @@
 .mh-side { display: flex; align-items: center; gap: 1rem; }
 .mh-end { flex-wrap: wrap; }
 .mh-photo-wrap { position: relative; }
+/* התמונה היא כפתור שפותח את הפרופיל (2026-10-09), עם עיפרון קטן בפינה */
+button.mh-photo-button { background: none; border: none; padding: 0; cursor: pointer; color: inherit; font: inherit; line-height: 0; }
+.mh-photo-edit {
+  position: absolute; inset-inline-start: -2px; bottom: -2px;
+  width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+  background: var(--pl-card); color: var(--pl-text); border: 2px solid var(--member-color, var(--pl-line));
+  border-radius: 50%; font-size: 13px; line-height: 1;
+}
 .mh-photo { width: 88px; height: 88px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; }
 .mh-avatar { font-size: 3rem; }
 .mh-percent {
@@ -446,8 +620,19 @@
 .mh-points-value { font-size: 1.3rem; font-weight: 700; }
 .mh .btn.mh-back, .mh .btn.mh-back:hover:not(:disabled) { color: #fff; font-size: 1.2rem; }
 
-/* מה ששייך רק לעיצוב החדש (theme-pixel.css) מוסתר בעיצוב הרגיל: אייקוני פיקסלים, פסי קוביות */
-.pl-icon, .px-only { display: none; }
+/* מה ששייך רק לעיצוב המשחקי (theme-pixel.css) מוסתר במעודן: פסי קוביות, ציורי החלונות */
+.px-only { display: none; }
+/* אייקונים בשני העיצובים (2026-10-09): במעודן אייקוני קו (Lucide), במשחקי פיקסלים. Icon.jsx בוחר */
+.pl-icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: var(--pl-icon-size); height: var(--pl-icon-size); }
+.pl-icon svg { width: 100%; height: 100%; }
+/* במעודן: אייקון בשורה בלי משבצת, בצבע משני; בלשונית ליד הטקסט */
+.pl-icon-line.pl-item-icon { color: var(--pl-muted); }
+.pl button.pl-tab { display: inline-flex; align-items: center; gap: 6px; }
+.pl-tab .pl-icon-line { width: 18px; height: 18px; }
+.pl-win-head { display: flex; align-items: center; gap: 10px; }
+.pl-win-head .pl-win-icon-line { width: 32px; height: 32px; color: var(--pl-accent); }
+.mh-points-value { display: flex; align-items: center; gap: 6px; }
+.mh-points-value .pl-icon-line { width: 20px; height: 20px; }
 
 /* כפתור המעבר בין העיצובים, בפס האפליקציה */
 .pl button.pl-theme-toggle {
@@ -532,6 +717,41 @@
     border-bottom: none;
   }
   .pl-modal-body { padding: 0 12px 16px; }
+}
+
+/* בחירת בן משפחה בראש לוח ניהול (MemberTabs, 2026-10-09) */
+.pl-member-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.pl button.pl-member-tab {
+  display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px;
+  border: 2px solid var(--pl-control); border-radius: 999px; background: var(--pl-card);
+  color: var(--pl-text); font: inherit; cursor: pointer;
+}
+.pl-member-tab img, .pl-member-tab-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; display: inline-flex; align-items: center; justify-content: center; }
+.pl button.pl-member-tab.pl-member-tab-on { border-color: var(--pl-accent); background: var(--pl-accent-soft); font-weight: 600; }
+/* מחיקה מהירה בלוח: אדום כשמצביעים */
+.pl button.pl-quick-delete { color: var(--pl-muted); }
+.pl button.pl-quick-delete:hover { color: var(--pl-error); }
+
+/* "קבע שעה" בשורת הרגל: שעון קטן (2026-10-10), כדי שלא יתחרה בשם */
+.pl button.pl-set-time .pl-icon { width: 18px; height: 18px; }
+
+/* חלון הפרופיל (2026-10-09): עיצוב, ימי לימודים ותמונות. הבחירה מסומנת במסגרת בצבע ההדגשה */
+.pl-profile-themes, .pl-profile-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pl button.pl-profile-theme {
+  display: flex; flex-direction: column; gap: 2px; align-items: flex-start;
+  padding: 12px 14px; border: 2px solid var(--pl-control); border-radius: var(--pl-r-card);
+  background: var(--pl-card); color: var(--pl-text); font: inherit; text-align: start; cursor: pointer;
+}
+.pl-profile-days { display: flex; gap: 6px; flex-wrap: wrap; }
+.pl button.pl-profile-day {
+  width: 40px; height: 40px; border: 2px dashed var(--pl-control); border-radius: var(--pl-r-button, 8px);
+  background: var(--pl-card); color: var(--pl-muted); font: inherit; font-weight: 600; cursor: pointer;
+}
+.pl button.pl-profile-day.pl-profile-on { border-style: solid; border-color: var(--pl-accent); background: var(--pl-accent); color: #fff; }
+.pl button.pl-profile-theme.pl-profile-on { border-color: var(--pl-accent); background: var(--pl-accent-soft); }
+.pl-profile-photo img, .pl-profile-photo-empty {
+  width: 88px; height: 88px; object-fit: cover; border-radius: 50%; border: 2px solid var(--pl-line);
+  display: flex; align-items: center; justify-content: center; font-size: var(--pl-size-sm); color: var(--pl-muted);
 }
 
 /* "למי?" בטופס משימה: תמונות של בני המשפחה */

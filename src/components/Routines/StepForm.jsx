@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useStore, api } from '../../store'
-import { TIMES, DAYS_RULES, DAY_LETTERS, ERRORS, memberWindows, ruleWeekdays } from './labels'
+import { TIMES, daysRules, DAY_LETTERS, ERRORS, memberWindows, ruleWeekdays } from './labels'
 import Modal from '../shared/Modal'
 import PixelButton from '../shared/PixelButton'
 import { memberPhoto } from '../shared/memberPhoto'
@@ -45,7 +45,11 @@ export default function StepForm({ step, memberId, timeOfDay, selfId, onClose })
 
   useEffect(() => { api.routines.library().then(setLibrary).catch(() => {}) }, [])
 
-  const days = ruleWeekdays(rule, custom)
+  // ימי הלימודים של בן המשפחה הראשון שנבחר (פרופיל, 2026-10-09). לכמה ילדים עם ימים שונים: התיבות של הראשון
+  const firstMember = members.find(m => m.id === memberIds[0])
+  const days = ruleWeekdays(rule, custom, firstMember?.school_days)
+  // להורה: ימי עבודה, ולוח החופשות של בית הספר לא חל עליו
+  const parentDays = firstMember?.role === 'parent'
 
   // שינוי תיבה הופך את הכלל ל"ימים מסוימים"
   const toggleDay = (d) => {
@@ -196,7 +200,7 @@ export default function StepForm({ step, memberId, timeOfDay, selfId, onClose })
       <div className="pl-section pl-col" style={{ gap: 12 }}>
         <h3 style={{ margin: 0 }}>באילו ימים?</h3>
         <div className="pl-slots" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
-          {DAYS_RULES.map(r => (
+          {daysRules(firstMember?.role).map(r => (
             <button key={r.id} className={slot(rule === r.id)} onClick={() => setRule(r.id)}>{r.label}</button>
           ))}
         </div>
@@ -208,8 +212,8 @@ export default function StepForm({ step, memberId, timeOfDay, selfId, onClose })
             </label>
           ))}
         </div>
-        {rule === 'before_school_day' && <p className="pl-muted">מופיעה בכל יום שלמחרתו יש לימודים, לפי לוח החופשות.</p>}
-        {(rule === 'school_days' || rule === 'weekend') && <p className="pl-muted">בחופשות: ימי לימודים לא חלים, וסופ״ש כן.</p>}
+        {rule === 'before_school_day' && <p className="pl-muted">{parentDays ? 'מופיעה בכל יום שלמחרתו יש עבודה.' : 'מופיעה בכל יום שלמחרתו יש לימודים, לפי לוח החופשות.'}</p>}
+        {(rule === 'school_days' || rule === 'weekend') && !parentDays && <p className="pl-muted">בחופשות: ימי לימודים לא חלים, וסופ״ש כן.</p>}
       </div>
 
       {/* תוספות: כל כפתור פותח את הסקציה שלו */}

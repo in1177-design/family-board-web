@@ -8,12 +8,18 @@ import LoginScreen from './components/shared/LoginScreen'
 import Loader from './components/shared/Loader'
 import ViewSwitcher from './components/shared/ViewSwitcher'
 import { ToastProvider } from './components/shared/Toast'
-import { useThemeName } from './components/shared/ThemeToggle'
+import { useThemeName, applyTheme, memberTheme } from './components/shared/ThemeToggle'
 
 function AppContent() {
-  const { members, loadFamily, activeView } = useStore()
+  const { members, loadFamily, activeView, activeMemberId } = useStore()
   // מחליפים עיצוב: הכל מצויר מחדש (אווטרים בפיקסלים בעיצוב החדש)
   useThemeName()
+
+  // העיצוב לפי בן המשפחה שבמסך (החלטה 2026-10-09). במסך הבית: מה שנבחר במכשיר
+  const viewMember = activeView === 'kid' ? members.find(m => m.id === activeMemberId)
+    : activeView === 'parent' ? (members.find(m => m.id === activeMemberId) || members.find(m => m.role === 'parent'))
+    : null
+  useEffect(() => { applyTheme(memberTheme(viewMember)) }, [viewMember?.id, viewMember?.theme])
   const [initializing, setInitializing] = useState(true)
   const [hasToken, setHasToken]         = useState(!!localStorage.getItem('family_token'))
 

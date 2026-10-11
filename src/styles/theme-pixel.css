@@ -113,6 +113,10 @@
   box-shadow: 4px 4px 0 var(--px-shadow);
 }
 :root[data-theme="pixel"] .pl.pl-day { background: transparent; }
+/* במחשב שלוש העמודות על כל 1200 של הדף, בלי ריפוד בצדדים (2026-10-08). אין רקע, אז הריפוד לא נחוץ */
+@media (min-width: 701px) {
+  :root[data-theme="pixel"] .pl.pl-day { padding-inline: 0; }
+}
 
 /* כותרת חלון בצבע משלו, על כל הרוחב של הכרטיס (שוליים שליליים כגודל הריפוד), עם ציור צבעוני.
    --win-base: הריפוד של החלון, 12px (צפוף, כדי שלשורות יהיה מקום). --win-extra: עובי מסגרת מהמעבדה (lab.css) */
@@ -270,3 +274,179 @@
 
 /* אווטרים בפיקסלים, מרובעים (2026-10-08) */
 :root[data-theme="pixel"] :is(.mh-photo, .pl-hero-photo, .pl-who-photo, .pl-switcher-photo, .home-photo) { border-radius: 0; }
+
+/* בחירת בן משפחה בעיצוב המשחקי: ריבועים */
+:root[data-theme="pixel"] .pl button.pl-member-tab { border-radius: 0; }
+:root[data-theme="pixel"] :is(.pl-member-tab img, .pl-member-tab-avatar) { border-radius: 0; }
+:root[data-theme="pixel"] .pl button.pl-member-tab.pl-member-tab-on { box-shadow: 3px 3px 0 var(--px-shadow, #E9DEF7); }
+
+/* חלון הפרופיל בעיצוב המשחקי (2026-10-09): ריבועים, טורקיז לבחירה, ותמונות מרובעות */
+:root[data-theme="pixel"] :is(.pl-profile-photo img, .pl-profile-photo-empty, .mh-photo-edit) { border-radius: 0; }
+:root[data-theme="pixel"] .mh-photo-edit { border-color: var(--px-frame); }
+:root[data-theme="pixel"] .pl button:is(.pl-profile-theme, .pl-profile-day) { border-radius: 0; }
+:root[data-theme="pixel"] .pl button.pl-profile-day.pl-profile-on { box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .18); }
+:root[data-theme="pixel"] .pl button.pl-profile-theme-playful { font-family: var(--pl-font); }
+:root[data-theme="pixel"] .pl button.pl-profile-theme.pl-profile-on { border-color: var(--pl-accent); box-shadow: 3px 3px 0 var(--px-shadow, #E9DEF7); }
+
+/* ── כותרת בן המשפחה בעיצוב המשחקי (handoff 1b מ-Claude Design, 2026-10-10) ──
+   Family header/design_handoff_member_header. כרטיס אחד: תמונה, ברכה, שעה, התקדמות ונקודות,
+   ומתחת שורת כפתורי המסכים ו-☰. מחליפה את ה-Hero ואת הפס העליון (שמוסתר במחשב). */
+:root[data-theme="pixel"] .hdr {
+  --hdr-lilac: #C9B8E6; --hdr-ink: #2E1F5E; --hdr-green: #2FB36B; --hdr-green-dark: #1E7A47;
+  max-width: var(--pl-page-max);
+  margin: 16px max(1.25rem, calc((100% - var(--pl-page-max)) / 2)) 0;
+  display: flex; flex-direction: column;
+  border: 2px solid var(--px-frame); border-radius: 12px;
+  background: #FFFFFF; box-shadow: 4px 4px 0 var(--px-shadow);
+  font-family: var(--pl-font); color: var(--pl-text);
+}
+:root[data-theme="pixel"] .hdr-top { display: flex; align-items: center; gap: 24px; padding: 16px 20px; flex-wrap: wrap; }
+:root[data-theme="pixel"] button.hdr-avatar {
+  position: relative; display: flex; width: 120px; height: 120px; flex-shrink: 0; padding: 6px; cursor: pointer;
+  border: 3px solid var(--px-frame); border-radius: 2px;
+  box-shadow: inset 0 0 0 3px #FFF, inset 0 0 0 5px var(--px-frame);
+  background: #BDEBF2; background-clip: content-box;
+}
+:root[data-theme="pixel"] .hdr-avatar img { display: block; width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+:root[data-theme="pixel"] .hdr-avatar .mh-photo-edit { inset-inline-start: -8px; bottom: -8px; }
+:root[data-theme="pixel"] .hdr-greet { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 180px; }
+:root[data-theme="pixel"] .hdr-greet h1 { margin: 0; font-size: 28px; font-weight: 800; line-height: 1.15; color: var(--pl-text); }
+:root[data-theme="pixel"] .hdr-greet span { color: var(--pl-muted); font-size: 15px; }
+:root[data-theme="pixel"] .hdr-clock { display: flex; flex-direction: column; gap: 4px; padding-inline: 24px; border-inline: 2px dashed var(--pl-line); }
+:root[data-theme="pixel"] .hdr-clock b { font: 400 30px/1 var(--pl-font-time); }
+:root[data-theme="pixel"] .hdr-label { color: var(--pl-muted); font-size: 13px; font-weight: 600; }
+:root[data-theme="pixel"] .hdr-progress { display: flex; flex-direction: column; gap: 6px; min-width: 150px; }
+:root[data-theme="pixel"] .hdr-progress .px-blocks { align-self: flex-start; }
+:root[data-theme="pixel"] .hdr-points {
+  display: flex; align-items: center; gap: 10px; min-height: 56px; padding: 0 16px;
+  border: 2px solid var(--px-frame); border-radius: 6px; background: #FFF0D2; box-shadow: 3px 3px 0 var(--px-shadow);
+}
+:root[data-theme="pixel"] .hdr-points .pl-icon { color: var(--px-gold, #F5B82E); }
+:root[data-theme="pixel"] .hdr-points div { display: flex; flex-direction: column; line-height: 1.1; }
+:root[data-theme="pixel"] .hdr-points b { font: 400 22px var(--pl-font-time); }
+
+/* שורת הכפתורים: כפתורים "מורמים", והמסך הנוכחי ירוק ושטוח */
+:root[data-theme="pixel"] .hdr-nav {
+  display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+  border-top: 2px dashed var(--pl-line); background: #F8F5FC; border-radius: 0 0 10px 10px;
+}
+:root[data-theme="pixel"] .hdr-nav nav { display: grid; gap: 10px; flex: 1; }
+:root[data-theme="pixel"] button.hdr-nav-btn,
+:root[data-theme="pixel"] .hdr-nav .pl-menu > button {
+  display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 0 18px;
+  border: 2px solid var(--hdr-lilac); border-radius: 6px; background: #FFFFFF; color: var(--pl-text);
+  box-shadow: 3px 3px 0 var(--hdr-lilac); font: 700 16px var(--pl-font); cursor: pointer;
+  transition: transform .08s, box-shadow .08s;
+}
+:root[data-theme="pixel"] button.hdr-nav-btn .pl-icon { color: var(--px-frame); }
+:root[data-theme="pixel"] button.hdr-nav-btn:hover,
+:root[data-theme="pixel"] .hdr-nav .pl-menu > button:hover {
+  transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--px-frame); border-color: var(--px-frame);
+}
+:root[data-theme="pixel"] button.hdr-nav-btn[aria-current="page"] {
+  background: var(--hdr-green); border-color: var(--hdr-green-dark); color: #FFF;
+  box-shadow: none; transform: none; cursor: default;
+}
+:root[data-theme="pixel"] button.hdr-nav-btn[aria-current="page"] .pl-icon { color: #FFF; }
+/* ☰ של ההורה (ParentMenu): כמו כפתור, 52×52. הסגנון ה-inline שלו (לבן) מתבטל */
+:root[data-theme="pixel"] .hdr-nav .pl-menu > button { width: 52px; padding: 0; color: var(--hdr-ink) !important; font-size: 20px !important; }
+:root[data-theme="pixel"] .hdr-nav .pl-menu-list { left: 0; top: calc(100% + 6px); }
+
+/* במחשב: הכפתורים בכותרת, אז הפס העליון הישן לא מוצג */
+@media (min-width: 701px) {
+  :root[data-theme="pixel"] .pl.pl-appbar { display: none; }
+}
+/* בטלפון במשחקי (רפרנס מהמשתמשת, 2026-10-10): פס סגול, כפתורי → ו-☰ לבנים עם מסגרת, תמונה במסגרת פיקסלים,
+   כרטיס ההתקדמות והנקודות עם מסגרת סגולה וצל, ובפס התחתון כפתורים "מורמים" כמו במחשב */
+@media (max-width: 700px) {
+  :root[data-theme="pixel"] .pl-appbar > .pl-row { display: none; }
+  :root[data-theme="pixel"] .hdr { --hdr-band: #6B4FB0; margin: 0; border: none; border-radius: 0; background: transparent; box-shadow: none; }
+  :root[data-theme="pixel"] .hdr-top {
+    display: grid; grid-template-columns: 44px 1fr 44px;
+    grid-template-areas: "back clock menu" "avatar avatar avatar" "greet greet greet" "stats stats stats";
+    justify-items: center; align-items: center; gap: 10px; padding: 12px 12px 0;
+    background: linear-gradient(var(--hdr-band), var(--hdr-band)) top / 100% calc(100% - 34px) no-repeat;
+  }
+  :root[data-theme="pixel"] .hdr-clock { flex-direction: column-reverse; align-items: center; }
+  :root[data-theme="pixel"] .hdr-clock .hdr-label { color: #FFF; }
+  :root[data-theme="pixel"] .hdr-greet { align-items: center; text-align: center; min-width: 0; }
+  :root[data-theme="pixel"] .hdr-progress { min-width: 0; }
+  :root[data-theme="pixel"] .hdr-back,
+  :root[data-theme="pixel"] .hdr-nav .pl-menu > button {
+    border: 2px solid var(--hdr-ink); border-radius: 4px; background: #FFF; color: var(--hdr-ink) !important; box-shadow: none;
+  }
+  :root[data-theme="pixel"] .hdr-clock { padding: 0; border: none; }
+  :root[data-theme="pixel"] .hdr-clock b { font-size: 18px; color: #FFF; }
+  :root[data-theme="pixel"] button.hdr-avatar { width: 104px; height: 104px; padding: 4px; box-shadow: inset 0 0 0 3px #FFF, inset 0 0 0 5px var(--px-frame), 4px 4px 0 var(--hdr-ink); }
+  :root[data-theme="pixel"] .hdr-greet h1 { font-size: 24px; color: #FFF; }
+  :root[data-theme="pixel"] .hdr-greet span { color: #FFF; }
+  :root[data-theme="pixel"] .hdr-stats { border: 2px solid var(--px-frame); border-radius: 10px; box-shadow: 4px 4px 0 var(--px-shadow); }
+  :root[data-theme="pixel"] .hdr-points { min-height: 0; padding: 0; padding-inline-start: 12px; border: none; border-inline-start: 2px dashed var(--pl-line); border-radius: 0; background: none; box-shadow: none; }
+  :root[data-theme="pixel"] .hdr-points b { font-size: 18px; }
+  :root[data-theme="pixel"] .hdr-nav { padding: 0; border: none; background: none; }
+  :root[data-theme="pixel"] .hdr-nav nav { display: none; }
+  :root[data-theme="pixel"] .hdr-nav:not(:has(.pl-menu)) { display: none; }
+  /* הפס התחתון: כפתורים עם מסגרת וצל, והמסך הנוכחי ירוק */
+  :root[data-theme="pixel"] .pl-appbar-tabs { gap: 10px; padding: 10px 12px; border-top: 2px solid var(--px-frame); background: #FFFDF8; }
+  :root[data-theme="pixel"] .pl button.pl-tab {
+    min-height: 56px; border: 2px solid var(--hdr-lilac, #C9B8E6); border-radius: 6px; background: #FFF;
+    color: var(--pl-text); font-weight: 700; box-shadow: 3px 3px 0 var(--hdr-lilac, #C9B8E6);
+  }
+  :root[data-theme="pixel"] .pl button.pl-tab-on { background: #2FB36B; border-color: #1E7A47; color: #FFF; box-shadow: 3px 3px 0 #1E7A47; }
+  :root[data-theme="pixel"] .pl button.pl-tab-on .pl-icon { color: #FFF; }
+}
+/* פס ההתקדמות במשחקי: כל חלק במסגרת פיקסלים, שלבים מרובעים, בצבעי כותרות החלונות. בלי אחוז, כמו ברפרנס */
+:root[data-theme="pixel"] .day-progress { gap: 4px; }
+:root[data-theme="pixel"] .day-progress-part { padding: 2px; border: 2px solid var(--px-frame); border-radius: 4px; background: var(--pl-card); }
+:root[data-theme="pixel"] .day-progress-part > span { width: 14px; height: 12px; border-radius: 2px; background: var(--px-shadow); }
+:root[data-theme="pixel"] .day-progress-part > span.on { background: var(--part-c); }
+:root[data-theme="pixel"] .day-progress-none { border-style: dashed; }
+:root[data-theme="pixel"] .day-progress-none > span { background: transparent; box-shadow: none; }
+:root[data-theme="pixel"] .day-part-morning { --part-c: #F5B82E; }
+:root[data-theme="pixel"] .day-part-noon    { --part-c: #F25C9B; }
+:root[data-theme="pixel"] .day-part-evening { --part-c: #2CC5B0; }
+:root[data-theme="pixel"] .day-progress-row b { display: none; }
+/* מה שהגרסה המעודנת (plain.css) נותנת לכותרת ולא מתאים לפיקסלים: תמונה עגולה, אייקון קטן בכפתור */
+:root[data-theme="pixel"] .hdr-avatar img { border-radius: 0; }
+:root[data-theme="pixel"] button.hdr-nav-btn .pl-icon { width: var(--pl-icon-size); height: var(--pl-icon-size); }
+
+/* בטלפון: שלבים קצת צרים יותר, כדי ש-12 השלבים והנקודות ייכנסו בשורה אחת */
+@media (max-width: 700px) {
+  :root[data-theme="pixel"] .day-progress-part > span { width: 11px; }
+  :root[data-theme="pixel"] .hdr-points { flex-shrink: 0; }
+}
+
+/* גרסה ב' בטלפון במשחקי ("תמונה גדולה", 2026-10-10): רקע מנטה מאחורי האווטר, כפתורים וכרטיס עם מסגרת וצל פיקסלים */
+@media (max-width: 700px) {
+  :root[data-theme="pixel"][data-mhdr="photo"] .hdr-top { grid-template-rows: 56px 250px auto auto; gap: 0; padding: 0; background: none; }
+  :root[data-theme="pixel"][data-mhdr="photo"] button.hdr-avatar {
+    grid-area: 1 / 1 / 3 / 4; width: 100%; height: 100%; padding: 0; border: none; border-radius: 0; background: #BDEBF2; box-shadow: none; z-index: 0;
+  }
+  :root[data-theme="pixel"][data-mhdr="photo"] .hdr-back,
+  :root[data-theme="pixel"][data-mhdr="photo"] .hdr-nav .pl-menu > button { box-shadow: 3px 3px 0 var(--hdr-ink); }
+  :root[data-theme="pixel"][data-mhdr="photo"] .hdr-clock {
+    flex-direction: column-reverse; align-items: center; padding: 4px 12px; border: 2px solid var(--hdr-ink); border-radius: 4px;
+    background: #FFF; box-shadow: 3px 3px 0 var(--hdr-ink);
+  }
+  :root[data-theme="pixel"][data-mhdr="photo"] .hdr-clock b { color: var(--hdr-ink); }
+  :root[data-theme="pixel"][data-mhdr="photo"] .hdr-clock .hdr-label { color: var(--hdr-ink); }
+  :root[data-theme="pixel"][data-mhdr="photo"] .hdr-greet {
+    align-items: flex-start; text-align: start; border: 2px solid var(--px-frame); border-bottom: none; border-radius: 10px 10px 0 0;
+    box-shadow: 4px 0 0 var(--px-shadow);
+  }
+  :root[data-theme="pixel"][data-mhdr="photo"] .hdr-greet h1 { color: var(--pl-text); }
+  :root[data-theme="pixel"][data-mhdr="photo"] .hdr-greet span { color: var(--pl-muted); }
+  :root[data-theme="pixel"][data-mhdr="photo"] .hdr-stats {
+    border: 2px solid var(--px-frame); border-top: 2px dashed var(--pl-line); border-radius: 0 0 10px 10px; box-shadow: 4px 4px 0 var(--px-shadow);
+  }
+}
+
+/* הפס הדבוק בטלפון במשחקי: מסגרת סגולה וצל פיקסלים, כפתורים עם מסגרת כהה */
+@media (max-width: 700px) {
+  :root[data-theme="pixel"] .hdr-mini { border: 2px solid var(--px-frame); border-radius: 10px; background: #FFFDF8; box-shadow: 4px 4px 0 var(--px-shadow); }
+  :root[data-theme="pixel"] .hdr-mini .hdr-back,
+  :root[data-theme="pixel"] .hdr-mini .pl-menu > button { border: 2px solid #2E1F5E; border-radius: 4px; color: #2E1F5E !important; box-shadow: 2px 2px 0 #2E1F5E; }
+  :root[data-theme="pixel"] .hdr-mini .hdr-points { border: none; background: none; box-shadow: none; padding: 0; }
+  :root[data-theme="pixel"] .hdr-mini .hdr-points b { font: 400 16px var(--pl-font-time); }
+  :root[data-theme="pixel"] .hdr-mini .day-progress-part > span { width: 9px; height: 9px; }
+}

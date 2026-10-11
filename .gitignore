@@ -5,3 +5,11 @@ dist-electron/
 .env
 .env.local
 save/
+
+# design-sync (Claude Design)
+.ds-sync/
+ds-bundle/
+.ds-lib/
+.design-sync/.cache/
+.design-sync/learnings/
+.design-sync/node_modules

@@ -14,10 +14,11 @@ export const TAGLINES = {
   evening: 'מסיימים את היום ברוגע'
 }
 
+// כמו בשרת (lib/routines.js, החלטה 2026-10-09): בוקר עד 8, צהריים 13:00–19:30, ערב 19:00–22:00
 export const DEFAULT_WINDOWS = {
-  morning: { start: '06:30', end: '07:45' },
-  noon:    { start: '14:00', end: '17:00' },
-  evening: { start: '19:00', end: '20:30' }
+  morning: { start: '06:30', end: '08:00' },
+  noon:    { start: '13:00', end: '19:30' },
+  evening: { start: '19:00', end: '22:00' }
 }
 
 export function memberWindows(member) {
@@ -36,22 +37,33 @@ export const DAYS_RULES = [
   { id: 'before_school_day', label: 'לפני יום לימודים' }
 ]
 
-// הימים שכלל מכסה בשבוע רגיל, בלי חופשות. לתיבות הימים בטופס
-export function ruleWeekdays(rule, custom = []) {
+// הימים שכלל מכסה בשבוע רגיל, בלי חופשות. לתיבות הימים בטופס.
+// schoolDays: ימי הלימודים של בן המשפחה (members.school_days, 2026-10-09). בלי: א׳–ה׳
+export function ruleWeekdays(rule, custom = [], schoolDays = [0, 1, 2, 3, 4]) {
+  const all = [0, 1, 2, 3, 4, 5, 6]
   switch (rule) {
     case 'every_day':
-    case 'inherit':           return [0, 1, 2, 3, 4, 5, 6]
-    case 'school_days':       return [0, 1, 2, 3, 4]
-    case 'weekend':           return [5, 6]
-    case 'before_school_day': return [6, 0, 1, 2, 3]
+    case 'inherit':           return all
+    case 'school_days':       return [...schoolDays]
+    case 'weekend':           return all.filter(d => !schoolDays.includes(d))
+    // היום שלפני יום לימודים: d שלמחרתו ((d+1) % 7) יש לימודים
+    case 'before_school_day': return all.filter(d => schoolDays.includes((d + 1) % 7))
     default:                  return custom
   }
 }
 
-export function rulesText(rule, custom = []) {
+// להורה אין ימי לימודים אלא ימי עבודה (המשתמשת, 2026-10-09). אותו כלל ואותו שדה (school_days), שם אחר
+const PARENT_LABELS = { school_days: 'ימי עבודה', before_school_day: 'לפני יום עבודה' }
+
+// הכללים עם השמות לבן המשפחה: role = 'parent' או 'child'
+export function daysRules(role) {
+  return role === 'parent' ? DAYS_RULES.map(r => ({ ...r, label: PARENT_LABELS[r.id] || r.label })) : DAYS_RULES
+}
+
+export function rulesText(rule, custom = [], role) {
   if (rule === 'custom') return custom.length ? 'ימים ' + custom.map(d => DAY_LETTERS[d]).join(' ') : 'אף יום'
   if (rule === 'inherit') return 'כל יום' // צעדים ישנים, לפני 2026-10-07
-  return DAYS_RULES.find(r => r.id === rule)?.label || rule
+  return daysRules(role).find(r => r.id === rule)?.label || rule
 }
 
 export const ERRORS = {

@@ -1,0 +1,26 @@
+{
+  "projectId": "0831ab9a-f46e-4f5b-b7bf-805f8e18893a",
+  "shape": "package",
+  "pkg": "family-board",
+  "globalName": "FamilyBoard",
+  "buildCmd": "npx vite build --config .design-sync/vite.lib.config.mjs && node .design-sync/build-css.mjs",
+  "cssEntry": "family-board.css",
+  "srcDir": "src/components",
+  "provider": {
+    "component": "FamilyBoardRoot"
+  },
+  "docsDir": "../.design-sync/docs",
+  "overrides": {
+    "Modal": {
+      "cardMode": "single",
+      "viewport": "720x520"
+    },
+    "WindowCard": {
+      "cardMode": "column"
+    },
+    "Icon": {
+      "cardMode": "column"
+    }
+  },
+  "readmeHeader": ".design-sync/conventions.md"
+}

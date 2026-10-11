@@ -12,6 +12,8 @@ import { memberPhoto } from '../shared/memberPhoto'
 import PixelCard from '../shared/PixelCard'
 
 const REFRESH_MS = 30000
+// אייקון לכל חלון בעיצוב המעודן, כמו הציורים במשחקי: שמש, שקיעה, ירח
+const WINDOW_LINE_ICONS = { morning: 'sun', noon: 'sunset', evening: 'moon' }
 
 // החלון של שעה: החלון האחרון שהתחיל עד אותה שעה. לפני הבוקר: בוקר
 function windowOf(time, windows) {
@@ -22,12 +24,19 @@ function windowOf(time, windows) {
 
 // סיכום היום ל-Hero ולשורת הסיכום: מה בוצע מתוך כל ההרגלים של היום, המשימות של היום והמשימות שבאיחור.
 // משימות "בלי תאריך" לא נספרות, כי הן לא חלק מהיום
+// parts (2026-10-10): אותו סיכום מחולק לפי חלון (בוקר, צהריים, ערב), לפס המחולק בכותרת.
+// משימה עם שעה היום נספרת בחלון שלה, כמו בתצוגה. משימות בלי שעה או באיחור: חלק רביעי, "משימות"
 export function daySummary(day) {
-  const steps = day.routines.flatMap(r => r.steps)
+  const steps = day.routines.flatMap(r => r.steps.map(s => ({ ...s, time_of_day: r.time_of_day })))
   const todos = [...(day.todos?.overdue || []), ...(day.todos?.today || [])]
   const total = steps.length + todos.length
   const done = steps.filter(s => s.done).length + todos.filter(t => t.done_at).length
-  return { total, done }
+
+  const parts = Object.fromEntries([...TIMES.map(t => t.id), 'todos'].map(id => [id, { total: 0, done: 0 }]))
+  const add = (id, isDone) => { parts[id].total++; if (isDone) parts[id].done++ }
+  steps.forEach(s => add(parts[s.time_of_day] ? s.time_of_day : 'todos', s.done))
+  todos.forEach(t => add(t.due_date === day.date && t.due_time && day.windows ? windowOf(t.due_time, day.windows) : 'todos', !!t.done_at))
+  return { total, done, parts }
 }
 
 // "היום שלי": שלושת החלונות של היום עם ההרגלים שחלים היום, ומתחתם המשימות.
@@ -163,6 +172,7 @@ export default function MyDay({ memberId, viewerId, hideHero, onSummary }) {
             now={day.now}
             onAdd={() => setEditing({ timeOfDay: t.id })}
             onAddTodo={time => setEditTodo({ defaultTime: time })}
+            role={day.member.role}
           />
         )
       })}
@@ -190,7 +200,7 @@ export default function MyDay({ memberId, viewerId, hideHero, onSummary }) {
 // ובתחתית "+ הוספה" (הרגל או משימה) והרצף. הרגל שבוצע נשאר במקומו עם קו עליו.
 // כל חלון מתקפל בלחיצה על הכותרת. חלון שהכל בו בוצע מתקפל מעצמו
 // habitList: תצוגה ב' לבדיקה (2026-10-08): ההרגלים כרשימה בלי מסגרת, והמשימות נשארות בכרטיס (lab.css, .pl-win-list)
-export function WindowCard({ id, label, tagline, window: w, steps, todos, today, onToggleTodo, onEditTodo, streak, windowOver, onMark, onSetTime, now, onAdd, onAddTodo, habitList }) {
+export function WindowCard({ id, label, tagline, window: w, steps, todos, today, onToggleTodo, onEditTodo, streak, windowOver, onMark, onSetTime, now, onAdd, onAddTodo, habitList, role }) {
   // null: לפי המצב (פתוח, ומקופל כשהכל בוצע). true/false: מה שבן המשפחה בחר
   const [open, setOpen] = useState(null)
   const total = steps.length + todos.length
@@ -213,21 +223,22 @@ export function WindowCard({ id, label, tagline, window: w, steps, todos, today,
         {/* האייקון מוסתר בעיצוב הרגיל. העטיפה נשארת הילד הראשון, כדי שהכותרת תתמתח כמו קודם */}
         <div className="pl-win-head">
           <img src={WINDOW_IMAGES[id]} alt="" className="pl-win-icon px-only" />
+          {/* במעודן: אייקון קו במקום הציור (2026-10-09) */}
+          <Icon name={WINDOW_LINE_ICONS[id]} className="pl-win-icon-line plain-only" />
           <div>
             <strong style={{ fontSize: 'var(--pl-size-h3)' }}>{complete ? '✓ ' : ''}{label}</strong>
-            <span className="pl-muted"> · {w.start}–{w.end}</span>
             <div className="pl-muted" style={{ fontSize: 'var(--pl-size-sm)' }}>{tagline}</div>
           </div>
         </div>
         {total > 0 && <span className="pl-chip pl-chip-accent">{doneCount}/{total}</span>}
       </FoldHead>
-      {total > 0 && <Progress done={doneCount} total={total} />}
+      {/* בלי פס התקדמות בחלון (2026-10-10): ההתקדמות בפס המחולק בכותרת, וכאן רק המונה */}
       {!folded && <>
       {windowOver && total > 0 && !complete && <div className="pl-muted">הזמן עבר, אבל אפשר עוד לסיים היום.</div>}
       {total === 0 && <div className="pl-muted">אין הרגלים היום.</div>}
       {items.map(({ kind, item: s }) => kind === 'todo'
         ? <TodoCard key={s.id} todo={s} today={today} inWindow onToggle={onToggleTodo} onEdit={onEditTodo} />
-        : <StepCard key={s.id} step={s} window={w} now={now} onChange={() => onMark(s)}
+        : <StepCard key={s.id} step={s} window={w} now={now} role={role} onChange={() => onMark(s)}
             onSetTime={time => onSetTime(s, time)} />
       )}
       <div className="pl-row" style={{ justifyContent: 'space-between' }}>
@@ -276,10 +287,12 @@ export function Progress({ done, total }) {
 }
 
 // שורת הרגל (wireframe): סימון, שם, ומתחת הימים. תגית שעה (לחיצה מזיזה להיום), נקודות, ועיפרון לעריכה
-export function StepCard({ step, window: w, now, onChange, onSetTime }) {
+// role: של בעל היום. להורה "ימי עבודה" במקום "ימי לימודים" (2026-10-09)
+export function StepCard({ step, window: w, now, onChange, onSetTime, role }) {
   const [picking, setPicking] = useState(false)
   // שעה שנקבעה או הוזזה להיום בלבד
   const today = step.time_today && step.time_today !== step.exact_time
+  const showDays = !['every_day', 'inherit'].includes(step.days_rule)
 
   return (
     <div className="pl-col" style={{ gap: 6 }}>
@@ -290,12 +303,15 @@ export function StepCard({ step, window: w, now, onChange, onSetTime }) {
           <Icon name={stepIcon(step)} className="pl-item-icon" />
           <span className="pl-step-name" style={{ flex: 1 }}>
             <span className="pl-step-title">{step.label}</span>
-            <span className="pl-sub">
-              <span className="pl-step-days">{rulesText(step.days_rule, step.days_custom)}</span>
-              {step.duration_minutes ? <span className="pl-step-duration"><span className="pl-step-sep"> · </span>⏱ {step.duration_minutes} דק׳</span> : null}
-            </span>
+            {/* "כל יום" לא מוצג (2026-10-10): רוב ההרגלים כל יום, וביום עצמו זה לא אומר כלום. כלל אחר כן */}
+            {(showDays || step.duration_minutes) ? (
+              <span className="pl-sub">
+                {showDays && <span className="pl-step-days">{rulesText(step.days_rule, step.days_custom, role)}</span>}
+                {step.duration_minutes ? <span className="pl-step-duration">{showDays && <span className="pl-step-sep"> · </span>}⏱ {step.duration_minutes} דק׳</span> : null}
+              </span>
+            ) : null}
           </span>
-          {step.points > 0 && <span className="pl-chip pl-chip-points">+{step.points} ★</span>}
+          {step.points > 0 && <span className="pl-chip pl-chip-points">{step.points} ★</span>}
         </label>
         {step.time_today
           ? (
@@ -310,7 +326,6 @@ export function StepCard({ step, window: w, now, onChange, onSetTime }) {
           : (
             // בעיצוב החדש: אייקון שעון במקום הטקסט, כדי שלשם יהיה מקום
             <button className="pl-link pl-muted pl-set-time" onClick={() => setPicking(v => !v)} aria-label="קבע שעה להיום" title="קבע שעה להיום">
-              <span className="plain-only">קבע שעה</span>
               <Icon name="clock" />
             </button>
           )}
