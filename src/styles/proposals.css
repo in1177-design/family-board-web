@@ -163,3 +163,92 @@
 /* הטקסט באמצע השורה לגובה: התוכן ממורכז, בלי ריפוד למעלה ולמטה שמזיז אותו */
 :root[data-theme="pixel"] .pp-listfix .pl-win-list .pl-step-row-habit { align-items: center; }
 :root[data-theme="pixel"] .pp-listfix .pl-win-list .pl-step-row-habit .pl-step { min-height: 52px; padding-block: 0; align-self: stretch; }
+
+/* ── 7. מילוי צהוב כגל: ברגע הסימון (pl-just, celebrate.js) הצהוב נכנס מצד התיבה עד הקצה, בשמונה קפיצות ── */
+:root[data-theme="pixel"] .pp-wave .pl-win-list .pl-step-row.pl-step-row-done.pl-just {
+  background-color: transparent;
+  background-image: linear-gradient(to left, #FFF3C4 50%, transparent 50%);
+  background-size: 200% 100%;
+  animation: pp-wave .4s steps(8, end) both;
+}
+@keyframes pp-wave { from { background-position: 0% 0; } to { background-position: 100% 0; } }
+
+/* ── 8. להפריד בין משימות להרגלים ── */
+/* כותרת קטנה: המשימות עוברות לסוף החלון, ומעל הראשונה כתוב "משימות להיום" */
+:root[data-theme="pixel"] .pp-sep-head .pl-win-list > .pl-step-row { order: 1; }
+:root[data-theme="pixel"] .pp-sep-head .pl-win-list > .pl-row:last-child { order: 2; }
+:root[data-theme="pixel"] .pp-sep-head .pl-win-list > .pl-step-row:nth-child(1 of .pl-step-row) { margin-top: 40px; }
+:root[data-theme="pixel"] .pp-sep-head .pl-win-list > .pl-step-row:nth-child(1 of .pl-step-row)::before {
+  content: 'משימות להיום';
+  position: absolute;
+  top: -30px;
+  inset-inline-start: 2px;
+  color: var(--pl-text);
+  font-size: 15px;
+  font-weight: 700;
+}
+/* צורת התיבה: למשימה יהלום (ריבוע מסובב), ובלי התגית "משימה". כשבוצעה: יהלום מלא עם נקודה בהירה */
+:root[data-theme="pixel"] .pp-sep-shape .pl-win-list > .pl-step-row .pl-chip { display: none; }
+:root[data-theme="pixel"] .pp-sep-shape .pl-win-list > .pl-step-row .pl-step input[type=checkbox] {
+  width: 16px; height: 16px; margin-inline: 1px;
+  transform: rotate(45deg);
+}
+:root[data-theme="pixel"] .pp-sep-shape .pl-win-list > .pl-step-row .pl-step input[type=checkbox]:checked {
+  background-image: none;
+  background-color: var(--pl-accent);
+  box-shadow: inset 0 0 0 3px var(--pl-card), inset 0 0 0 8px var(--pl-accent-dark);
+}
+:root[data-theme="pixel"] .pp-sep-shape .pl-win-list > .pl-step-row.pl-just .pl-step input[type=checkbox] { animation: pp-gem-pop .3s steps(3, end); }
+@keyframes pp-gem-pop { 0% { transform: rotate(45deg) scale(1); } 50% { transform: rotate(45deg) scale(1.35); } 100% { transform: rotate(45deg) scale(1); } }
+
+/* ── 9. המונה והחץ בכותרת החלון: ארבעה עיצובים ── */
+.pp-counters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 24px; }
+@media (max-width: 700px) { .pp-counters { grid-template-columns: 1fr; } }
+.pl button.pp-chead {
+  position: relative;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  width: 100%; min-height: 56px; padding: 8px 14px;
+  border: 2px solid var(--px-frame, #8E70C9); border-radius: 10px;
+  background: var(--px-morning, #FFF0D2); color: var(--pl-text);
+  text-align: start; cursor: pointer;
+}
+.pl button.pp-chead:hover:not(:disabled) { border-color: var(--px-frame, #8E70C9); }
+.pp-chead-title strong { font-size: 18px; }
+.pp-counter { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.pp-count { font: 400 13px var(--pl-font-time); color: var(--pl-text); }
+.pp-chev { width: 20px; height: 12px; color: var(--px-frame, #8E70C9); transition: transform .2s steps(2, end); }
+.pp-folded .pp-chev { transform: rotate(90deg); }   /* מקופל: החץ מצביע לצד, כמו ◂ היום */
+
+/* א. קוביות */
+.pp-mini-blocks { display: inline-flex; gap: 2px; padding: 2px; border: 2px solid var(--px-frame, #8E70C9); background: var(--pl-card); }
+.pp-mini-blocks i { width: 8px; height: 10px; background: var(--px-shadow, #E9DEF7); }
+.pp-mini-blocks i.on { background: #2CC5B0; }
+.pp-complete .pp-mini-blocks i.on { background: #F5B82E; }
+
+/* ב. כפתור מורם */
+.pp-c-button .pp-counter {
+  min-height: 44px; padding: 0 12px;
+  border: 2px solid #C9B8E6; border-radius: 4px; background: #FFFFFF;
+  box-shadow: 3px 3px 0 #C9B8E6;
+  transition: transform .08s, box-shadow .08s;
+}
+.pp-c-button.pp-folded .pp-counter { transform: translate(3px, 3px); box-shadow: none; background: #F8F5FC; }
+.pp-c-button.pp-complete .pp-counter { border-color: #E8B730; box-shadow: 3px 3px 0 #E8B730; }
+
+/* ג. מטבע: תגית זהב, חץ שקופץ כשנוגעים */
+.pp-c-coin .pp-count {
+  padding: 3px 10px;
+  border: 2px solid #E8B730; background: #FFE38A; color: #7A5300;
+  box-shadow: 2px 2px 0 #E8B730;
+}
+.pp-c-coin.pp-complete .pp-count { font-family: var(--pl-font); font-weight: 800; }
+.pp-c-coin:not(.pp-folded):is(:hover, :active) .pp-chev { animation: pl-hop .36s steps(3, end); }
+
+/* ד. לשונית שתלויה מתחת לכותרת */
+.pl button.pp-chead.pp-c-tab { margin-bottom: 26px; }
+.pp-c-tab .pp-counter {
+  position: absolute; inset-inline-end: 16px; top: 100%;
+  margin-top: -2px; padding: 4px 10px 5px;
+  border: 2px solid var(--px-frame, #8E70C9); border-top: none; border-radius: 0 0 6px 6px;
+  background: var(--px-morning, #FFF0D2);
+}

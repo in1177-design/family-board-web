@@ -93,6 +93,23 @@ export default function PlayfulProposals({ theme }) {
           {(list) => <ListDemo list={list} />}
         </Pair>
       </Proposal>
+
+      <Proposal n={7} status="לבחירה" title="מילוי צהוב כגל" text="כשמסמנים, הצהוב נשפך לאורך השורה מהתיבה עד הקצה, בשמונה קפיצות של בלוקים, כמו פס טעינה במשחק ישן (פחות מחצי שנייה). על החלון כרשימה המתוקן. סמני כאן כדי לראות.">
+        <div className="pp-listfix pp-wave pp-wide" style={{ maxWidth: 420 }}>
+          <ListDemo list fresh />
+        </div>
+      </Proposal>
+
+      <Proposal n={8} status="לבחירה" title="להפריד בין משימות להרגלים" text="שתי דרכים, על החלון כרשימה המתוקן. משמאל: צורה שונה לתיבה (הרגל בריבוע, משימה ביהלום), בלי צבע ובלי טקסט נוסף. מימין: כותרת קטנה &quot;משימות להיום&quot;, והמשימות מתחתיה. בדרך הזו המשימות עוברות לסוף החלון, גם אם יש הרגל עם שעה מאוחרת יותר.">
+        <div className="pp-pair">
+          <div className="pp-listfix pp-sep-head"><span className="pp-tag pp-tag-new">כותרת קטנה</span><ListDemo list /></div>
+          <div className="pp-listfix pp-sep-shape"><span className="pp-tag pp-tag-new">צורת התיבה</span><ListDemo list /></div>
+        </div>
+      </Proposal>
+
+      <Proposal n={9} status="לבחירה" title="המונה והחץ בכותרת החלון" text="ארבעה עיצובים למונה (&quot;2/6&quot;) ולחץ הקיפול. לחיצה על כל אחד מקפלת ופותחת, כדי לראות את החץ זז. בכל אחד: באמצע היום, ובסוף (6/6).">
+        <CounterIdeas />
+      </Proposal>
     </div>
   )
 }
@@ -131,9 +148,10 @@ const LIST_TODOS = [
   { id: 'lt1', title: 'להחזיר ספר לספרייה', due_date: '2026-10-11', due_time: '07:00', done_at: 'now' },
   { id: 'lt2', title: 'לחתום על אישור טיול', due_date: '2026-10-11', due_time: '07:20', done_at: null }
 ]
-function ListDemo({ list }) {
-  const [steps, setSteps] = useState(LIST_STEPS)
-  const [todos, setTodos] = useState(LIST_TODOS)
+// fresh: מתחילים בלי שום דבר מסומן (להדגמת הגל)
+function ListDemo({ list, fresh }) {
+  const [steps, setSteps] = useState(() => fresh ? LIST_STEPS.map(s => ({ ...s, done: false })) : LIST_STEPS)
+  const [todos, setTodos] = useState(() => fresh ? LIST_TODOS.map(t => ({ ...t, done_at: null })) : LIST_TODOS)
   return (
     <WindowCard
       id="morning" label="בוקר" tagline={TAGLINES.morning} window={WINDOW} habitList={list}
@@ -205,5 +223,57 @@ function AnimatedDemo() {
       ))}
       <button className="pl-link" style={{ alignSelf: 'flex-start' }} onClick={reset}>לאפס את ההדגמה</button>
     </div>
+  )
+}
+
+// חץ פיקסלים: V מריבועים (מצביע למטה). מסתובב ב-CSS כשהחלון מקופל
+function PixelChevron() {
+  return (
+    <svg className="pp-chev" viewBox="0 0 10 6" aria-hidden="true" shapeRendering="crispEdges">
+      <path d="M0 0h2v2H0zM2 2h2v2H2zM4 4h2v2H4zM6 2h2v2H6zM8 0h2v2H8z" fill="currentColor" />
+    </svg>
+  )
+}
+
+const COUNTER_IDEAS = [
+  { id: 'blocks', title: 'א. קוביות', text: 'שש קוביות קטנות במקום המספר, כמו פס החיים במשחק, וחץ פיקסלים שמסתובב במדרגות.' },
+  { id: 'button', title: 'ב. כפתור מורם', text: 'המונה והחץ בכפתור אחד עם צל פיקסלים, בגובה 44 (קל ללחוץ). מקופל = הכפתור "לחוץ".' },
+  { id: 'coin', title: 'ג. מטבע', text: 'המונה ב-Silkscreen בתגית זהב, וחץ שקופץ פעם אחת כשנוגעים. בסוף: ✓ במקום המספר.' },
+  { id: 'tab', title: 'ד. לשונית', text: 'המונה בלשונית שתלויה מתחתית הכותרת, כמו לשונית של תיקייה, והחץ בתוכה.' }
+]
+
+// ארבעה עיצובים למונה ולחץ, על כותרת חלון "בוקר" מדומה (רק בדף)
+function CounterIdeas() {
+  return (
+    <div className="pp-counters">
+      {COUNTER_IDEAS.map(idea => (
+        <div key={idea.id} className="pl-col" style={{ gap: 8 }}>
+          <strong>{idea.title}</strong>
+          <span className="pl-muted" style={{ margin: 0 }}>{idea.text}</span>
+          <CounterHead kind={idea.id} done={2} total={6} />
+          <CounterHead kind={idea.id} done={6} total={6} />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function CounterHead({ kind, done, total }) {
+  const [folded, setFolded] = useState(done === total)
+  const complete = done === total
+  return (
+    <button className={'pp-chead pp-c-' + kind + (folded ? ' pp-folded' : '') + (complete ? ' pp-complete' : '')}
+      onClick={() => setFolded(f => !f)} aria-expanded={!folded}>
+      <span className="pp-chead-title"><strong>{complete ? '✓ ' : ''}בוקר</strong></span>
+      <span className="pp-counter">
+        {kind === 'blocks' && (
+          <span className="pp-mini-blocks" role="img" aria-label={`${done} מתוך ${total}`}>
+            {Array.from({ length: total }, (_, i) => <i key={i} className={i < done ? 'on' : ''} />)}
+          </span>
+        )}
+        {kind !== 'blocks' && <span className="pp-count">{complete && kind === 'coin' ? '✓' : `${done}/${total}`}</span>}
+        <PixelChevron />
+      </span>
+    </button>
   )
 }
