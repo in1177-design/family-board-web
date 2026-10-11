@@ -266,9 +266,9 @@
   width: 16px;
   height: 16px;
   pointer-events: none;
-  background: linear-gradient(135deg, var(--pl-card) 50%, #A8E3D9 50%);
-  border-right: 2px solid var(--pl-accent);
-  border-bottom: 2px solid var(--pl-accent);
+  background: linear-gradient(135deg, var(--pl-card) 50%, #BDEBF2 50%);
+  border-right: 2px solid #BDEBF2;
+  border-bottom: 2px solid #BDEBF2;
 }
 :root[data-theme="pixel"] .pp-merged .pl-win-list > .pl-step-row.pl-step-row-done:not(.pl-step-row-habit)::after {
   background: linear-gradient(135deg, var(--pl-card) 50%, #F7DF8A 50%);

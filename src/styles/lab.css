@@ -175,9 +175,9 @@
 /* בתצוגה ב' בלי "כל יום" / "ימי לימודים" בהרגל: לא קריטי לתצוגה (משך הזמן נשאר) */
 .pl-win-list .pl-step-row-habit .pl-step-days { display: none; }
 .pl-win-list .pl-step-row-habit .pl-step-sep { display: none; }
-/* משימה בתצוגה ב': כרטיס בטורקיז בהיר, כדי שתיבדל מההרגלים */
+/* משימה בתצוגה ב': כרטיס בטורקיז בהיר, כדי שתיבדל מההרגלים. מסגרת תכלת בהירה (המשתמשת, 2026-10-12) */
 .pl-win-list .pl-step-row:not(.pl-step-row-habit) {
-  border-color: var(--pl-accent);
+  border-color: #BDEBF2;
   background: var(--pl-accent-soft);
 }
 .pl-win-list .pl-step-row:not(.pl-step-row-habit) .pl-step { background: none; border-color: transparent; }
