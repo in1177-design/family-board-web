@@ -250,3 +250,30 @@
 @media (prefers-reduced-motion: reduce) {
   :root[data-theme="pixel"] .pp-merged .pp-levelup :is(.pl-win-icon, .pp-count) { animation: none; }
 }
+
+/* החלון המאוחד, תיקונים (המשתמשת, 2026-10-12): משימות צמודות יותר, בלי יהלום (תיבה ריבועית רגילה), בלי התגית "משימה",
+   והפינה השמאלית העליונה של כרטיס המשימה בלי עיגול, ונראית מקופלת כמו פינה של פתק */
+:root[data-theme="pixel"] .pp-merged .pl-win-list > .pl-step-row:not(.pl-step-row-habit) { margin-block: 3px; }
+:root[data-theme="pixel"] .pp-merged .pl-win-list > .pl-step-row:nth-child(1 of .pl-step-row:not(.pl-step-row-habit)) { margin-top: 12px; }
+:root[data-theme="pixel"] .pp-merged .pl-win-list > .pl-step-row .pl-chip { display: none; }
+:root[data-theme="pixel"] .pp-merged .pl-win-list > .pl-step-row:not(.pl-step-row-habit) { border-top-left-radius: 0; }
+:root[data-theme="pixel"] .pp-merged .pl-win-list > .pl-step-row:not(.pl-step-row-habit)::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+  background: linear-gradient(135deg, var(--pl-card) 50%, #A8E3D9 50%);
+  border-right: 2px solid var(--pl-accent);
+  border-bottom: 2px solid var(--pl-accent);
+}
+:root[data-theme="pixel"] .pp-merged .pl-win-list > .pl-step-row.pl-step-row-done:not(.pl-step-row-habit)::after {
+  background: linear-gradient(135deg, var(--pl-card) 50%, #F7DF8A 50%);
+  border-color: #E8B730;
+}
+/* ⋮ במקום העיפרון: התפריט נפתח מתחת לכפתור, לתוך הכרטיס */
+.pl-more-menu .pl-add-menu-list { inset-inline-start: auto; inset-inline-end: 0; top: calc(100% + 4px); bottom: auto; }
+.pl button.pl-more-button { font-size: 22px; font-weight: 700; color: var(--px-frame, var(--pl-muted)); }
+.pl .pl-add-menu-list button.pl-more-delete { color: var(--pl-error); }

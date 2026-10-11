@@ -114,8 +114,8 @@ export default function PlayfulProposals({ theme }) {
         <CounterIdeas />
       </Proposal>
 
-      <Proposal n={10} status="הכל ביחד, לבחירה" title="החלון המאוחד" text="כל מה שהוחלט, בחלון אחד: רשימה בלי רווחים, צהוב עד המסגרת, גל צהוב בסימון, &quot;+2&quot; שמשתחרר, מונה מטבע, ו&quot;+ הוספה&quot; בולד. קודם כל ההרגלים ואחריהם כל המשימות (לא מעורבבים לפי שעה). המשימות בכרטיס עם תיבת יהלום, בלי התגית &quot;משימה&quot;. חדש: &quot;השלב הושלם&quot;, כשמסמנים את האחרון השמש מקפצת והמטבע קופץ עם ✓, ורק אז החלון מתקפל. לחיצה על הכותרת פותחת שוב.">
-        <div className="pp-listfix pp-wave pp-sep-shape pp-merged pp-wide" style={{ maxWidth: 440 }}>
+      <Proposal n={10} status="הכל ביחד, לבחירה" title="החלון המאוחד" text="כל מה שהוחלט, בחלון אחד: רשימה בלי רווחים, צהוב עד המסגרת, גל צהוב בסימון, &quot;+2&quot; שמשתחרר, מונה מטבע, ו&quot;+ הוספה&quot; בולד. קודם כל ההרגלים ואחריהם כל המשימות (לא מעורבבים לפי שעה). המשימות בכרטיס עם פינה שמאלית עליונה מקופלת, צמודות יותר זו לזו, בלי התגית &quot;משימה&quot;, ו-⋮ במקום העיפרון (עריכה או מחיקה, כאן המחיקה רק מהדף). חדש: &quot;השלב הושלם&quot;, כשמסמנים את האחרון השמש מקפצת והמטבע קופץ עם ✓, ורק אז החלון מתקפל. לחיצה על הכותרת פותחת שוב.">
+        <div className="pp-listfix pp-wave pp-merged pp-wide" style={{ maxWidth: 440 }}>
           <MergedWindow />
         </div>
       </Proposal>
@@ -383,7 +383,7 @@ function MergedWindow() {
         </button>
         {!folded && <>
           {items.map(({ kind, item }) => kind === 'todo'
-            ? <TodoCard key={item.id} todo={item} today="2026-10-12" inWindow onToggle={toggleTodo} onEdit={noop} />
+            ? <TodoCard key={item.id} todo={item} today="2026-10-12" inWindow moreMenu onToggle={toggleTodo} onEdit={noop} onDelete={t => setTodos(l => l.filter(x => x.id !== t.id))} />
             : <StepCard key={item.id} step={item} window={WINDOW} now="07:00" onChange={() => toggleStep(item)} onSetTime={noop} />
           )}
           <div className="pl-row" style={{ justifyContent: 'space-between' }}>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import PixelCard from '../shared/PixelCard'
 import { dateText, repeatText } from './todoLabels'
 import FoldHead from './FoldHead'
@@ -66,7 +66,8 @@ export default function TodosSection({ todos, today, onToggle, onAdd, onEdit }) 
 // שורת משימה: סימון, שם, ומתחת התאריך והשעה. ↻ למשימה חוזרת, ועיפרון לעריכה.
 // inWindow: משימה עם שעה בתוך חלון ב"היום שלי", עם תגית "משימה"
 // onDelete: מחיקה מהירה, רק בלוח המשימות של ההורה (2026-10-09)
-export function TodoCard({ todo, today, late, inWindow, onToggle, onEdit, onDelete }) {
+// moreMenu: ⋮ במקום העיפרון, שפותח "עריכה" ו"מחיקה" (מחיקה רק עם onDelete). בינתיים רק בהדמיה במדריך (2026-10-12)
+export function TodoCard({ todo, today, late, inWindow, onToggle, onEdit, onDelete, moreMenu }) {
   const done = !!todo.done_at
   const when = [todo.due_date && dateText(todo.due_date, today), todo.due_time].filter(Boolean).join(' · ')
   // רגע אחרי סימון: התיבה קופצת, כמו בשורת הרגל (למשימה אין נקודות, אז בלי "+")
@@ -83,8 +84,36 @@ export function TodoCard({ todo, today, late, inWindow, onToggle, onEdit, onDele
         </span>
         {todo.repeat && <span className="pl-muted" title={repeatText(todo.repeat)}>↻</span>}
       </label>
-      <button className="pl-icon-button" onClick={() => onEdit(todo)} aria-label="ערוך משימה" title="ערוך משימה">✎</button>
-      {onDelete && <button className="pl-icon-button pl-quick-delete" onClick={() => onDelete(todo)} aria-label={'מחק את ' + todo.title} title="מחיקה">✕</button>}
+      {moreMenu
+        ? <MoreMenu onEdit={() => onEdit(todo)} onDelete={onDelete ? () => onDelete(todo) : null} title={todo.title} />
+        : <button className="pl-icon-button" onClick={() => onEdit(todo)} aria-label="ערוך משימה" title="ערוך משימה">✎</button>}
+      {onDelete && !moreMenu && <button className="pl-icon-button pl-quick-delete" onClick={() => onDelete(todo)} aria-label={'מחק את ' + todo.title} title="מחיקה">✕</button>}
+    </div>
+  )
+}
+
+// ⋮ בשורת משימה: תפריט קטן עם עריכה ומחיקה. נסגר בלחיצה בחוץ או ב-Escape
+function MoreMenu({ onEdit, onDelete, title }) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+  useEffect(() => {
+    if (!open) return
+    const onDown = (e) => { if (!ref.current?.contains(e.target)) setOpen(false) }
+    const onKey = (e) => { if (e.key === 'Escape') setOpen(false) }
+    document.addEventListener('pointerdown', onDown)
+    document.addEventListener('keydown', onKey)
+    return () => { document.removeEventListener('pointerdown', onDown); document.removeEventListener('keydown', onKey) }
+  }, [open])
+  const pick = (fn) => { setOpen(false); fn() }
+  return (
+    <div className="pl-add-menu pl-more-menu" ref={ref}>
+      <button className="pl-icon-button pl-more-button" onClick={() => setOpen(v => !v)} aria-expanded={open} aria-label={'אפשרויות ל' + title} title="אפשרויות">⋮</button>
+      {open && (
+        <div className="pl-add-menu-list">
+          <button onClick={() => pick(onEdit)}><Icon name="pencil" />עריכה</button>
+          {onDelete && <button className="pl-more-delete" onClick={() => pick(onDelete)}>✕ מחיקה</button>}
+        </div>
+      )}
     </div>
   )
 }
