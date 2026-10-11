@@ -253,7 +253,8 @@
 
 /* החלון המאוחד, תיקונים (המשתמשת, 2026-10-12): משימות צמודות יותר, בלי יהלום (תיבה ריבועית רגילה), בלי התגית "משימה",
    והפינה השמאלית העליונה של כרטיס המשימה בלי עיגול, ונראית מקופלת כמו פינה של פתק */
-:root[data-theme="pixel"] .pp-merged .pl-win-list > .pl-step-row:not(.pl-step-row-habit) { margin-block: 3px; }
+/* 10px בין המשימות (16 היה גדול מדי, 6 צמוד מדי) */
+:root[data-theme="pixel"] .pp-merged .pl-win-list > .pl-step-row:not(.pl-step-row-habit) { margin-block: 5px; }
 :root[data-theme="pixel"] .pp-merged .pl-win-list > .pl-step-row:nth-child(1 of .pl-step-row:not(.pl-step-row-habit)) { margin-top: 12px; }
 :root[data-theme="pixel"] .pp-merged .pl-win-list > .pl-step-row .pl-chip { display: none; }
 :root[data-theme="pixel"] .pp-merged .pl-win-list > .pl-step-row:not(.pl-step-row-habit) { border-top-left-radius: 0; }
