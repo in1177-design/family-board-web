@@ -204,7 +204,8 @@
 /* ── 9. המונה והחץ בכותרת החלון: ארבעה עיצובים ── */
 .pp-counters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 24px; }
 @media (max-width: 700px) { .pp-counters { grid-template-columns: 1fr; } }
-.pp-counter { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
+/* מרווחים (המשתמשת, 2026-10-12: "החץ קרוב מדי למסגרת, והמספור קרוב מדי לחץ"): 14px בין המונה לחץ, ועוד 8px בין החץ למסגרת */
+.pp-counter { display: inline-flex; align-items: center; gap: 14px; flex-shrink: 0; margin-inline-end: 8px; }
 .pp-count { font: 400 13px var(--pl-font-time); color: var(--pl-text); }
 .pp-chev { width: 20px; height: 12px; color: var(--px-frame, #8E70C9); transition: transform .2s steps(2, end); }
 .pp-folded .pp-chev { transform: rotate(90deg); }   /* מקופל: החץ מצביע לצד, כמו ◂ היום */
@@ -227,7 +228,7 @@
 
 /* ג. מטבע: תגית זהב, חץ שקופץ כשנוגעים */
 .pp-c-coin .pp-count {
-  padding: 3px 10px;
+  padding: 5px 14px;
   border: 2px solid #E8B730; background: #FFE38A; color: #7A5300;
   box-shadow: 2px 2px 0 #E8B730;
 }
