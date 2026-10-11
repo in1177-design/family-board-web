@@ -114,7 +114,7 @@ export default function PlayfulProposals({ theme }) {
         <CounterIdeas />
       </Proposal>
 
-      <Proposal n={10} status="הכל ביחד, לבחירה" title="החלון המאוחד" text="כל מה שהוחלט, בחלון אחד: רשימה בלי רווחים, צהוב עד המסגרת, גל צהוב בסימון, &quot;+2&quot; שמשתחרר, מונה מטבע, ו&quot;+ הוספה&quot; בולד. המשימות בכרטיס עם תיבת יהלום, בלי התגית &quot;משימה&quot;. חדש: &quot;השלב הושלם&quot;, כשמסמנים את האחרון השמש מקפצת והמטבע קופץ עם ✓, ורק אז החלון מתקפל. לחיצה על הכותרת פותחת שוב.">
+      <Proposal n={10} status="הכל ביחד, לבחירה" title="החלון המאוחד" text="כל מה שהוחלט, בחלון אחד: רשימה בלי רווחים, צהוב עד המסגרת, גל צהוב בסימון, &quot;+2&quot; שמשתחרר, מונה מטבע, ו&quot;+ הוספה&quot; בולד. קודם כל ההרגלים ואחריהם כל המשימות (לא מעורבבים לפי שעה). המשימות בכרטיס עם תיבת יהלום, בלי התגית &quot;משימה&quot;. חדש: &quot;השלב הושלם&quot;, כשמסמנים את האחרון השמש מקפצת והמטבע קופץ עם ✓, ורק אז החלון מתקפל. לחיצה על הכותרת פותחת שוב.">
         <div className="pp-listfix pp-wave pp-sep-shape pp-merged pp-wide" style={{ maxWidth: 440 }}>
           <MergedWindow />
         </div>
@@ -310,7 +310,7 @@ function IdeaWindow({ kind }) {
   )
 }
 
-// החלון המאוחד (הצעה 10): הרגלים ומשימות בסדר של החלון האמיתי (קודם הרגלים בלי שעה, אחר כך הכל לפי שעה),
+// החלון המאוחד (הצעה 10): קודם כל ההרגלים ואחריהם כל המשימות (לא מעורבבים לפי שעה כמו באפליקציה היום),
 // מונה מטבע, ו"השלב הושלם" לפני שהחלון מתקפל. רק בדף
 const MERGED_STEPS = [
   { id: 'm1', label: 'לצחצח שיניים', library_step_id: 'lib-m-teeth', days_rule: 'every_day', points: 2, done: true, time_today: null, exact_time: null },
@@ -355,12 +355,13 @@ function MergedWindow() {
   }
   const reset = () => { setSteps(MERGED_STEPS); setTodos(MERGED_TODOS); setOpen(null); setLevelUp(false) }
 
+  // קודם כל ההרגלים (בלי שעה לפי הסדר, אחריהם עם שעה לפי השעה), ואחריהם כל המשימות לפי השעה
+  // (המשתמשת, 2026-10-12: "כשהם לפי שעה זה ממש מבלבל")
+  const byTime = (a, b) => (a.time || '99:99').localeCompare(b.time || '99:99')
   const items = [
     ...steps.filter(s => !s.time_today).map(s => ({ kind: 'step', item: s })),
-    ...[
-      ...steps.filter(s => s.time_today).map(s => ({ kind: 'step', item: s, time: s.time_today })),
-      ...todos.map(t => ({ kind: 'todo', item: t, time: t.due_time }))
-    ].sort((a, b) => a.time.localeCompare(b.time))
+    ...steps.filter(s => s.time_today).map(s => ({ kind: 'step', item: s, time: s.time_today })).sort(byTime),
+    ...todos.map(t => ({ kind: 'todo', item: t, time: t.due_time })).sort(byTime)
   ]
 
   return (
