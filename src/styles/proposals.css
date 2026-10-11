@@ -204,16 +204,6 @@
 /* ── 9. המונה והחץ בכותרת החלון: ארבעה עיצובים ── */
 .pp-counters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 24px; }
 @media (max-width: 700px) { .pp-counters { grid-template-columns: 1fr; } }
-.pl button.pp-chead {
-  position: relative;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  width: 100%; min-height: 56px; padding: 8px 14px;
-  border: 2px solid var(--px-frame, #8E70C9); border-radius: 10px;
-  background: var(--px-morning, #FFF0D2); color: var(--pl-text);
-  text-align: start; cursor: pointer;
-}
-.pl button.pp-chead:hover:not(:disabled) { border-color: var(--px-frame, #8E70C9); }
-.pp-chead-title strong { font-size: 18px; }
 .pp-counter { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .pp-count { font: 400 13px var(--pl-font-time); color: var(--pl-text); }
 .pp-chev { width: 20px; height: 12px; color: var(--px-frame, #8E70C9); transition: transform .2s steps(2, end); }
@@ -245,7 +235,7 @@
 .pp-c-coin:not(.pp-folded):is(:hover, :active) .pp-chev { animation: pl-hop .36s steps(3, end); }
 
 /* ד. לשונית שתלויה מתחת לכותרת */
-.pl button.pp-chead.pp-c-tab { margin-bottom: 26px; }
+.pl button.pl-fold-head.pp-c-tab { position: relative; margin-bottom: 26px; }
 .pp-c-tab .pp-counter {
   position: absolute; inset-inline-end: 16px; top: 100%;
   margin-top: -2px; padding: 4px 10px 5px;

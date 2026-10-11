@@ -3,6 +3,8 @@ import { StepCard, WindowCard } from '../MyDay/MyDay'
 import { TAGLINES } from '../Routines/labels'
 import Icon from '../shared/Icon'
 import { Blocks } from '../shared/MemberHero'
+import PixelCard from '../shared/PixelCard'
+import { WINDOW_IMAGES } from '../MyDay/icons'
 
 // הצעות לעיצוב המשחקי (ניסוי Impeccable, 2026-10-11): כל הצעה מוצגת "היום" מול "מוצע",
 // עם הרכיבים האמיתיים. הכללים ב-styles/proposals.css, וחלים רק בתוך .pp-on.
@@ -107,7 +109,7 @@ export default function PlayfulProposals({ theme }) {
         </div>
       </Proposal>
 
-      <Proposal n={9} status="לבחירה" title="המונה והחץ בכותרת החלון" text="ארבעה עיצובים למונה (&quot;2/6&quot;) ולחץ הקיפול. לחיצה על כל אחד מקפלת ופותחת, כדי לראות את החץ זז. בכל אחד: באמצע היום, ובסוף (6/6).">
+      <Proposal n={9} status="לבחירה" title="המונה והחץ בכותרת החלון" text="ארבעה עיצובים למונה (&quot;2/3&quot;) ולחץ הקיפול, כל אחד על חלון שלם עם הציור והרשימה. אפשר לסמן, והמונה מתעדכן. כשהכל מסומן החלון מתקפל, ורואים את המצב של הסוף. לחיצה על הכותרת מקפלת ופותחת.">
         <CounterIdeas />
       </Proposal>
     </div>
@@ -236,13 +238,14 @@ function PixelChevron() {
 }
 
 const COUNTER_IDEAS = [
-  { id: 'blocks', title: 'א. קוביות', text: 'שש קוביות קטנות במקום המספר, כמו פס החיים במשחק, וחץ פיקסלים שמסתובב במדרגות.' },
+  { id: 'blocks', title: 'א. קוביות', text: 'קובייה לכל פריט במקום המספר, כמו פס החיים במשחק, וחץ פיקסלים שמסתובב במדרגות.' },
   { id: 'button', title: 'ב. כפתור מורם', text: 'המונה והחץ בכפתור אחד עם צל פיקסלים, בגובה 44 (קל ללחוץ). מקופל = הכפתור "לחוץ".' },
   { id: 'coin', title: 'ג. מטבע', text: 'המונה ב-Silkscreen בתגית זהב, וחץ שקופץ פעם אחת כשנוגעים. בסוף: ✓ במקום המספר.' },
   { id: 'tab', title: 'ד. לשונית', text: 'המונה בלשונית שתלויה מתחתית הכותרת, כמו לשונית של תיקייה, והחץ בתוכה.' }
 ]
 
-// ארבעה עיצובים למונה ולחץ, על כותרת חלון "בוקר" מדומה (רק בדף)
+// ארבעה עיצובים למונה ולחץ, כל אחד על חלון "בוקר" שלם: הציור, המשפט, והחלון כרשימה (המתוקן).
+// אפשר לסמן, והמונה מתעדכן. כשהכל מסומן החלון מתקפל, כמו באפליקציה (רק בדף)
 function CounterIdeas() {
   return (
     <div className="pp-counters">
@@ -250,30 +253,52 @@ function CounterIdeas() {
         <div key={idea.id} className="pl-col" style={{ gap: 8 }}>
           <strong>{idea.title}</strong>
           <span className="pl-muted" style={{ margin: 0 }}>{idea.text}</span>
-          <CounterHead kind={idea.id} done={2} total={6} />
-          <CounterHead kind={idea.id} done={6} total={6} />
+          <IdeaWindow kind={idea.id} />
         </div>
       ))}
     </div>
   )
 }
 
-function CounterHead({ kind, done, total }) {
-  const [folded, setFolded] = useState(done === total)
+const IDEA_STEPS = [
+  { id: 'i1', label: 'לצחצח שיניים', library_step_id: 'lib-m-teeth', days_rule: 'every_day', points: 2, done: true, time_today: null, exact_time: null },
+  { id: 'i2', label: 'להתלבש', days_rule: 'every_day', points: 2, done: true, time_today: null, exact_time: null },
+  { id: 'i3', label: 'להכין תיק לבית הספר', library_step_id: 'lib-m-bag', days_rule: 'every_day', points: 5, done: false, time_today: null, exact_time: null }
+]
+
+function IdeaWindow({ kind }) {
+  const [steps, setSteps] = useState(IDEA_STEPS)
+  const [open, setOpen] = useState(null)
+  const done = steps.filter(s => s.done).length
+  const total = steps.length
   const complete = done === total
+  const folded = open === null ? complete : !open
+  const toggle = (s) => setSteps(l => l.map(x => x.id === s.id ? { ...x, done: !x.done } : x))
   return (
-    <button className={'pp-chead pp-c-' + kind + (folded ? ' pp-folded' : '') + (complete ? ' pp-complete' : '')}
-      onClick={() => setFolded(f => !f)} aria-expanded={!folded}>
-      <span className="pp-chead-title"><strong>{complete ? '✓ ' : ''}בוקר</strong></span>
-      <span className="pp-counter">
-        {kind === 'blocks' && (
-          <span className="pp-mini-blocks" role="img" aria-label={`${done} מתוך ${total}`}>
-            {Array.from({ length: total }, (_, i) => <i key={i} className={i < done ? 'on' : ''} />)}
+    <div className="pp-listfix">
+      <PixelCard className="pl-col pl-win pl-win-morning pl-win-list" style={{ gap: 10 }}>
+        <button className={'pl-fold-head pp-c-' + kind + (folded ? ' pp-folded' : '') + (complete ? ' pp-complete' : '')}
+          onClick={() => setOpen(folded)} aria-expanded={!folded}>
+          <div className="pl-win-head">
+            <img src={WINDOW_IMAGES.morning} alt="" className="pl-win-icon px-only" />
+            <div>
+              <strong style={{ fontSize: 'var(--pl-size-h3)' }}>{complete ? '✓ ' : ''}בוקר</strong>
+              <div className="pl-muted" style={{ fontSize: 'var(--pl-size-sm)' }}>{TAGLINES.morning}</div>
+            </div>
+          </div>
+          <span className="pp-counter">
+            {kind === 'blocks'
+              ? (
+                <span className="pp-mini-blocks" role="img" aria-label={`${done} מתוך ${total}`}>
+                  {Array.from({ length: total }, (_, i) => <i key={i} className={i < done ? 'on' : ''} />)}
+                </span>
+              )
+              : <span className="pp-count">{complete && kind === 'coin' ? '✓' : `${done}/${total}`}</span>}
+            <PixelChevron />
           </span>
-        )}
-        {kind !== 'blocks' && <span className="pp-count">{complete && kind === 'coin' ? '✓' : `${done}/${total}`}</span>}
-        <PixelChevron />
-      </span>
-    </button>
+        </button>
+        {!folded && steps.map(s => <StepCard key={s.id} step={s} window={WINDOW} now="07:00" onChange={() => toggle(s)} onSetTime={noop} />)}
+      </PixelCard>
+    </div>
   )
 }
