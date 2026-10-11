@@ -552,7 +552,9 @@ button.hdr-nav-btn[aria-current="page"] .pl-icon { color: #FFF; }
    בגובה 0 בתוך אזור הגלילה, כך שלא מזיז את הדף. במחשב לא מוצג */
 .hdr-mini-wrap { display: none; }
 @media (max-width: 700px) {
+  /* padding: 0 (2026-10-12): הכלל ".pl-under-tabs > div" נתן לו ריפוד, והוא תפס 16px, והרווח בין הכותרת לחלונות היה 32 */
   .hdr-mini-wrap { display: block; position: sticky; top: 0; height: 0; z-index: 30; }
+  .pl-under-tabs > div.hdr-mini-wrap { padding: 0 !important; }
   .hdr-mini {
     position: absolute; top: 8px; inset-inline: 8px; display: flex; align-items: center; gap: 10px; padding: 8px 10px;
     border: 1px solid var(--pl-line); border-radius: var(--pl-r-box); background: var(--pl-card);
@@ -957,4 +959,9 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
   .pl-cols3.pl-wins { align-items: stretch; }
   .pl-wins > .pl-win:has(> .pl-fold-head[aria-expanded="false"]) { align-self: start; }
   .pl-wins > .pl-win.pl-win > .pl-row:last-child { margin-top: auto; }
+}
+/* במחשב, במשחקי: 20px בין הכותרת לחלונות (היה 40, מריפוד הדף ומריפוד "היום שלי" יחד) (2026-10-12).
+   במעודן ל"היום שלי" יש רקע משלו, אז הריפוד שלו נשאר */
+@media (min-width: 701px) {
+  :root[data-theme="pixel"] .pl.pl-day { padding-top: 0; }
 }
