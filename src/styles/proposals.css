@@ -128,3 +128,28 @@
   #guide-proposals { padding-inline: 0; border: none; box-shadow: none; background: none; }
   .pp-pair, .pp-wide { margin-inline: -7px; }
 }
+
+/* ── 6. חלון כרשימה, מתוקן (תצוגה ב' מ-lab.css, עם התיקונים). רק בתוך .pp-listfix, רק במשחקי ── */
+/* קו מקווקו של 2px בין ההרגלים, ושורה בגובה 52 לפחות */
+:root[data-theme="pixel"] .pp-listfix .pl-win-list .pl-step-row.pl-step-row-habit {
+  min-height: 52px;
+  border-bottom: 2px dashed var(--pl-line);
+}
+:root[data-theme="pixel"] .pp-listfix .pl-win-list .pl-step-row.pl-step-row-habit:hover { border-color: var(--pl-line); }
+/* מה שבוצע: פס צהוב מלא, מקצה לקצה של החלון (מעבר לריפוד שלו) */
+:root[data-theme="pixel"] .pp-listfix .pl-win-list .pl-step-row.pl-step-row-habit.pl-step-row-done {
+  margin-inline: calc(-1 * var(--win-base));
+  padding-inline: var(--win-base);
+  background: #FFF3C4;
+  border-bottom-color: #F2CF5B;
+}
+/* משימה: כרטיס (כמו בתצוגה ב'), וכשבוצעה גם היא צהובה */
+:root[data-theme="pixel"] .pp-listfix .pl-win-list .pl-step-row:not(.pl-step-row-habit) { min-height: 52px; }
+:root[data-theme="pixel"] .pp-listfix .pl-win-list .pl-step-row.pl-step-row-done:not(.pl-step-row-habit) {
+  border-color: #F2CF5B;
+  background: #FFF3C4;
+}
+:root[data-theme="pixel"] .pp-listfix .pl-win-list .pl-step-row.pl-step-row-done:not(.pl-step-row-habit) .pl-chip {
+  border-color: #E8B730;
+  color: #7A5300;
+}

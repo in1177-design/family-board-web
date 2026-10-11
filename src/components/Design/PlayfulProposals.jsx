@@ -87,6 +87,12 @@ export default function PlayfulProposals({ theme }) {
           <AnimatedDemo />
         </div>
       </Proposal>
+
+      <Proposal n={6} status="לבחירה" title="חלון כרשימה (תצוגה ב', מתוקנת)" text="ההרגלים כרשימה בלי מסגרת לכל שורה, והמשימה בכרטיס, כדי שיהיה ברור מה קבוע ומה חד-פעמי. מה שתוקן לעומת תצוגה ב' שלמטה: מה שבוצע מקבל פס צהוב מלא (גם משימה), קו מקווקו של 2px בין ההרגלים, ושורה בגובה 52px לפחות. עם הצבע והאנימציה שכבר נכנסו. אפשר לסמן כאן, בלי לשמור.">
+        <Pair right="pp-listfix" rightTag="תצוגה ב' מתוקנת">
+          {(list) => <ListDemo list={list} />}
+        </Pair>
+      </Proposal>
     </div>
   )
 }
@@ -104,12 +110,38 @@ function Proposal({ n, title, text, status, children }) {
 }
 
 // "היום" ו"מוצע" זה ליד זה. children היא פונקציה, כדי שכל צד יקבל עותק משלו (עם state משלו)
-function Pair({ on, children }) {
+// right: ה-class של הצד המוצע (ברירת מחדל: on). הצד המוצע מקבל true, כדי שהדוגמה תדע שהיא "אחרי"
+function Pair({ on, right, rightTag = 'מוצע', children }) {
   return (
     <div className="pp-pair">
-      <div><span className="pp-tag">היום</span>{children()}</div>
-      <div className={on}><span className="pp-tag pp-tag-new">מוצע</span>{children()}</div>
+      <div><span className="pp-tag">היום</span>{children(false)}</div>
+      <div className={right || on}><span className="pp-tag pp-tag-new">{rightTag}</span>{children(true)}</div>
     </div>
+  )
+}
+
+// חלון "בוקר" עם הרגלים ומשימות שאפשר לסמן (רק בדף). list: בתצוגת רשימה
+const LIST_STEPS = [
+  { id: 'l1', label: 'לצחצח שיניים', library_step_id: 'lib-m-teeth', days_rule: 'every_day', points: 2, done: true, time_today: null, exact_time: null },
+  { id: 'l2', label: 'להתלבש', days_rule: 'every_day', points: 2, done: false, time_today: null, exact_time: null },
+  { id: 'l3', label: 'לקרוא 15 דקות', days_rule: 'school_days', duration_minutes: 15, points: 2, done: false, time_today: null, exact_time: null },
+  { id: 'l4', label: 'להכין תיק לבית הספר', library_step_id: 'lib-m-bag', days_rule: 'before_school_day', points: 5, done: false, time_today: '07:30', exact_time: '07:30' }
+]
+const LIST_TODOS = [
+  { id: 'lt1', title: 'להחזיר ספר לספרייה', due_date: '2026-10-11', due_time: '07:00', done_at: 'now' },
+  { id: 'lt2', title: 'לחתום על אישור טיול', due_date: '2026-10-11', due_time: '07:20', done_at: null }
+]
+function ListDemo({ list }) {
+  const [steps, setSteps] = useState(LIST_STEPS)
+  const [todos, setTodos] = useState(LIST_TODOS)
+  return (
+    <WindowCard
+      id="morning" label="בוקר" tagline={TAGLINES.morning} window={WINDOW} habitList={list}
+      steps={steps} todos={todos} today="2026-10-11" now="07:00" windowOver={false} streak={3}
+      onMark={s => setSteps(l => l.map(x => x.id === s.id ? { ...x, done: !x.done } : x))}
+      onToggleTodo={(t, done) => setTodos(l => l.map(x => x.id === t.id ? { ...x, done_at: done ? 'now' : null } : x))}
+      onEditTodo={noop} onSetTime={noop} onAdd={noop} onAddTodo={noop}
+    />
   )
 }
 
