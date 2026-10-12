@@ -1,0 +1,120 @@
+import React, { useState } from 'react'
+import { api } from '../../store'
+import Modal from '../shared/Modal'
+import PixelButton from '../shared/PixelButton'
+import { DAY_NAMES } from './WeeklySchedule'
+
+// עריכה של שיעור או חוג אחד מהטבלה (2026-10-12): במצב עריכה לוחצים על תא, ונפתח החלון הזה.
+// חוג: שם, שעה וצבע. שיעור: שם, צבע, ושעה חריגה (בלי: השעה מהצלצולים).
+// item: פריט קיים, או טיוטה ({ kind, weekday, period }) מלחיצה על תא ריק או על "+ חוג"
+export const SCHEDULE_COLORS = [
+  { value: null,      label: 'בלי צבע' },
+  { value: '#FFE3E0', label: 'אלמוג' },
+  { value: '#FFF1C2', label: 'צהוב' },
+  { value: '#DDF5E8', label: 'מנטה' },
+  { value: '#DCEBFF', label: 'כחול' },
+  { value: '#EDE3FF', label: 'לילך' },
+  { value: '#FFE4F3', label: 'ורוד' }
+]
+
+const ERRORS = {
+  missing_title: 'צריך לתת שם',
+  bad_time: 'שעה לא תקינה, או שעת סיום לפני ההתחלה',
+  activity_needs_time: 'לחוג צריך שעת התחלה',
+  lesson_needs_period_or_time: 'לשיעור צריך מספר שיעור או שעה',
+  bad_color: 'הצבע לא תקין'
+}
+
+export default function ScheduleItemModal({ member, item, onClose, onSaved }) {
+  const isNew = !item.id
+  const lesson = item.kind === 'lesson'
+  const [title, setTitle] = useState(item.title || '')
+  const [color, setColor] = useState(item.color || null)
+  const [start, setStart] = useState(item.start_time || (lesson ? '' : '16:00'))
+  const [end, setEnd] = useState(item.end_time || (lesson ? '' : '17:00'))
+  const [weekday, setWeekday] = useState(item.weekday)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  const what = lesson ? 'שיעור' : 'חוג'
+  const heading = isNew
+    ? `${what} חדש · ${DAY_NAMES[weekday]}${lesson ? `, שיעור ${item.period}` : ''}`
+    : `${item.title} · ${DAY_NAMES[item.weekday]}`
+
+  const run = async (action) => {
+    setSaving(true)
+    setError('')
+    try {
+      await action()
+      onSaved()
+      onClose()
+    } catch (e) {
+      setError(ERRORS[e.message] || 'לא הצלחתי לשמור. ' + (e.message || ''))
+      setSaving(false)
+    }
+  }
+
+  const save = () => run(() => {
+    const body = {
+      kind: item.kind, weekday, period: lesson ? item.period : null,
+      start_time: start || null, end_time: end || null, title,
+      teacher: item.teacher || null, location: item.location || null, color
+    }
+    return isNew ? api.schedule.create({ member_id: member.id, ...body }) : api.schedule.update({ id: item.id, ...body })
+  })
+  const remove = () => {
+    if (!confirm(`למחוק את "${item.title}"?`)) return
+    run(() => api.schedule.delete(item.id))
+  }
+
+  return (
+    <Modal title={heading} onClose={onClose}>
+      <div className="pl-col pl-schedule-item-modal" style={{ gap: 16 }}>
+        <label className="pl-col" style={{ gap: 6 }}>
+          <strong>שם {lesson ? 'השיעור' : 'החוג'}</strong>
+          <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder={lesson ? 'מתמטיקה' : 'שחייה'} autoFocus />
+        </label>
+
+        {!lesson && (
+          <label className="pl-col" style={{ gap: 6 }}>
+            <strong>יום</strong>
+            <select value={weekday} onChange={e => setWeekday(Number(e.target.value))}>
+              {DAY_NAMES.map((d, i) => <option key={i} value={i}>{d}</option>)}
+            </select>
+          </label>
+        )}
+
+        <div className="pl-col" style={{ gap: 6 }}>
+          <strong>{lesson ? 'שעה חריגה' : 'שעה'}</strong>
+          {lesson && <span className="pl-muted">ריק: השעה של שיעור {item.period} לפי הצלצולים.</span>}
+          <div className="pl-row" style={{ gap: 8 }}>
+            <input type="time" value={start} onChange={e => setStart(e.target.value)} aria-label="התחלה" />
+            <span>–</span>
+            <input type="time" value={end} onChange={e => setEnd(e.target.value)} aria-label="סיום" />
+            {lesson && (start || end) && <button className="pl-link pl-muted" onClick={() => { setStart(''); setEnd('') }}>לפי הצלצולים</button>}
+          </div>
+        </div>
+
+        <div className="pl-col" style={{ gap: 6 }}>
+          <strong>צבע</strong>
+          <div className="pl-row pl-schedule-colors" role="radiogroup" aria-label="צבע">
+            {SCHEDULE_COLORS.map(c => (
+              <button key={c.label} role="radio" aria-checked={color === c.value} title={c.label} aria-label={c.label}
+                className={'pl-schedule-swatch' + (color === c.value ? ' pl-schedule-swatch-on' : '') + (c.value ? '' : ' pl-schedule-swatch-none')}
+                style={c.value ? { background: c.value } : undefined} onClick={() => setColor(c.value)} />
+            ))}
+          </div>
+        </div>
+
+        {error && <p className="pl-sub pl-sub-warn" role="alert">{error}</p>}
+        <div className="pl-row" style={{ justifyContent: 'space-between' }}>
+          {!isNew ? <button className="pl-link pl-danger-link" onClick={remove} disabled={saving}>מחיקה</button> : <span />}
+          <div className="pl-row">
+            <PixelButton variant="secondary" onClick={onClose}>ביטול</PixelButton>
+            <PixelButton variant="main" onClick={save} disabled={saving}>{saving ? 'שומר...' : 'שמירה'}</PixelButton>
+          </div>
+        </div>
+      </div>
+    </Modal>
+  )
+}

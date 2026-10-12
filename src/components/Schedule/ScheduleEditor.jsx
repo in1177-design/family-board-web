@@ -52,8 +52,8 @@ export default function ScheduleEditor({ member, data, onClose, onSaved }) {
       })
       await api.schedule.replace({
         memberId: member.id,
-        items: items.map(({ kind, weekday, period, start_time, end_time, title, teacher, location }) =>
-          ({ kind, weekday, period: period === '' ? null : period, start_time: start_time || null, end_time: end_time || null, title, teacher, location }))
+        items: items.map(({ kind, weekday, period, start_time, end_time, title, teacher, location, color }) =>
+          ({ kind, weekday, period: period === '' ? null : period, start_time: start_time || null, end_time: end_time || null, title, teacher, location, ...(color ? { color } : {}) }))
       })
       onSaved()
       onClose()
