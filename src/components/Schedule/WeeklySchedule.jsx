@@ -65,9 +65,10 @@ export default function WeeklySchedule({ member, canEdit }) {
             ))}
           </div>
         )}
-        <div className="pl-schedule-week" style={narrow ? undefined : { gridTemplateColumns: `repeat(${days.length}, minmax(0, 1fr))` }}>
-          {shown.map(d => <DayColumn key={d.weekday} day={d} isToday={d.weekday === today} />)}
-        </div>
+        {/* כל השבוע: טבלה כמו המערכת המודפסת (המשתמשת, 2026-10-12). בטלפון: יום אחד, ו"כל השבוע" פותח את הטבלה עם גלילה לצד */}
+        {narrow && !all
+          ? <div className="pl-schedule-week">{shown.map(d => <DayColumn key={d.weekday} day={d} isToday={d.weekday === today} />)}</div>
+          : <ScheduleTable days={days} periods={data.periods} today={today} />}
       </>}
 
       {editing && <ScheduleEditor member={member} data={data} onClose={() => setEditing(false)} onSaved={load} />}
@@ -76,6 +77,94 @@ export default function WeeklySchedule({ member, canEdit }) {
 }
 
 const range = (start, end) => start ? (end ? `${start}–${end}` : start) : ''
+
+// הטבלה של כל השבוע: שורה לכל שיעור (מספר ושעה מהצלצולים), עמודה לכל יום, כמו המערכת המודפסת.
+// בין שיעורים עם רווח בצלצולים: שורת "הפסקה". בסוף: שיעורים בלי מספר, ושורת חוגים.
+// השורות: כל מספר שיעור שיש בצלצולים או בשיעורים, כך ששיעור 8 בלי צלצול עדיין מופיע (בלי שעה)
+function ScheduleTable({ days, periods, today }) {
+  const byNumber = new Map(periods.map(p => [p.period, p]))
+  const numbers = [...new Set([
+    ...periods.map(p => p.period),
+    ...days.flatMap(d => d.lessons.filter(l => l.period != null).map(l => l.period))
+  ])].sort((a, b) => a - b)
+  const cell = (d, n) => d.lessons.filter(l => l.period === n)
+  const unnumbered = days.some(d => d.lessons.some(l => l.period == null))
+  const hasActivities = days.some(d => d.activities.length)
+
+  const rows = []
+  numbers.forEach((n, i) => {
+    const p = byNumber.get(n)
+    const prev = byNumber.get(numbers[i - 1])
+    if (p && prev && prev.end_time < p.start_time) {
+      rows.push(
+        <tr key={'break-' + n} className="pl-schedule-break">
+          <th scope="row"><span className="pl-schedule-range">{range(prev.end_time, p.start_time)}</span></th>
+          <td colSpan={days.length}>הפסקה</td>
+        </tr>
+      )
+    }
+    rows.push(
+      <tr key={n}>
+        <th scope="row">
+          <span className="pl-schedule-period">שיעור {n}</span>
+          {p && <span className="pl-schedule-range pl-schedule-time">{range(p.start_time, p.end_time)}</span>}
+        </th>
+        {days.map(d => (
+          <td key={d.weekday} className={d.weekday === today ? 'pl-schedule-col-today' : undefined}>
+            {cell(d, n).map(l => <div key={l.id}>{l.title}</div>)}
+          </td>
+        ))}
+      </tr>
+    )
+  })
+
+  return (
+    <div className="pl-schedule-table-wrap">
+      <table className="pl-schedule-table">
+        <thead>
+          <tr>
+            <th scope="col"><span className="pl-sr">שיעור</span></th>
+            {days.map(d => (
+              <th key={d.weekday} scope="col" className={d.weekday === today ? 'pl-schedule-col-today' : undefined}>
+                {DAY_NAMES[d.weekday]}
+                {d.school && <span className="pl-schedule-range pl-schedule-time">{range(d.school.start, d.school.end)}</span>}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows}
+          {unnumbered && (
+            <tr>
+              <th scope="row"><span className="pl-schedule-period">בשעה אחרת</span></th>
+              {days.map(d => (
+                <td key={d.weekday} className={d.weekday === today ? 'pl-schedule-col-today' : undefined}>
+                  {d.lessons.filter(l => l.period == null).map(l => (
+                    <div key={l.id}>{l.title} <span className="pl-schedule-range pl-schedule-time">{range(l.start, l.end)}</span></div>
+                  ))}
+                </td>
+              ))}
+            </tr>
+          )}
+          {hasActivities && (
+            <tr className="pl-schedule-activities-row">
+              <th scope="row"><span className="pl-schedule-period">חוגים</span></th>
+              {days.map(d => (
+                <td key={d.weekday} className={d.weekday === today ? 'pl-schedule-col-today' : undefined}>
+                  {d.activities.map(a => (
+                    <div key={a.id} className="pl-schedule-activity-cell">
+                      {a.title}<span className="pl-schedule-range pl-schedule-time">{range(a.start, a.end)}</span>
+                    </div>
+                  ))}
+                </td>
+              ))}
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  )
+}
 
 function DayColumn({ day, isToday }) {
   return (
