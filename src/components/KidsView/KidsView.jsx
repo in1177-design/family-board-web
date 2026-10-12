@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useStore } from '../../store'
-import WeeklyCalendar from './WeeklyCalendar'
+import WeeklySchedule from '../Schedule/WeeklySchedule'
 import PointsDisplay from './PointsDisplay'
 import MyDay from '../MyDay/MyDay'
 import MemberHero, { AppBar } from '../shared/MemberHero'
@@ -8,7 +8,8 @@ import DailyLeaderboard from '../Points/DailyLeaderboard'
 
 const TABS = [
   { id: 'myday',    label: 'היום שלי',  text: 'היום שלי', icon: 'sun' },
-  { id: 'calendar', label: '📅 יומן',    text: 'יומן',     icon: 'calendar' },
+  // מערכת שבועית במקום היומן (2026-10-12). WeeklyCalendar (Google) נשאר בקוד עד ההחלטה על Google
+  { id: 'schedule', label: 'מערכת שבועית', text: 'מערכת שבועית', icon: 'calendar' },
   { id: 'points',   label: '⭐ ניקוד',   text: 'ניקוד',    icon: 'star' }
 ]
 
@@ -48,7 +49,7 @@ export default function KidsView() {
         <MemberHero member={member} summary={summary} tabs={TABS} current={tab} onPick={setTab} />
         <div style={{ padding: '1.25rem' }}>
           {tab === 'myday'    && <MyDay memberId={member.id} hideHero onSummary={setSummary} />}
-          {tab === 'calendar' && <WeeklyCalendar member={member} />}
+          {tab === 'schedule' && <WeeklySchedule member={member} />}
           {tab === 'points'   && <><DailyLeaderboard currentId={member.id} /><PointsDisplay member={member} /></>}
         </div>
       </div>

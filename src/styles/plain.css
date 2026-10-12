@@ -973,3 +973,47 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
 @media (min-width: 701px) {
   :root[data-theme="pixel"] .pl.pl-day { padding-top: 0; }
 }
+
+/* מערכת שבועית (2026-10-12): עמודה לכל יום במחשב, יום אחד עם בורר בטלפון.
+   שיעורים: מספר בריבוע, שם ושעה. חוגים אחריהם, ברקע צבעוני */
+.pl-schedule-head { justify-content: space-between; margin-bottom: 12px; }
+.pl-schedule-head h2 { margin: 0; }
+.pl-schedule-days { gap: 6px; margin-bottom: 12px; }
+/* כפתורי הימים: רוחב שווה ואזור לחיצה בגובה 44px. "כל השבוע" בשורת הכותרת */
+:root .pl .pl-schedule-days { flex-wrap: nowrap; }
+:root .pl .pl-schedule-days button.pl-slot { flex: 1 1 0; min-width: 0; min-height: 44px; padding: 0 4px; justify-content: center; }
+.pl-schedule-days .pl-schedule-today:not(.pl-slot-on) { border-color: var(--pl-accent); }
+.pl-schedule-week { display: grid; gap: 12px; align-items: start; }
+.pl-schedule-day { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.pl-schedule-day-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.pl-schedule-day-today { outline: 2px solid var(--pl-accent); outline-offset: 2px; }
+.pl-schedule-school { font-size: var(--pl-size-sm); font-weight: 700; color: var(--pl-accent-dark); }
+.pl-schedule-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.pl-schedule-item {
+  display: grid; grid-template-columns: 26px 1fr; align-items: center; column-gap: 8px; row-gap: 2px;
+  min-height: 40px; padding: 6px 0; border-bottom: 1px solid var(--pl-line);
+}
+.pl-schedule-list .pl-schedule-item:last-child { border-bottom: none; }
+.pl-schedule-num {
+  display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px;
+  border-radius: var(--pl-r-control); background: var(--pl-soft); color: var(--pl-muted); font-size: 13px; font-weight: 700;
+}
+.pl-schedule-title { min-width: 0; overflow-wrap: break-word; line-height: 1.3; }
+.pl-schedule-time { color: var(--pl-muted); font-size: 12px; white-space: nowrap; direction: ltr; unicode-bidi: isolate; }
+/* טווח שעות: משמאל לימין ובלי שבירה, כדי ש-"08:00–13:10" לא יתהפך או יישבר באמצע */
+.pl-schedule-range { display: inline-block; direction: ltr; unicode-bidi: isolate; white-space: nowrap; }
+.pl-schedule-activities { gap: 6px; }
+.pl-schedule-activity { padding: 6px 8px; border: none; border-radius: var(--pl-r-control); background: var(--pl-warn-soft); }
+.pl-schedule-activity .pl-schedule-num { background: none; color: var(--pl-warn); }
+/* במחשב העמודות צרות: השעה מתחת לשם. בטלפון (יום אחד ברוחב המסך) השעה בסוף השורה */
+.pl-schedule-time { grid-column: 2; }
+@media (max-width: 900px) {
+  .pl-schedule-item { grid-template-columns: 26px 1fr auto; }
+  .pl-schedule-time { grid-column: auto; }
+}
+/* עורך המערכת */
+.pl-schedule-edit-row { gap: 8px; }
+.pl-schedule-edit-item { gap: 6px; padding: 10px; border: 1px solid var(--pl-line); border-radius: var(--pl-r-box); }
+.pl-schedule-edit-activity { background: var(--pl-warn-soft); }
+.pl-schedule-editor input[type=time] { width: 100px; min-width: 0; }
+.pl-schedule-editor input[type=number] { min-width: 0; }

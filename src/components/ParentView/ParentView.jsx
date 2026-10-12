@@ -3,7 +3,8 @@ import { useStore } from '../../store'
 import PointsManager from './PointsManager'
 import Settings from './Settings'
 import FamilyOverview from './FamilyOverview'
-import ParentCalendar from './ParentCalendar'
+import WeeklySchedule from '../Schedule/WeeklySchedule'
+import MemberTabs from '../shared/MemberTabs'
 import RoutinesBoard from '../Routines/RoutinesBoard'
 import StepForm from '../Routines/StepForm'
 import MyDay from '../MyDay/MyDay'
@@ -17,7 +18,8 @@ import StyleGuide from '../Design/StyleGuide'
 // החלטה 2026-10-07: ההגדרות, ההרגלים והמשימות עברו מהלשוניות לתפריט שבפס העליון
 const TABS = [
   { id: 'overview',  label: '🏠 סקירה',  text: 'סקירה',    icon: 'home' },
-  { id: 'calendar',  label: '📅 יומן',   text: 'יומן',     icon: 'calendar' },
+  // מערכת שבועית במקום היומן (2026-10-12). ParentCalendar (Google) נשאר בקוד עד ההחלטה על Google
+  { id: 'schedule',  label: 'מערכת שבועית', text: 'מערכת שבועית', icon: 'calendar' },
   { id: 'myday',     label: 'היום שלי', text: 'היום שלי', icon: 'sun' },
   { id: 'points',    label: '⭐ ניקוד',  text: 'ניקוד',    icon: 'star' }
 ]
@@ -74,7 +76,7 @@ export default function ParentView() {
 
         {!opened && <>
           {tab === 'overview'  && <FamilyOverview />}
-          {tab === 'calendar'  && <ParentCalendar />}
+          {tab === 'schedule'  && <ScheduleOf />}
           {tab === 'myday'     && activeMemberId && <DayOf viewerId={activeMemberId} onSummary={setSummary} />}
           {tab === 'points'    && <><DailyLeaderboard currentId={activeMemberId} /><PointsManager /></>}
         </>}
@@ -110,6 +112,23 @@ function DayOf({ viewerId, onSummary }) {
       </div>
       {/* key: יום חדש לכל בן משפחה, בלי טפסים פתוחים מהקודם */}
       <MyDay key={memberId} memberId={memberId} viewerId={viewerId} hideHero onSummary={own ? onSummary : undefined} />
+    </>
+  )
+}
+
+// מערכת שבועית בפאנל ההורים: בחירת ילד למעלה (כמו בלוחות הניהול), וההורה עורך
+function ScheduleOf() {
+  const { members } = useStore()
+  const kids = members.filter(m => m.role !== 'parent')
+  const [memberId, setMemberId] = useState(kids[0]?.id)
+  const member = kids.find(m => m.id === memberId) || kids[0]
+  if (!member) return <div className="pl"><p className="pl-muted">אין ילדים במשפחה.</p></div>
+  return (
+    <>
+      <div className="pl pl-bare" style={{ maxWidth: 'var(--pl-page-max)', margin: '0 auto 16px' }}>
+        <MemberTabs members={kids} value={member.id} onChange={setMemberId} />
+      </div>
+      <WeeklySchedule key={member.id} member={member} canEdit />
     </>
   )
 }

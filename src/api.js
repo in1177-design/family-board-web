@@ -68,6 +68,15 @@ export const liveApi = {
     setDone: ({ id, done }) => req('POST', `/api/todos/${id}/done`, { done }),
     delete:  (id) => req('DELETE', `/api/todos/${id}`)
   },
+  // מערכת שעות שבועית (2026-10-12): { items, periods }
+  schedule: {
+    get:     (memberId) => req('GET', `/api/schedule${memberId ? `?member_id=${memberId}` : ''}`),
+    create:  (item) => req('POST', '/api/schedule', item),
+    update:  ({ id, ...data }) => req('PUT', `/api/schedule/${id}`, data),
+    delete:  (id) => req('DELETE', `/api/schedule/${id}`),
+    setPeriods: ({ memberId, periods }) => req('PUT', `/api/schedule/periods?member_id=${memberId}`, periods),
+    replace: ({ memberId, items }) => req('PUT', `/api/schedule/replace?member_id=${memberId}`, items)
+  },
   day: {
     get:      (memberId) => req('GET', `/api/day/${memberId}`),
     markStep: ({ runId, stepId, done }) => req('POST', `/api/day/runs/${runId}/steps/${stepId}`, { done }),

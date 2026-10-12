@@ -27,7 +27,7 @@ export function currentWindow(now, windows) {
 }
 
 // מסך צר: החלונות אחד מתחת לשני (כמו pl-cols3 עד 900px)
-function useNarrow() {
+export function useNarrow() {
   const q = '(max-width: 900px)'
   const [narrow, setNarrow] = useState(() => window.matchMedia?.(q).matches ?? false)
   useEffect(() => {
