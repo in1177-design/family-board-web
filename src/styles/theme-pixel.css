@@ -301,8 +301,8 @@
   font-family: var(--pl-font); color: var(--pl-text);
 }
 :root[data-theme="pixel"] .hdr-top { display: flex; align-items: center; gap: 24px; padding: 16px 20px; flex-wrap: wrap; }
-:root[data-theme="pixel"] button.hdr-avatar {
-  position: relative; display: flex; width: 120px; height: 120px; flex-shrink: 0; padding: 6px; cursor: pointer;
+:root[data-theme="pixel"] .hdr-avatar {
+  position: relative; display: flex; width: 120px; height: 120px; flex-shrink: 0; padding: 6px;
   border: 3px solid var(--px-frame); border-radius: 2px;
   box-shadow: inset 0 0 0 3px #FFF, inset 0 0 0 5px var(--px-frame);
   background: #BDEBF2; background-clip: content-box;
@@ -377,7 +377,7 @@
   }
   :root[data-theme="pixel"] .hdr-clock { padding: 0; border: none; }
   :root[data-theme="pixel"] .hdr-clock b { font-size: 18px; color: #FFF; }
-  :root[data-theme="pixel"] button.hdr-avatar { width: 104px; height: 104px; padding: 4px; box-shadow: inset 0 0 0 3px #FFF, inset 0 0 0 5px var(--px-frame), 4px 4px 0 var(--hdr-ink); }
+  :root[data-theme="pixel"] .hdr-avatar { width: 104px; height: 104px; padding: 4px; box-shadow: inset 0 0 0 3px #FFF, inset 0 0 0 5px var(--px-frame), 4px 4px 0 var(--hdr-ink); }
   :root[data-theme="pixel"] .hdr-greet h1 { font-size: 24px; color: #FFF; }
   :root[data-theme="pixel"] .hdr-greet span { color: #FFF; }
   :root[data-theme="pixel"] .hdr-stats { border: 2px solid var(--px-frame); border-radius: 10px; box-shadow: 4px 4px 0 var(--px-shadow); }
@@ -419,7 +419,7 @@
 /* גרסה ב' בטלפון במשחקי ("תמונה גדולה", 2026-10-10): רקע מנטה מאחורי האווטר, כפתורים וכרטיס עם מסגרת וצל פיקסלים */
 @media (max-width: 700px) {
   :root[data-theme="pixel"][data-mhdr="photo"] .hdr-top { grid-template-rows: 56px 250px auto auto; gap: 0; padding: 0; background: none; }
-  :root[data-theme="pixel"][data-mhdr="photo"] button.hdr-avatar {
+  :root[data-theme="pixel"][data-mhdr="photo"] .hdr-avatar {
     grid-area: 1 / 1 / 3 / 4; width: 100%; height: 100%; padding: 0; border: none; border-radius: 0; background: #BDEBF2; box-shadow: none; z-index: 0;
   }
   :root[data-theme="pixel"][data-mhdr="photo"] .hdr-back,

@@ -12,7 +12,6 @@ import TodoForm from '../MyDay/TodoForm'
 import MemberHero, { AppBar } from '../shared/MemberHero'
 import { memberPhoto } from '../shared/memberPhoto'
 import DailyLeaderboard from '../Points/DailyLeaderboard'
-import StyleLab from '../Design/StyleLab'
 import StyleGuide from '../Design/StyleGuide'
 
 // החלטה 2026-10-07: ההגדרות, ההרגלים והמשימות עברו מהלשוניות לתפריט שבפס העליון
@@ -30,7 +29,7 @@ export default function ParentView() {
   const { loadTasks, members, logout, activeMemberId } = useStore()
   const [tab, setTab] = useState('overview')
   // מה נפתח מהתפריט, במקום הלשונית: 'routines', 'todos', 'settings',
-  // 'lab' (מעבדת סגנונות) או 'guide' (מדריך סגנון)
+  // או 'guide' (מדריך סגנון). מעבדת הסגנונות כדף נפרד הוסרה (2026-10-12): כל מה שבה נפתח מתוך המדריך
   const [opened, setOpened] = useState(null)
   // סיכום היום של ההורה עצמו, לאחוז ב-Hero. כשצופים ביום של ילד: אין
   const [summary, setSummary] = useState(null)
@@ -71,7 +70,6 @@ export default function ParentView() {
         {opened === 'routines' && <RoutinesBoard />}
         {opened === 'todos'    && <TodosBoard />}
         {opened === 'settings' && <Settings />}
-        {opened === 'lab'      && <StyleLab onTry={t => { setTrial(t); setOpened('guide') }} />}
         {opened === 'guide'    && <StyleGuide trial={trial} onClearTrial={() => setTrial(null)} onTry={setTrial} />}
 
         {!opened && <>
@@ -150,7 +148,6 @@ function ParentMenu({ onPick, onLogout }) {
           <button onClick={() => pick('step')}>+ הוסף הרגל</button>
           <button onClick={() => pick('todo')}>+ הוסף משימה</button>
           <button onClick={() => pick('settings')}>⚙️ הגדרות</button>
-          <button onClick={() => pick('lab')}>🧪 מעבדת סגנונות</button>
           <button onClick={() => pick('guide')}>📘 מדריך סגנון</button>
           <button onClick={() => { setOpen(false); onLogout() }}>🚪 יציאה</button>
         </div>

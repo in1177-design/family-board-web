@@ -8,7 +8,8 @@ import LoginScreen from './components/shared/LoginScreen'
 import Loader from './components/shared/Loader'
 import ViewSwitcher from './components/shared/ViewSwitcher'
 import { ToastProvider } from './components/shared/Toast'
-import { useThemeName, applyTheme, memberTheme } from './components/shared/ThemeToggle'
+import ThemeToggle, { useThemeName, applyTheme, memberTheme } from './components/shared/ThemeToggle'
+import StyleGuide from './components/Design/StyleGuide'
 
 function AppContent() {
   const { members, loadFamily, activeView, activeMemberId } = useStore()
@@ -20,6 +21,8 @@ function AppContent() {
     : activeView === 'parent' ? (members.find(m => m.id === activeMemberId) || members.find(m => m.role === 'parent'))
     : null
   useEffect(() => { applyTheme(memberTheme(viewMember)) }, [viewMember?.id, viewMember?.theme])
+  // המדריך המלא, מהכפתור בפס העליון (זמני, 2026-10-12)
+  const [guide, setGuide] = useState(false)
   const [initializing, setInitializing] = useState(true)
   const [hasToken, setHasToken]         = useState(!!localStorage.getItem('family_token'))
 
@@ -48,9 +51,23 @@ function AppContent() {
              : <HomeScreen />
   return (
     <>
-      <ViewSwitcher />
-      <div style={{ flex: 1, minHeight: 0 }}>{view}</div>
+      <ViewSwitcher guideOpen={guide} onGuide={setGuide} />
+      <div style={{ flex: 1, minHeight: 0 }}>{guide ? <GuidePage /> : view}</div>
     </>
+  )
+}
+
+// מדריך הסגנון כדף מלא, מכל מסך. העיצוב: של המסך שממנו הגיעו, והכפתור כאן מחליף אותו במכשיר בלבד.
+// trial: מסגרת מ"נסה במדריך" במעבדה שנפתחת מתוך המדריך. נמחקת כשסוגרים
+function GuidePage() {
+  const [trial, setTrial] = useState(null)
+  return (
+    <div style={{ height: '100%', overflow: 'auto', background: 'var(--bg)' }}>
+      <div style={{ padding: '1.5rem' }}>
+        <div className="pl pl-bare pl-row" style={{ justifyContent: 'flex-end', marginBottom: 12 }}><ThemeToggle /></div>
+        <StyleGuide trial={trial} onClearTrial={() => setTrial(null)} onTry={setTrial} />
+      </div>
+    </div>
   )
 }
 

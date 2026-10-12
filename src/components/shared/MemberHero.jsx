@@ -23,7 +23,8 @@ const windowByClock = (now) => {
 
 // הכותרת בראש המסך של בן משפחה, ילד או הורה. מחליפה את ה-Hero של ה-wireframe (2026-10-07) מ-2026-10-10.
 // summary: מ-daySummary ב"היום שלי" ({ done, total }). בלעדיו הכותרת טוענת את היום בעצמה.
-// end: מה שמופיע אחרי כפתורי המסכים (תפריט ההורה)
+// end: מה שמופיע אחרי כפתורי המסכים (תפריט ההורה). בלעדיו: כפתור הגדרות שפותח את הפרופיל (2026-10-12),
+// באותו מקום ובאותו סגנון כמו ☰ של ההורה. מאז הלחיצה על התמונה לא פותחת את הפרופיל
 // tabs, current, onPick: כפתורי המסכים בתוך הכותרת (handoff 1b, 2026-10-10)
 export default function MemberHero({ member, summary, end, tabs, current, onPick }) {
   // השעה מתעדכנת כל 30 שניות
@@ -68,6 +69,7 @@ export default function MemberHero({ member, summary, end, tabs, current, onPick
   // צבע בן המשפחה עובר כמשתנה CSS: הטבעת סביב התמונה במעודן
   const vars = { '--member-color': member.color, '--member-shadow': member.color + '55' }
   const profileModal = profile && <ProfileModal member={member} onClose={() => setProfile(false)} />
+  const endSlot = end || <SettingsButton onClick={() => setProfile(true)} />
 
   // הכותרת 1b מ-Claude Design (Family header/design_handoff_member_header), בשני העיצובים (2026-10-10):
   // כרטיס אחד: תמונה, ברכה, שעה, התקדמות ונקודות, ומתחת כפתורי המסכים ו-☰ (end).
@@ -79,10 +81,9 @@ export default function MemberHero({ member, summary, end, tabs, current, onPick
     <header className="hdr" style={vars}>
       <div className="hdr-top">
         <button className="hdr-back" onClick={() => setActiveView('home')} aria-label="חזרה" title="חזרה למסך הבית">→</button>
-        <button className="hdr-avatar" onClick={() => setProfile(true)} title="הפרופיל שלי" aria-label="הפרופיל שלי">
+        <div className="hdr-avatar">
           {photo ? <img src={photo} alt="" /> : <span className="mh-avatar">{member.avatar}</span>}
-          <span className="mh-photo-edit" aria-hidden="true">✎</span>
-        </button>
+        </div>
         <div className="hdr-greet">
           <h1>{greeting}, {member.name}!</h1>
           <span>{summaryText(today)}</span>
@@ -115,7 +116,7 @@ export default function MemberHero({ member, summary, end, tabs, current, onPick
               </button>
             ))}
           </nav>
-          {end}
+          {endSlot}
         </div>
       )}
     </header>
@@ -132,12 +133,23 @@ export default function MemberHero({ member, summary, end, tabs, current, onPick
           <Icon name="star" />
           <PointsValue value={member.points} />
         </div>
-        {end}
+        {endSlot}
       </div>
     </div>
     {/* מחוץ ל-header, כדי שהסגנון שלו לא יחול על החלון */}
     {profileModal}
     </>
+  )
+}
+
+// כפתור ההגדרות של בן משפחה בכותרת: עטוף כמו ☰ של ההורה (pl-menu), כדי לקבל את אותו מקום ואותו סגנון
+// במחשב, בטלפון ובפס הדבוק. ⚙ כתו טקסט (FE0E), כמו ☰, כי אין אייקון הגדרות בשתי סדרות האייקונים
+function SettingsButton({ onClick }) {
+  return (
+    <div className="pl pl-bare pl-menu">
+      <button className="btn btn-ghost btn-sm" style={{ color: '#fff', fontSize: '1.4rem' }}
+        onClick={onClick} aria-label="הגדרות" title="הגדרות">⚙︎</button>
+    </div>
   )
 }
 
