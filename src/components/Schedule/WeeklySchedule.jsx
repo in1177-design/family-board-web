@@ -105,7 +105,7 @@ export default function WeeklySchedule({ member, canEdit }) {
           ? shown.map(d => <DayActivities key={d.weekday} day={d} editing={editActivities} onPick={open} />)
           : <ActivitiesTable days={days} today={today} editing={editActivities} onPick={open} />}
 
-      {modalItem && <ScheduleItemModal member={member} item={modalItem} onClose={() => setModalItem(null)} onSaved={load} />}
+      {modalItem && <ScheduleItemModal member={member} item={modalItem} items={data.items} onClose={() => setModalItem(null)} onSaved={load} />}
       {bells && <ScheduleEditor member={member} data={data} onClose={() => setBells(false)} onSaved={load} />}
     </div>
   )
@@ -153,7 +153,10 @@ function LessonsTable({ days, periods, today, editing, onPick, onAdd }) {
         {lessons.map(l => (
           <Pickable key={l.id} editing={editing} onClick={() => onPick(l)} label={`עריכת ${l.title}, ${DAY_NAMES[d.weekday]}`}>
             {l.title}
-            {period === null && <span className="pl-schedule-range pl-schedule-time">{range(l.start, l.end)}</span>}
+            {/* שעה משלו (שעה חריגה), או שיעור בלי מספר: השעה בתא, כדי שיראו שהיא שונה מהצלצול */}
+            {(period === null || l.start_time) && (
+              <span className={'pl-schedule-range pl-schedule-time' + (l.start_time ? ' pl-schedule-time-own' : '')}>{range(l.start, l.end)}</span>
+            )}
           </Pickable>
         ))}
         {editing && !lessons.length && period !== null && (

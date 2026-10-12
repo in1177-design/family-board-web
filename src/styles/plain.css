@@ -1080,3 +1080,7 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
 .pl button.pl-schedule-swatch-none { background: linear-gradient(135deg, transparent 46%, var(--pl-line) 46% 54%, transparent 54%), var(--pl-card); }
 .pl button.pl-schedule-swatch-on { border-color: var(--pl-accent-dark); box-shadow: 0 0 0 2px var(--pl-card), 0 0 0 4px var(--pl-accent-dark); }
 .pl-schedule-item-modal input[type=time] { width: 120px; }
+/* שעה חריגה של שיעור: בתא, בצבע ההדגשה, כדי שיראו שהיא לא לפי הצלצול */
+.pl-schedule-table .pl-schedule-time-own { color: var(--pl-accent-dark); font-weight: 700; }
+.pl-schedule-to-all { align-items: flex-start; gap: 10px; padding: 10px 12px; border: 1px solid var(--pl-line); border-radius: var(--pl-r-box); background: var(--pl-soft); }
+.pl-schedule-to-all input { margin-top: 3px; }
