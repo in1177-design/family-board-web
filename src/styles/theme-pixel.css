@@ -618,6 +618,7 @@
 }
 :root[data-theme="pixel"] .sg-card strong { font-weight: 800; }
 :root[data-theme="pixel"] .sg-chip { border-width: 2px; border-radius: 2px; box-shadow: 2px 2px 0 var(--sg-edge); }
+:root[data-theme="pixel"] .pl button.sg-card { border: 2px solid var(--sg-edge); border-radius: 2px; background: var(--sg-bg); }
 :root[data-theme="pixel"] .pl button.sg-card-edit { box-shadow: 3px 3px 0 var(--sg-edge); }
 :root[data-theme="pixel"] .pl button.sg-card-edit:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--sg-edge); border-color: var(--sg-edge); background: var(--sg-bg); }
 :root[data-theme="pixel"] .pl button.sg-card-edit:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--sg-edge); }

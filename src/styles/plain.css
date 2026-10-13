@@ -1120,6 +1120,12 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
 .sg-activities-label { flex-direction: column; align-items: center; gap: 4px; color: var(--sg-ink, var(--pl-text)); }
 .sg-stack { justify-content: flex-start; }
 /* מצב עריכה: הכרטיסים כפתורים, ותא ריק מוסיף שיעור */
+/* בעריכה הכרטיס הוא כפתור: הסגנון הכללי של .pl button (רקע בהיר, מסגרת אפורה, ריפוד) לא חל עליו,
+   כדי שהצבע של המקצוע יישאר (המשתמשת, 2026-10-13) */
+.pl button.sg-card {
+  min-height: var(--sg-row); padding: 8px 10px; border: 1px solid var(--sg-edge);
+  background: var(--sg-bg); color: var(--pl-text); font-weight: inherit;
+}
 /* בלי קו מקווקו (המשתמשת, 2026-10-13): במעבר עכבר הכרטיס מתרומם עם צל, ובלחיצה נלחץ פנימה, כמו כפתור */
 .pl button.sg-card-edit { cursor: pointer; box-shadow: none; transition: transform .08s, box-shadow .08s; }
 /* בלי מסגרת ירוקה במעבר עכבר: המסגרת נשארת בצבע של הכרטיס */
