@@ -1054,6 +1054,9 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
    מסגרת אחת לשיעורים ואחת לחוגים, באותן עמודות. כרטיס לכל יום עם תאריך, "שיעור N" ושעה בצד,
    כרטיס צבעוני לכל שיעור (צבע ואייקון לפי הקבוצה, subjects.js), והפסקות כקו מקווקו.
    הצבעים של כרטיס מגיעים במשתנים --sg-bg, --sg-edge, --sg-ink. בטלפון: גלילה לצד, והעמודה של השיעורים נשארת */
+/* באותו רוחב כמו הכותרת (1200, --pl-page-max), כמו "היום שלי": בלי הריפוד והרקע של .pl (המשתמשת, 2026-10-13) */
+.pl.pl-schedule { padding: 0; background: transparent; }
+@media (max-width: 700px) { .pl.pl-schedule { padding-inline: 4px; } }
 .pl-schedule { --sg-side: 96px; --sg-col: 118px; --sg-row: 58px; --sg-gap: 8px; }
 .sg-legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
 .sg-chip {
