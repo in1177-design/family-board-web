@@ -136,13 +136,14 @@ export function LessonsGrid({ days, periods, today, editing, onPick, onAdd }) {
         {numbers.map(n => {
           const p = byNumber.get(n)
           return (
-            <div key={'p' + n} className="sg-side sg-period" style={{ gridRow: rowOf.get(n), gridColumn: 1 }}>
-              <strong>שיעור {n}</strong>
-              {p && <span className="sg-time">{range(p.start_time, p.end_time)}</span>}
+            // מספר השיעור, ולידו שעת ההתחלה והסיום אחת מתחת לשנייה (המשתמשת, 2026-10-13)
+            <div key={'p' + n} className="sg-side sg-period" style={{ gridRow: rowOf.get(n), gridColumn: 1 }} aria-label={`שיעור ${n}`}>
+              <span className="sg-num">{n}</span>
+              {p && <span className="sg-times"><span>{p.start_time}</span><span>{p.end_time}</span></span>}
             </div>
           )
         })}
-        {unnumbered && <div className="sg-side sg-period" style={{ gridRow: otherRow, gridColumn: 1 }}><strong>בשעה אחרת</strong></div>}
+        {unnumbered && <div className="sg-side sg-period" style={{ gridRow: otherRow, gridColumn: 1 }}><span className="sg-other">בשעה אחרת</span></div>}
         {breaks.map(b => (
           <div key={'b' + b.before} className="sg-break" style={{ gridRow: b.row, gridColumn: '1 / -1' }}>
             <span>הפסקה · {b.minutes} דק׳</span>
@@ -158,7 +159,8 @@ export function ActivitiesGrid({ days, editing, onPick }) {
   return (
     <div className="sg-scroll">
       <div className={'sg-grid sg-grid-activities' + (editing ? ' sg-editing' : '')} style={{ gridTemplateColumns: columns(days) }}>
-        <div className="sg-side sg-activities-label"><Icon name="smile" /><strong>חוגים</strong></div>
+        {/* העמודה הראשונה ריקה, כדי שהימים יתיישרו עם הלוח שמעל. הכותרת "חוגים" בשורת הכלים */}
+        <div className="sg-side" aria-hidden="true" />
         {days.map(d => (
           <div key={d.weekday} className="sg-cell sg-stack">
             {d.activities.map(a => <Card key={a.id} item={a} editing={editing} onPick={onPick} activity />)}

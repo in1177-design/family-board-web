@@ -57,23 +57,33 @@ export default function WeeklySchedule({ member, canEdit }) {
   const open = (item) => setModalItem(data.items.find(i => i.id === item.id) || item)
 
   const editButton = (on, set) => canEdit && (
-    <button className={'pl-link' + (on ? ' pl-schedule-editing' : '')} aria-pressed={on} onClick={() => set(v => !v)}>
+    <button className={'sg-btn' + (on ? ' sg-btn-on' : '')} aria-pressed={on} onClick={() => set(v => !v)}>
       {on ? 'סיום עריכה' : 'עריכה'}
     </button>
   )
+  const weekToggle = narrow && (
+    <button className="sg-btn" aria-pressed={all} onClick={() => setAll(v => !v)}>{all ? 'יום אחד' : 'כל השבוע'}</button>
+  )
+  const addLesson = (weekday, period) => setModalItem({ kind: 'lesson', weekday, period })
+  const lessonsActions = (
+    <div className="sg-actions">
+      {weekToggle}
+      {editLessons && <button className="sg-btn" onClick={() => setBells(true)}>צלצולים</button>}
+      {editButton(editLessons, setEditLessons)}
+    </div>
+  )
+  const activitiesActions = (
+    <div className="sg-actions">
+      {editActivities && <button className="sg-btn" onClick={() => setModalItem({ kind: 'activity', weekday: oneDay ? picked : today < 6 ? today : 0 })}>+ חוג</button>}
+      {editButton(editActivities, setEditActivities)}
+    </div>
+  )
 
+  // בלי הכותרת "מערכת שבועית" (המשתמשת, 2026-10-13). המקרא וכפתורי העריכה בשורה אחת בתוך המסגרת, מעל הלוח
   return (
     <div className="pl pl-schedule" style={{ maxWidth: 'var(--pl-page-max)', margin: '0 auto' }}>
-      <div className="pl-row pl-schedule-head">
-        <h2>מערכת שבועית</h2>
-        <div className="pl-row">
-          {narrow && <button className="pl-link" aria-pressed={all} onClick={() => setAll(v => !v)}>{all ? 'יום אחד' : 'כל השבוע'}</button>}
-          {editLessons && <button className="pl-link" onClick={() => setBells(true)}>צלצולים</button>}
-          {editButton(editLessons, setEditLessons)}
-        </div>
-      </div>
-
-      {oneDay && (
+      {oneDay ? <>
+        <div className="sg-toolbar sg-toolbar-bare">{lessonsActions}</div>
         <div className="pl-row pl-schedule-days" role="tablist" aria-label="יום בשבוע">
           {days.map(d => (
             <button key={d.weekday} role="tab" aria-selected={picked === d.weekday}
@@ -83,31 +93,28 @@ export default function WeeklySchedule({ member, canEdit }) {
             </button>
           ))}
         </div>
+        {editLessons && <p className="pl-muted pl-schedule-hint">לחיצה על שיעור משנה אותו.</p>}
+        {shown.map(d => <DayLessons key={d.weekday} day={d} isToday={d.weekday === today} editing={editLessons} onPick={open}
+          onAdd={() => addLesson(d.weekday, Math.max(0, ...d.lessons.map(l => l.period || 0)) + 1)} />)}
+      </> : (
+        <section className="sg-frame">
+          <div className="sg-toolbar"><Legend />{lessonsActions}</div>
+          {editLessons && <p className="pl-muted pl-schedule-hint">לחיצה על שיעור משנה אותו. לחיצה על תא ריק מוסיפה שיעור.</p>}
+          {noLessons && !editLessons
+            ? <p className="pl-muted">עוד אין שיעורים{canEdit ? '. אפשר להוסיף ב"עריכה".' : '.'}</p>
+            : <LessonsGrid days={days} periods={data.periods} today={today} editing={editLessons} onPick={open} onAdd={addLesson} />}
+        </section>
       )}
 
-      {!noLessons && !oneDay && <Legend />}
-      {editLessons && <p className="pl-muted pl-schedule-hint">לחיצה על שיעור משנה אותו. לחיצה על תא ריק מוסיפה שיעור.</p>}
-      {noLessons && !editLessons
-        ? <PixelCard><p className="pl-muted">עוד אין שיעורים{canEdit ? '. אפשר להוסיף ב"עריכה".' : '.'}</p></PixelCard>
-        : oneDay
-          ? shown.map(d => <DayLessons key={d.weekday} day={d} isToday={d.weekday === today} editing={editLessons} onPick={open}
-              onAdd={() => setModalItem({ kind: 'lesson', weekday: d.weekday, period: Math.max(0, ...d.lessons.map(l => l.period || 0)) + 1 })} />)
-          : <LessonsGrid days={days} periods={data.periods} today={today} editing={editLessons} onPick={open}
-              onAdd={(weekday, period) => setModalItem({ kind: 'lesson', weekday, period })} />}
-
-      <div className="pl-row pl-schedule-head pl-schedule-head-sub">
-        <h2>חוגים</h2>
-        <div className="pl-row">
-          {editActivities && <button className="pl-link" onClick={() => setModalItem({ kind: 'activity', weekday: oneDay ? picked : today < 6 ? today : 0 })}>+ חוג</button>}
-          {editButton(editActivities, setEditActivities)}
-        </div>
-      </div>
-      {editActivities && <p className="pl-muted pl-schedule-hint">לחיצה על חוג משנה את השם, השעה או הצבע.</p>}
-      {noActivities
-        ? <PixelCard><p className="pl-muted">אין חוגים{canEdit ? '. אפשר להוסיף ב"עריכה".' : '.'}</p></PixelCard>
-        : oneDay
-          ? shown.map(d => <DayActivities key={d.weekday} day={d} editing={editActivities} onPick={open} />)
-          : <ActivitiesGrid days={days} editing={editActivities} onPick={open} />}
+      <section className={oneDay ? 'sg-activities-day' : 'sg-frame sg-frame-activities'}>
+        <div className={'sg-toolbar' + (oneDay ? ' sg-toolbar-bare' : '')}><strong className="sg-title">חוגים</strong>{activitiesActions}</div>
+        {editActivities && <p className="pl-muted pl-schedule-hint">לחיצה על חוג משנה את השם, השעה או הצבע.</p>}
+        {noActivities
+          ? <p className="pl-muted">אין חוגים{canEdit ? '. אפשר להוסיף ב"עריכה".' : '.'}</p>
+          : oneDay
+            ? shown.map(d => <DayActivities key={d.weekday} day={d} editing={editActivities} onPick={open} />)
+            : <ActivitiesGrid days={days} editing={editActivities} onPick={open} />}
+      </section>
 
       {modalItem && <ScheduleItemModal member={member} item={modalItem} items={data.items} onClose={() => setModalItem(null)} onSaved={load} />}
       {bells && <ScheduleEditor member={member} data={data} onClose={() => setBells(false)} onSaved={load} />}

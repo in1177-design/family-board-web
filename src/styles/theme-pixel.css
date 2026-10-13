@@ -597,18 +597,21 @@
 
 /* מערכת שבועית במשחקי (2026-10-13, לפי העיצוב): מסגרת כפולה סגולה עם צל, כרטיסים עם מסגרת ופס צל בצבע הקבוצה,
    שעות ותאריכים בגופן הפיקסלים */
-:root[data-theme="pixel"] .sg-scroll {
+:root[data-theme="pixel"] .sg-frame {
   border: 2px solid var(--px-frame); border-radius: 2px; background: #FFFEFA;
   box-shadow: inset 0 0 0 4px #FFFEFA, inset 0 0 0 5px #D9CCF2, 5px 5px 0 var(--px-shadow);
   padding: 18px;
 }
-:root[data-theme="pixel"] .sg-side { background: #FFFEFA; border-inline-end: 2px dashed #E3DAF3; }
-:root[data-theme="pixel"] .sg-corner { border-inline-end: none; color: var(--px-frame); }
-:root[data-theme="pixel"] .sg-period strong { font-weight: 800; }
+:root[data-theme="pixel"] .sg-side { background: #FFFEFA; }
+:root[data-theme="pixel"] .sg-corner { color: var(--px-frame); }
+:root[data-theme="pixel"] .sg-toolbar { border-bottom: 2px solid #E9DEF7; }
+:root[data-theme="pixel"] .sg-toolbar-bare { border-bottom: none; }
+:root[data-theme="pixel"] .sg-times { font-family: var(--pl-font-time); font-size: 12px; }
+:root[data-theme="pixel"] .pl button.sg-btn { border: 2px solid var(--hdr-lilac, #D9CCF2); border-radius: 4px; box-shadow: 2px 2px 0 var(--hdr-lilac, #D9CCF2); }
+:root[data-theme="pixel"] .pl button.sg-btn-on { border-color: #127567; background: #127567; box-shadow: none; }
 :root[data-theme="pixel"] .sg-time { font-family: var(--pl-font-time); font-size: 10px; letter-spacing: .02em; }
-:root[data-theme="pixel"] .sg-day { border: 2px solid #D9CCF2; border-radius: 2px; background: #F1EAFB; }
+:root[data-theme="pixel"] .sg-day-today::after { border-radius: 0; background: var(--px-frame); }
 :root[data-theme="pixel"] .sg-day strong { font-weight: 800; }
-:root[data-theme="pixel"] .sg-day-today { border-color: var(--px-frame); background: #E9DEF7; }
 :root[data-theme="pixel"] .sg-break { color: var(--px-frame); }
 :root[data-theme="pixel"] .sg-break::before, :root[data-theme="pixel"] .sg-break::after { border-top: 2px dashed #D9CCF2; }
 :root[data-theme="pixel"] .sg-card {
@@ -617,7 +620,7 @@
 :root[data-theme="pixel"] .sg-card strong { font-weight: 800; }
 :root[data-theme="pixel"] .sg-chip { border-width: 2px; border-radius: 2px; box-shadow: 2px 2px 0 var(--sg-edge); }
 :root[data-theme="pixel"] .pl button.sg-card-edit { box-shadow: 3px 3px 0 var(--sg-edge); }
-:root[data-theme="pixel"] .pl button.sg-card-edit:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--sg-edge); }
+:root[data-theme="pixel"] .pl button.sg-card-edit:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--sg-edge); border-color: var(--sg-edge); background: var(--sg-bg); }
 :root[data-theme="pixel"] .pl button.sg-card-edit:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--sg-edge); }
 :root[data-theme="pixel"] .pl button.sg-add:hover, :root[data-theme="pixel"] .pl button.sg-add:focus-visible { border-color: #D9CCF2; background: #F1EAFB; box-shadow: 3px 3px 0 #D9CCF2; transform: translate(-1px, -1px); }
 :root[data-theme="pixel"] .pl button.sg-add:active { transform: translate(2px, 2px); box-shadow: none; }
