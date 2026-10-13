@@ -3,21 +3,15 @@ import { api } from '../../store'
 import Modal from '../shared/Modal'
 import PixelButton from '../shared/PixelButton'
 import { DAY_NAMES } from './WeeklySchedule'
+import { COLOR_CHOICES } from './subjects'
 
 // עריכה של שיעור או חוג אחד מהטבלה (2026-10-12): במצב עריכה לוחצים על תא, ונפתח החלון הזה.
 // חוג: שם, שעה, מורה/מדריך וצבע. שיעור: שם, מורה, צבע, ושעה חריגה (בלי: השעה מהצלצולים).
 // "שינוי לכל השיעורים בשם הזה": השם, המורה והצבע עוברים לכל הפריטים מאותו סוג עם אותו שם (למשל כל המתמטיקה).
 // השעה והיום משתנים רק בפריט שנלחץ.
 // item: פריט קיים, או טיוטה ({ kind, weekday, period }) מלחיצה על תא ריק או על "+ חוג". items: כל הפריטים של בן המשפחה
-export const SCHEDULE_COLORS = [
-  { value: null,      label: 'בלי צבע' },
-  { value: '#FFE3E0', label: 'אלמוג' },
-  { value: '#FFF1C2', label: 'צהוב' },
-  { value: '#DDF5E8', label: 'מנטה' },
-  { value: '#DCEBFF', label: 'כחול' },
-  { value: '#EDE3FF', label: 'לילך' },
-  { value: '#FFE4F3', label: 'ורוד' }
-]
+// הצבעים: קבוצות המקצועות (subjects.js). "לפי השם": בלי צבע שמור, והצבע לפי שם השיעור
+export const SCHEDULE_COLORS = COLOR_CHOICES
 
 const ERRORS = {
   missing_title: 'צריך לתת שם',

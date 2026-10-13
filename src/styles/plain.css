@@ -1018,38 +1018,6 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
 .pl-schedule-editor input[type=time] { width: 100px; min-width: 0; }
 .pl-schedule-editor input[type=number] { min-width: 0; }
 
-/* מערכת שבועית כטבלה (2026-10-12, "כמו טבלה", לפי המערכת המודפסת): שורה לכל שיעור, עמודה לכל יום.
-   הפסקות בשורה צבועה, והיום מודגש. בטלפון גוללים לצד בתוך המסגרת, והעמודה של השיעור נשארת במקום */
-.pl-schedule-table-wrap {
-  overflow-x: auto; border: 1px solid var(--pl-line); border-radius: var(--pl-r-box); background: var(--pl-card);
-}
-.pl-schedule-table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 640px; }
-.pl-schedule-table th, .pl-schedule-table td {
-  padding: 8px 10px; border-bottom: 1px solid var(--pl-line); border-inline-start: 1px solid var(--pl-line);
-  text-align: center; vertical-align: middle; line-height: 1.3; overflow-wrap: break-word;
-}
-.pl-schedule-table thead th { background: var(--pl-soft); font-weight: 700; }
-.pl-schedule-table thead th:first-child, .pl-schedule-table tbody th { width: 96px; }
-.pl-schedule-table tbody th {
-  position: sticky; inset-inline-start: 0; z-index: 1; background: var(--pl-card); font-weight: 600;
-}
-.pl-schedule-table th > span { display: block; }
-.pl-schedule-period { font-size: var(--pl-size-sm); }
-.pl-schedule-table .pl-schedule-time { font-weight: 400; }
-.pl-schedule-table td > div + div { margin-top: 4px; }
-.pl-schedule-break th, .pl-schedule-break td {
-  padding: 4px 10px; background: var(--pl-soft); color: var(--pl-muted); font-size: 12px;
-}
-.pl-schedule-break th { font-weight: 400; }
-.pl-schedule-table .pl-schedule-col-today { background: var(--pl-accent-soft); }
-.pl-schedule-table thead .pl-schedule-col-today { color: var(--pl-accent-dark); }
-.pl-schedule-activities-row td { vertical-align: top; }
-.pl-schedule-activity-cell { display: block; width: 100%; }
-.pl-schedule-activity-cell + .pl-schedule-activity-cell { margin-top: 6px; }
-.pl-schedule-activity-fill { display: block; padding: 6px; border-radius: var(--pl-r-control); background: var(--pl-warn-soft); }
-.pl-schedule-activity-fill .pl-schedule-time { display: block; }
-.pl-schedule-table tr:last-child > * { border-bottom: none; }
-.pl-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* טבלת החוגים, מתחת לטבלת השיעורים */
 .pl-schedule-head-sub { margin-top: 28px; }
@@ -1057,7 +1025,6 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
 .pl button.pl-link.pl-schedule-editing { font-weight: 700; }
 /* מצב עריכה (2026-10-12): כל שיעור וחוג הוא כפתור שממלא את התא. במעבר עכבר מסומן, ובלחיצה נפתח חלון.
    תא ריק בטבלת השיעורים: + שמופיע במעבר עכבר או בפוקוס */
-.pl-schedule-table-editing td { padding: 3px; }
 .pl button.pl-schedule-pick {
   display: block; width: 100%; min-height: 40px; padding: 6px; border: 2px dashed transparent; border-radius: var(--pl-r-control);
   background: transparent; color: inherit; font: inherit; line-height: 1.3; cursor: pointer; box-shadow: none; text-align: center;
@@ -1080,7 +1047,68 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
 .pl button.pl-schedule-swatch-none { background: linear-gradient(135deg, transparent 46%, var(--pl-line) 46% 54%, transparent 54%), var(--pl-card); }
 .pl button.pl-schedule-swatch-on { border-color: var(--pl-accent-dark); box-shadow: 0 0 0 2px var(--pl-card), 0 0 0 4px var(--pl-accent-dark); }
 .pl-schedule-item-modal input[type=time] { width: 120px; }
-/* שעה חריגה של שיעור: בתא, בצבע ההדגשה, כדי שיראו שהיא לא לפי הצלצול */
-.pl-schedule-table .pl-schedule-time-own { color: var(--pl-accent-dark); font-weight: 700; }
 .pl-schedule-to-all { align-items: flex-start; gap: 10px; padding: 10px 12px; border: 1px solid var(--pl-line); border-radius: var(--pl-r-box); background: var(--pl-soft); }
 .pl-schedule-to-all input { margin-top: 3px; }
+
+/* ── מערכת שבועית: רשת כרטיסים (2026-10-13, לפי העיצוב של המשתמשת) ──
+   מסגרת אחת לשיעורים ואחת לחוגים, באותן עמודות. כרטיס לכל יום עם תאריך, "שיעור N" ושעה בצד,
+   כרטיס צבעוני לכל שיעור (צבע ואייקון לפי הקבוצה, subjects.js), והפסקות כקו מקווקו.
+   הצבעים של כרטיס מגיעים במשתנים --sg-bg, --sg-edge, --sg-ink. בטלפון: גלילה לצד, והעמודה של השיעורים נשארת */
+.pl-schedule { --sg-side: 96px; --sg-col: 118px; --sg-row: 58px; --sg-gap: 8px; }
+.sg-legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+.sg-chip {
+  display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px;
+  border: 1px solid var(--sg-edge); border-radius: var(--pl-r-pill); background: var(--sg-bg); color: var(--sg-ink);
+  font-size: 13px; font-weight: 700;
+}
+.sg-chip .pl-icon { width: 16px; height: 16px; }
+.sg-scroll {
+  overflow-x: auto; padding: 14px; border: 1px solid var(--pl-line); border-radius: var(--pl-r-box); background: var(--pl-card);
+}
+.sg-grid { display: grid; gap: var(--sg-gap); min-width: calc(var(--sg-side) + 6 * var(--sg-col)); }
+.sg-side {
+  position: sticky; inset-inline-start: 0; z-index: 1; display: flex; flex-direction: column; justify-content: center;
+  gap: 2px; padding-inline-end: 8px; background: var(--pl-card); border-inline-end: 1px dashed var(--pl-line);
+}
+.sg-corner { align-items: center; color: var(--pl-muted); border-inline-end: none; }
+.sg-period strong { font-size: 14px; }
+.sg-time { font-size: 11px; color: var(--pl-muted); direction: ltr; unicode-bidi: isolate; white-space: nowrap; }
+.sg-day {
+  display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px;
+  border: 1px solid var(--pl-line); border-radius: var(--pl-r-control); background: var(--pl-soft);
+}
+.sg-day strong { font-size: 16px; }
+.sg-day-today { border-color: var(--pl-accent); background: var(--pl-accent-soft); }
+.sg-day-today strong { color: var(--pl-accent-dark); }
+.sg-break { display: flex; align-items: center; gap: 10px; color: var(--pl-muted); font-size: 11px; font-weight: 600; }
+.sg-break::before, .sg-break::after { content: ''; flex: 1; border-top: 1px dashed var(--pl-line); }
+.sg-cell { display: flex; flex-direction: column; gap: var(--sg-gap); min-width: 0; }
+.sg-card {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; flex: 1; min-height: var(--sg-row);
+  padding: 8px 10px; border: 1px solid var(--sg-edge); border-radius: var(--pl-r-control);
+  background: var(--sg-bg); color: var(--pl-text); text-align: start; font: inherit;
+}
+.sg-card-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.sg-card strong { color: var(--sg-ink); font-size: 14px; line-height: 1.25; overflow-wrap: break-word; }
+.sg-sub { font-size: 12px; color: var(--pl-muted); line-height: 1.3; }
+.sg-time-own { color: var(--sg-ink); font-weight: 700; }
+.sg-icon { flex-shrink: 0; color: var(--sg-ink); }
+.sg-icon svg { width: 22px; height: 22px; }
+.sg-card-activity { flex: 0 0 auto; }
+.sg-card-activity .sg-time { color: var(--sg-ink); }
+.sg-grid-activities { grid-auto-rows: auto; }
+.sg-activities-label { flex-direction: column; align-items: center; gap: 4px; color: var(--sg-ink, var(--pl-text)); }
+.sg-stack { justify-content: flex-start; }
+/* מצב עריכה: הכרטיסים כפתורים, ותא ריק מוסיף שיעור */
+.pl button.sg-card-edit { cursor: pointer; box-shadow: none; }
+.pl button.sg-card-edit:hover, .pl button.sg-card-edit:focus-visible { outline: 2px dashed var(--pl-accent-dark); outline-offset: 2px; }
+.pl button.sg-add {
+  min-height: var(--sg-row); padding: 0; border: 2px dashed var(--pl-line); border-radius: var(--pl-r-control);
+  background: transparent; color: var(--pl-accent-dark); font-size: 20px; opacity: 0; box-shadow: none; cursor: pointer;
+}
+.pl button.sg-add:hover, .pl button.sg-add:focus-visible { opacity: 1; border-color: var(--pl-accent); }
+@media (hover: none) { .pl button.sg-add { opacity: .5; } }
+@media (max-width: 700px) {
+  .pl-schedule { --sg-side: 78px; --sg-col: 112px; }
+  .sg-scroll { padding: 10px; }
+}

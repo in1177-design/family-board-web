@@ -4,9 +4,11 @@ import PixelCard from '../shared/PixelCard'
 import { useNarrow } from '../MyDay/MyDay'
 import ScheduleEditor from './ScheduleEditor'
 import ScheduleItemModal from './ScheduleItemModal'
+import { LessonsGrid, ActivitiesGrid, Legend } from './ScheduleGrid'
+import { subjectStyle, subjectVars } from './subjects'
 
 // מערכת שעות שבועית (החלטה 2026-10-12): במקום היומן. תבנית קבועה לפי יום בשבוע, בלי תאריכים ולא קשורה ל-Google.
-// שתי טבלאות באותם רוחבים: השיעורים (שורה לכל שיעור, כמו המערכת המודפסת), ומתחת "חוגים".
+// שתי רשתות כרטיסים באותן עמודות (ScheduleGrid.jsx, לפי העיצוב של המשתמשת מ-2026-10-13): השיעורים, ומתחת "חוגים".
 // השעות מחושבות בשרת (week, מ-lib/schedule.js). בטלפון: יום אחד עם בורר ימים, ו"כל השבוע" פותח את הטבלאות.
 // canEdit: לכל טבלה כפתור "עריכה". במצב עריכה כל תא לחיץ, ונפתח חלון לשם, שעה וצבע (ScheduleItemModal).
 // תא ריק בטבלת השיעורים מוסיף שיעור. מערכת הצלצולים: "צלצולים" בעריכת השיעורים (ScheduleEditor)
@@ -21,8 +23,8 @@ const israelWeekday = () => {
 
 const hasContent = (d) => d.lessons.length > 0 || d.activities.length > 0
 const range = (start, end) => start ? (end ? `${start}–${end}` : start) : ''
-// צבע של שיעור או חוג: רקע התא
-const tint = (item) => item?.color ? { background: item.color } : undefined
+// הצבע של שיעור או חוג (subjects.js): לאייקון המספר בתצוגת יום
+const tint = (item) => { const st = subjectStyle(item); return { ...subjectVars(st), background: st.color, color: st.ink } }
 
 export default function WeeklySchedule({ member, canEdit }) {
   const narrow = useNarrow()
@@ -82,13 +84,14 @@ export default function WeeklySchedule({ member, canEdit }) {
         </div>
       )}
 
+      {!noLessons && !oneDay && <Legend />}
       {editLessons && <p className="pl-muted pl-schedule-hint">לחיצה על שיעור משנה אותו. לחיצה על תא ריק מוסיפה שיעור.</p>}
       {noLessons && !editLessons
         ? <PixelCard><p className="pl-muted">עוד אין שיעורים{canEdit ? '. אפשר להוסיף ב"עריכה".' : '.'}</p></PixelCard>
         : oneDay
           ? shown.map(d => <DayLessons key={d.weekday} day={d} isToday={d.weekday === today} editing={editLessons} onPick={open}
               onAdd={() => setModalItem({ kind: 'lesson', weekday: d.weekday, period: Math.max(0, ...d.lessons.map(l => l.period || 0)) + 1 })} />)
-          : <LessonsTable days={days} periods={data.periods} today={today} editing={editLessons} onPick={open}
+          : <LessonsGrid days={days} periods={data.periods} today={today} editing={editLessons} onPick={open}
               onAdd={(weekday, period) => setModalItem({ kind: 'lesson', weekday, period })} />}
 
       <div className="pl-row pl-schedule-head pl-schedule-head-sub">
@@ -103,7 +106,7 @@ export default function WeeklySchedule({ member, canEdit }) {
         ? <PixelCard><p className="pl-muted">אין חוגים{canEdit ? '. אפשר להוסיף ב"עריכה".' : '.'}</p></PixelCard>
         : oneDay
           ? shown.map(d => <DayActivities key={d.weekday} day={d} editing={editActivities} onPick={open} />)
-          : <ActivitiesTable days={days} today={today} editing={editActivities} onPick={open} />}
+          : <ActivitiesGrid days={days} editing={editActivities} onPick={open} />}
 
       {modalItem && <ScheduleItemModal member={member} item={modalItem} items={data.items} onClose={() => setModalItem(null)} onSaved={load} />}
       {bells && <ScheduleEditor member={member} data={data} onClose={() => setBells(false)} onSaved={load} />}
@@ -115,125 +118,6 @@ export default function WeeklySchedule({ member, canEdit }) {
 function Pickable({ editing, onClick, label, children, className = '' }) {
   if (!editing) return <div className={className}>{children}</div>
   return <button className={'pl-schedule-pick ' + className} onClick={onClick} aria-label={label}>{children}</button>
-}
-
-// שורת הכותרת של שתי הטבלאות: ימים, ושעות בית הספר רק בטבלת השיעורים
-function DaysHead({ days, today, label, withSchool }) {
-  return (
-    <thead>
-      <tr>
-        <th scope="col"><span className="pl-sr">{label}</span></th>
-        {days.map(d => (
-          <th key={d.weekday} scope="col" className={d.weekday === today ? 'pl-schedule-col-today' : undefined}>
-            {DAY_NAMES[d.weekday]}
-            {withSchool && d.school && <span className="pl-schedule-range pl-schedule-time">{range(d.school.start, d.school.end)}</span>}
-          </th>
-        ))}
-      </tr>
-    </thead>
-  )
-}
-
-// טבלת השיעורים: שורה לכל שיעור (מספר ושעה מהצלצולים), עמודה לכל יום, כמו המערכת המודפסת.
-// בין שיעורים עם רווח בצלצולים: שורת "הפסקה". שיעור בלי צלצול (למשל 8) מופיע בלי שעה.
-// שיעורים בלי מספר: שורה "בשעה אחרת" בסוף
-function LessonsTable({ days, periods, today, editing, onPick, onAdd }) {
-  const byNumber = new Map(periods.map(p => [p.period, p]))
-  const numbers = [...new Set([
-    ...periods.map(p => p.period),
-    ...days.flatMap(d => d.lessons.filter(l => l.period != null).map(l => l.period))
-  ])].sort((a, b) => a - b)
-  const unnumbered = days.some(d => d.lessons.some(l => l.period == null))
-  const todayClass = (d) => d.weekday === today ? 'pl-schedule-col-today' : undefined
-
-  const lessonCell = (d, lessons, period) => {
-    const one = lessons.length === 1 ? lessons[0] : null
-    return (
-      <td key={d.weekday} className={todayClass(d)} style={tint(one)}>
-        {lessons.map(l => (
-          <Pickable key={l.id} editing={editing} onClick={() => onPick(l)} label={`עריכת ${l.title}, ${DAY_NAMES[d.weekday]}`}>
-            {l.title}
-            {/* שעה משלו (שעה חריגה), או שיעור בלי מספר: השעה בתא, כדי שיראו שהיא שונה מהצלצול */}
-            {(period === null || l.start_time) && (
-              <span className={'pl-schedule-range pl-schedule-time' + (l.start_time ? ' pl-schedule-time-own' : '')}>{range(l.start, l.end)}</span>
-            )}
-          </Pickable>
-        ))}
-        {editing && !lessons.length && period !== null && (
-          <button className="pl-schedule-pick pl-schedule-pick-empty" onClick={() => onAdd(d.weekday, period)}
-            aria-label={`הוספת שיעור ${period}, ${DAY_NAMES[d.weekday]}`}>+</button>
-        )}
-      </td>
-    )
-  }
-
-  const rows = []
-  numbers.forEach((n, i) => {
-    const p = byNumber.get(n)
-    const prev = byNumber.get(numbers[i - 1])
-    if (p && prev && prev.end_time < p.start_time) {
-      rows.push(
-        <tr key={'break-' + n} className="pl-schedule-break">
-          <th scope="row"><span className="pl-schedule-range">{range(prev.end_time, p.start_time)}</span></th>
-          <td colSpan={days.length}>הפסקה</td>
-        </tr>
-      )
-    }
-    rows.push(
-      <tr key={n}>
-        <th scope="row">
-          <span className="pl-schedule-period">שיעור {n}</span>
-          {p && <span className="pl-schedule-range pl-schedule-time">{range(p.start_time, p.end_time)}</span>}
-        </th>
-        {days.map(d => lessonCell(d, d.lessons.filter(l => l.period === n), n))}
-      </tr>
-    )
-  })
-
-  return (
-    <div className="pl-schedule-table-wrap">
-      <table className={'pl-schedule-table' + (editing ? ' pl-schedule-table-editing' : '')}>
-        <DaysHead days={days} today={today} label="שיעור" withSchool />
-        <tbody>
-          {rows}
-          {unnumbered && (
-            <tr>
-              <th scope="row"><span className="pl-schedule-period">בשעה אחרת</span></th>
-              {days.map(d => lessonCell(d, d.lessons.filter(l => l.period == null), null))}
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
-  )
-}
-
-// טבלת החוגים: אותם רוחבים כמו טבלת השיעורים. שורה אחת, ובכל יום החוגים לפי שעה
-function ActivitiesTable({ days, today, editing, onPick }) {
-  return (
-    <div className="pl-schedule-table-wrap">
-      <table className={'pl-schedule-table' + (editing ? ' pl-schedule-table-editing' : '')}>
-        <DaysHead days={days} today={today} label="חוגים" />
-        <tbody>
-          <tr className="pl-schedule-activities-row">
-            <th scope="row"><span className="pl-schedule-period">אחרי הלימודים</span></th>
-            {days.map(d => (
-              <td key={d.weekday} className={d.weekday === today ? 'pl-schedule-col-today' : undefined}>
-                {d.activities.map(a => (
-                  <Pickable key={a.id} editing={editing} onClick={() => onPick(a)} label={`עריכת ${a.title}, ${DAY_NAMES[d.weekday]}`}
-                    className="pl-schedule-activity-cell">
-                    <span style={tint(a)} className="pl-schedule-activity-fill">
-                      {a.title}<span className="pl-schedule-range pl-schedule-time">{range(a.start, a.end)}</span>
-                    </span>
-                  </Pickable>
-                ))}
-              </td>
-            ))}
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  )
 }
 
 // בטלפון: השיעורים של יום אחד
