@@ -1100,13 +1100,21 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
 .sg-activities-label { flex-direction: column; align-items: center; gap: 4px; color: var(--sg-ink, var(--pl-text)); }
 .sg-stack { justify-content: flex-start; }
 /* מצב עריכה: הכרטיסים כפתורים, ותא ריק מוסיף שיעור */
-.pl button.sg-card-edit { cursor: pointer; box-shadow: none; }
-.pl button.sg-card-edit:hover, .pl button.sg-card-edit:focus-visible { outline: 2px dashed var(--pl-accent-dark); outline-offset: 2px; }
+/* בלי קו מקווקו (המשתמשת, 2026-10-13): במעבר עכבר הכרטיס מתרומם עם צל, ובלחיצה נלחץ פנימה, כמו כפתור */
+.pl button.sg-card-edit { cursor: pointer; box-shadow: none; transition: transform .08s, box-shadow .08s; }
+.pl button.sg-card-edit:hover { transform: translateY(-2px); box-shadow: 0 3px 0 var(--sg-edge); }
+.pl button.sg-card-edit:active { transform: translateY(1px); box-shadow: none; }
+.pl button.sg-card-edit:focus-visible { outline: 2px solid var(--pl-accent-dark); outline-offset: 2px; }
 .pl button.sg-add {
-  min-height: var(--sg-row); padding: 0; border: 2px dashed var(--pl-line); border-radius: var(--pl-r-control);
+  min-height: var(--sg-row); padding: 0; border: 2px solid transparent; border-radius: var(--pl-r-control);
   background: transparent; color: var(--pl-accent-dark); font-size: 20px; opacity: 0; box-shadow: none; cursor: pointer;
+  transition: transform .08s, box-shadow .08s;
 }
-.pl button.sg-add:hover, .pl button.sg-add:focus-visible { opacity: 1; border-color: var(--pl-accent); }
+.pl button.sg-add:hover, .pl button.sg-add:focus-visible { opacity: 1; border-color: var(--pl-line); background: var(--pl-soft); box-shadow: 0 3px 0 var(--pl-line); transform: translateY(-2px); }
+.pl button.sg-add:active { transform: translateY(1px); box-shadow: none; }
+.sg-card .sg-icon .pl-icon, .sg-icon svg { width: 22px; height: 22px; }
+.pl-schedule-item-icon { display: inline-flex; width: 18px; height: 18px; margin-inline-start: 6px; vertical-align: middle; color: var(--pl-muted); }
+.pl-schedule-item-icon svg { width: 100%; height: 100%; }
 @media (hover: none) { .pl button.sg-add { opacity: .5; } }
 @media (max-width: 700px) {
   .pl-schedule { --sg-side: 78px; --sg-col: 112px; }

@@ -5,7 +5,7 @@ import { DAY_NAMES } from './WeeklySchedule'
 
 // המערכת השבועית כרשת כרטיסים (2026-10-13, לפי העיצוב של המשתמשת):
 // כותרת: כרטיס לכל יום עם התאריך של השבוע הזה. בצד: "שיעור N" והשעה מהצלצולים.
-// כל שיעור: כרטיס בצבע ובאייקון של הקבוצה שלו (subjects.js), עם שם המורה. שיעור כפול (אותו שיעור בשני שיעורים רצופים,
+// כל שיעור: כרטיס בצבע של הקבוצה שלו (subjects.js), עם שם המורה, ואייקון רק אם ההורה בחר. שיעור כפול (אותו שיעור בשני שיעורים רצופים,
 // בלי הפסקה ביניהם) הוא כרטיס אחד בגובה שתי שורות. הפסקה: קו מקווקו עם האורך שלה.
 // החוגים בכרטיס נפרד מתחת, באותן עמודות.
 // editing: כל כרטיס הוא כפתור (onPick), ותא ריק מוסיף שיעור (onAdd)
@@ -33,7 +33,7 @@ export function Legend() {
   return (
     <div className="sg-legend" aria-label="קבוצות מקצועות">
       {GROUPS.map(g => (
-        <span key={g.id} className="sg-chip" style={subjectVars(g)}><Icon name={g.icon} />{g.label}</span>
+        <span key={g.id} className="sg-chip" style={subjectVars(g)}>{g.label}</span>
       ))}
     </div>
   )
@@ -54,7 +54,7 @@ function Card({ item, editing, onPick, double, activity, style }) {
         {sub && <span className="sg-sub">{sub}</span>}
         {!activity && item.start_time && <span className="sg-time sg-time-own">{range(item.start, item.end)}</span>}
       </span>
-      <Icon name={s.icon} className="sg-icon" />
+      {item.icon && <Icon name={item.icon} className="sg-icon" />}
     </Tag>
   )
 }

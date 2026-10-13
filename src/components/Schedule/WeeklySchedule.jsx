@@ -6,6 +6,7 @@ import ScheduleEditor from './ScheduleEditor'
 import ScheduleItemModal from './ScheduleItemModal'
 import { LessonsGrid, ActivitiesGrid, Legend } from './ScheduleGrid'
 import { subjectStyle, subjectVars } from './subjects'
+import Icon from '../shared/Icon'
 
 // מערכת שעות שבועית (החלטה 2026-10-12): במקום היומן. תבנית קבועה לפי יום בשבוע, בלי תאריכים ולא קשורה ל-Google.
 // שתי רשתות כרטיסים באותן עמודות (ScheduleGrid.jsx, לפי העיצוב של המשתמשת מ-2026-10-13): השיעורים, ומתחת "חוגים".
@@ -136,7 +137,7 @@ function DayLessons({ day, isToday, editing, onPick, onAdd }) {
             <li key={l.id}>
               <Pickable editing={editing} onClick={() => onPick(l)} label={`עריכת ${l.title}`} className="pl-schedule-item">
                 <span className="pl-schedule-num" style={tint(l)}>{l.period ?? '·'}</span>
-                <span className="pl-schedule-title">{l.title}</span>
+                <span className="pl-schedule-title">{l.title}{l.icon && <Icon name={l.icon} className="pl-schedule-item-icon" />}</span>
                 <span className="pl-schedule-time">{range(l.start, l.end)}</span>
               </Pickable>
             </li>
@@ -159,7 +160,7 @@ function DayActivities({ day, editing, onPick }) {
             <li key={a.id}>
               <Pickable editing={editing} onClick={() => onPick(a)} label={`עריכת ${a.title}`} className="pl-schedule-item pl-schedule-activity">
                 <span className="pl-schedule-num" aria-hidden="true" style={tint(a)}>★</span>
-                <span className="pl-schedule-title">{a.title}</span>
+                <span className="pl-schedule-title">{a.title}{a.icon && <Icon name={a.icon} className="pl-schedule-item-icon" />}</span>
                 <span className="pl-schedule-time">{range(a.start, a.end)}</span>
               </Pickable>
             </li>

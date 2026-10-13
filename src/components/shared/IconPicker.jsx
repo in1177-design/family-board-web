@@ -4,7 +4,8 @@ import Icon, { ICON_NAMES } from './Icon'
 // בחירת אייקון בטופס הרגל ומשימה (2026-10-08): כפתור קטן ליד השם, שפותח רשת של כל האייקונים, כמו בחירת אמוג'י.
 // value: שם האייקון, או '' לאייקון אוטומטי (לפי השם). auto: האייקון האוטומטי, להצגה בכפתור כשלא נבחר.
 // האייקונים מוצגים כאן תמיד, גם בעיצוב הרגיל (plain.css, .pl-icon-pick)
-export default function IconPicker({ value, auto, onChange }) {
+// noneLabel: הכיתוב של "בלי בחירה" (ברירת מחדל: אוטומטי). במערכת השבועית: "בלי אייקון"
+export default function IconPicker({ value, auto, onChange, noneLabel = 'אוטומטי' }) {
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
 
@@ -32,7 +33,7 @@ export default function IconPicker({ value, auto, onChange }) {
       {open && (
         <div className="pl-icon-pick-grid" role="listbox" aria-label="אייקונים">
           <button className={'pl-icon-pick-auto' + (!value ? ' pl-icon-pick-on' : '')} onClick={() => pick('')} title="לפי השם">
-            אוטומטי
+            {noneLabel}
           </button>
           {ICON_NAMES.map(n => (
             <button key={n} role="option" aria-selected={value === n} className={value === n ? 'pl-icon-pick-on' : ''}

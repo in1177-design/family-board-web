@@ -617,5 +617,8 @@
 :root[data-theme="pixel"] .sg-card strong { font-weight: 800; }
 :root[data-theme="pixel"] .sg-chip { border-width: 2px; border-radius: 2px; box-shadow: 2px 2px 0 var(--sg-edge); }
 :root[data-theme="pixel"] .pl button.sg-card-edit { box-shadow: 3px 3px 0 var(--sg-edge); }
-:root[data-theme="pixel"] .pl button.sg-card-edit:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--sg-edge); }
+:root[data-theme="pixel"] .pl button.sg-card-edit:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--sg-edge); }
+:root[data-theme="pixel"] .pl button.sg-card-edit:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--sg-edge); }
+:root[data-theme="pixel"] .pl button.sg-add:hover, :root[data-theme="pixel"] .pl button.sg-add:focus-visible { border-color: #D9CCF2; background: #F1EAFB; box-shadow: 3px 3px 0 #D9CCF2; transform: translate(-1px, -1px); }
+:root[data-theme="pixel"] .pl button.sg-add:active { transform: translate(2px, 2px); box-shadow: none; }
 :root[data-theme="pixel"] .pl button.sg-add { border-radius: 2px; }

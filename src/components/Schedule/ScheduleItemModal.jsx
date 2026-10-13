@@ -4,6 +4,7 @@ import Modal from '../shared/Modal'
 import PixelButton from '../shared/PixelButton'
 import { DAY_NAMES } from './WeeklySchedule'
 import { COLOR_CHOICES } from './subjects'
+import IconPicker from '../shared/IconPicker'
 
 // עריכה של שיעור או חוג אחד מהטבלה (2026-10-12): במצב עריכה לוחצים על תא, ונפתח החלון הזה.
 // חוג: שם, שעה, מורה/מדריך וצבע. שיעור: שם, מורה, צבע, ושעה חריגה (בלי: השעה מהצלצולים).
@@ -26,6 +27,7 @@ export default function ScheduleItemModal({ member, item, items = [], onClose, o
   const lesson = item.kind === 'lesson'
   const [title, setTitle] = useState(item.title || '')
   const [teacher, setTeacher] = useState(item.teacher || '')
+  const [icon, setIcon] = useState(item.icon || '')
   const [color, setColor] = useState(item.color || null)
   // פריטים אחרים מאותו סוג ובאותו שם (לפי השם לפני השינוי)
   const sameName = isNew ? [] : items.filter(i => i.id !== item.id && i.kind === item.kind && i.title.trim() === item.title.trim())
@@ -54,11 +56,14 @@ export default function ScheduleItemModal({ member, item, items = [], onClose, o
     }
   }
 
+  const iconChange = icon !== (item.icon || '') ? { icon: icon || null } : {}
   const save = () => run(async () => {
     const body = {
       kind: item.kind, weekday, period: lesson ? item.period : null,
       start_time: start || null, end_time: end || null, title,
-      teacher: teacher || null, location: item.location || null, color
+      teacher: teacher || null, location: item.location || null, color,
+      // האייקון נשלח רק כששונה, כדי ששמירה תעבוד גם לפני שמריצים את 012
+      ...iconChange
     }
     if (isNew) return api.schedule.create({ member_id: member.id, ...body })
     await api.schedule.update({ id: item.id, ...body })
@@ -68,7 +73,7 @@ export default function ScheduleItemModal({ member, item, items = [], onClose, o
         await api.schedule.update({
           id: other.id, kind: other.kind, weekday: other.weekday, period: other.period,
           start_time: other.start_time, end_time: other.end_time, location: other.location,
-          title, teacher: teacher || null, color
+          title, teacher: teacher || null, color, ...iconChange
         })
       }
     }
@@ -85,6 +90,12 @@ export default function ScheduleItemModal({ member, item, items = [], onClose, o
           <strong>שם {lesson ? 'השיעור' : 'החוג'}</strong>
           <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder={lesson ? 'מתמטיקה' : 'שחייה'} autoFocus />
         </label>
+
+        {/* אייקון, כמו בטופס משימה. בלי בחירה: אין אייקון בכרטיס */}
+        <div className="pl-row" style={{ gap: 10 }}>
+          <IconPicker value={icon} onChange={setIcon} noneLabel="בלי אייקון" />
+          <span className="pl-muted">{icon ? 'האייקון יופיע בכרטיס' : 'אייקון (לא חובה)'}</span>
+        </div>
 
         <label className="pl-col" style={{ gap: 6 }}>
           <strong>{lesson ? 'שם המורה' : 'שם המדריך'}</strong>
@@ -127,7 +138,7 @@ export default function ScheduleItemModal({ member, item, items = [], onClose, o
             <input type="checkbox" checked={toAll} onChange={e => setToAll(e.target.checked)} />
             <span>
               שינוי לכל {lesson ? 'השיעורים' : 'החוגים'} בשם "{item.title}" ({sameName.length + 1})
-              <span className="pl-muted" style={{ display: 'block' }}>השם, המורה והצבע. {lesson ? 'השעה משתנה' : 'השעה והיום משתנים'} רק כאן.</span>
+              <span className="pl-muted" style={{ display: 'block' }}>השם, המורה, האייקון והצבע. {lesson ? 'השעה משתנה' : 'השעה והיום משתנים'} רק כאן.</span>
             </span>
           </label>
         )}

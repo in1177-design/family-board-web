@@ -1,13 +1,13 @@
-// קבוצות מקצועות במערכת השבועית (2026-10-13, לפי העיצוב של המשתמשת): צבע ואייקון לכל שיעור וחוג.
+// קבוצות מקצועות במערכת השבועית (2026-10-13, לפי העיצוב של המשתמשת): צבע לכל שיעור וחוג.
 // הקבוצה נקבעת לפי השם (מילות מפתח). צבע שנבחר בחלון (item.color) גובר, ונותן את הסגנון של הצבע הזה.
 // color: רקע הכרטיס. edge: מסגרת וצל. ink: הכותרת
 
 export const GROUPS = [
-  { id: 'lang',     label: 'שפות',           icon: 'book-open', color: '#DCEBFF', edge: '#7FA8E0', ink: '#24518F' },
-  { id: 'math',     label: 'מתמטיקה',        icon: 'pencil',    color: '#FFE4F3', edge: '#E58BB8', ink: '#9C2F68' },
-  { id: 'world',    label: 'עולם ודעת',      icon: 'tree',      color: '#DDF5E8', edge: '#6FC08F', ink: '#23704A' },
-  { id: 'move',     label: 'תנועה ואומנות',  icon: 'trophy',    color: '#FFF1C2', edge: '#E3B33A', ink: '#7F5A00' },
-  { id: 'activity', label: 'חוגים',          icon: 'smile',     color: '#EDE3FF', edge: '#A88BE0', ink: '#51379A' }
+  { id: 'lang',     label: 'שפות',           color: '#DCEBFF', edge: '#7FA8E0', ink: '#24518F' },
+  { id: 'math',     label: 'מתמטיקה',        color: '#FFE4F3', edge: '#E58BB8', ink: '#9C2F68' },
+  { id: 'world',    label: 'עולם ודעת',      color: '#DDF5E8', edge: '#6FC08F', ink: '#23704A' },
+  { id: 'move',     label: 'תנועה ואומנות',  color: '#FFF1C2', edge: '#E3B33A', ink: '#7F5A00' },
+  { id: 'activity', label: 'חוגים',          color: '#EDE3FF', edge: '#A88BE0', ink: '#51379A' }
 ]
 // צבע נוסף בחלון, בלי קבוצה
 const EXTRA = [{ id: 'coral', label: 'אלמוג', color: '#FFE3E0', edge: '#E9917F', ink: '#9A3B27' }]
@@ -28,21 +28,7 @@ const RULES = [
   { re: /מולדת|תנ["״]ך|מדעים|מפתח הלב|כישורי חיים|היסטוריה|גיאוגרפיה|מורשת|תורה/, group: 'world' }
 ]
 
-// אייקון לפי השם, לפני האייקון של הקבוצה
-const ICONS = [
-  { re: /מוזיקה|מקצב/, icon: 'music' },
-  { re: /אומנות|אמנות|ציור/, icon: 'brush' },
-  { re: /תנ["״]ך|תורה/, icon: 'notebook' },
-  { re: /מדעים/, icon: 'sparkles' },
-  { re: /מפתח הלב/, icon: 'heart' },
-  { re: /כישורי חיים/, icon: 'smile' },
-  { re: /שחייה.*מים|מים/, icon: 'cloud-sun' },
-  { re: /יבש/, icon: 'trophy' },
-  { re: /הישרדות|צופים/, icon: 'fire' },
-  { re: /מתמטיקה|גיאומטריה/, icon: 'pencil' }
-]
-
-// הסגנון של שיעור או חוג: { color, edge, ink, icon, group }
+// הסגנון של שיעור או חוג: { color, edge, ink, group }. בלי אייקון אוטומטי (המשתמשת, 2026-10-13): אייקון רק אם נבחר (item.icon)
 export function subjectStyle(item) {
   const title = item?.title || ''
   const group = item?.kind === 'activity'
@@ -50,8 +36,7 @@ export function subjectStyle(item) {
     : byId[RULES.find(r => r.re.test(title))?.group] || null
   const chosen = item?.color && [...GROUPS, ...EXTRA].find(g => g.color.toLowerCase() === item.color.toLowerCase())
   const look = chosen || group || { color: '#F4F1EA', edge: '#CFC8BA', ink: 'var(--pl-text)' }
-  const icon = ICONS.find(r => r.re.test(title))?.icon || group?.icon || (chosen?.icon) || 'star'
-  return { color: item?.color && !chosen ? item.color : look.color, edge: look.edge, ink: look.ink, icon, group: group?.id || null }
+  return { color: item?.color && !chosen ? item.color : look.color, edge: look.edge, ink: look.ink, group: group?.id || null }
 }
 
 // משתני CSS לכרטיס
