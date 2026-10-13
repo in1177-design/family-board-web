@@ -1092,9 +1092,10 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
 /* מספר השיעור, ולידו שעת ההתחלה והסיום אחת מתחת לשנייה */
 .sg-period { flex-direction: row; align-items: center; justify-content: flex-start; gap: 10px; }
 .sg-num { min-width: 22px; font-size: 22px; font-weight: 800; line-height: 1; text-align: center; color: var(--pl-text); }
-.sg-times { display: flex; flex-direction: column; gap: 1px; font-size: 13px; line-height: 1.25; color: var(--pl-muted); direction: ltr; text-align: start; }
+/* שעות ותאריכים בגופן הרגיל, עם ספרות ברוחב קבוע: הגופן הפיקסלי לא מספיק קריא (המשתמשת, 2026-10-13) */
+.sg-times { display: flex; flex-direction: column; gap: 1px; font-size: 14px; font-weight: 600; line-height: 1.25; color: var(--pl-muted); direction: ltr; text-align: start; font-variant-numeric: tabular-nums; }
 .sg-other { font-size: 12px; font-weight: 600; }
-.sg-time { font-size: 11px; color: var(--pl-muted); direction: ltr; unicode-bidi: isolate; white-space: nowrap; }
+.sg-time { font-size: 12px; font-weight: 600; color: var(--pl-muted); direction: ltr; unicode-bidi: isolate; white-space: nowrap; font-variant-numeric: tabular-nums; }
 /* כותרת יום: בלי רקע ומסגרת (המשתמשת, 2026-10-13). היום: בצבע ההדגשה, עם פס קטן מתחת */
 .sg-day { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 4px 8px; }
 .sg-day strong { font-size: 16px; }
@@ -1109,8 +1110,8 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
   background: var(--sg-bg); color: var(--pl-text); text-align: start; font: inherit;
 }
 .sg-card-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.sg-card strong { color: var(--sg-ink); font-size: 14px; line-height: 1.25; overflow-wrap: break-word; }
-.sg-sub { font-size: 12px; color: var(--pl-muted); line-height: 1.3; }
+.sg-card strong { color: var(--sg-ink); font-size: 15px; line-height: 1.25; overflow-wrap: break-word; }
+.sg-sub { font-size: 13px; color: var(--pl-muted); line-height: 1.3; }
 .sg-time-own { color: var(--sg-ink); font-weight: 700; }
 .sg-icon { flex-shrink: 0; color: var(--sg-ink); }
 .sg-icon svg { width: 22px; height: 22px; }

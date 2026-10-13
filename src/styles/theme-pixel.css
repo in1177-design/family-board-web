@@ -596,7 +596,7 @@
 }
 
 /* מערכת שבועית במשחקי (2026-10-13, לפי העיצוב): מסגרת כפולה סגולה עם צל, כרטיסים עם מסגרת ופס צל בצבע הקבוצה,
-   שעות ותאריכים בגופן הפיקסלים */
+   שעות ותאריכים בגופן הרגיל (הפיקסלי לא מספיק קריא, 2026-10-13) */
 :root[data-theme="pixel"] .sg-frame {
   border: 2px solid var(--px-frame); border-radius: 2px; background: #FFFEFA;
   box-shadow: inset 0 0 0 4px #FFFEFA, inset 0 0 0 5px #D9CCF2, 5px 5px 0 var(--px-shadow);
@@ -606,9 +606,7 @@
 :root[data-theme="pixel"] .sg-corner { color: var(--px-frame); }
 :root[data-theme="pixel"] .sg-toolbar { border-bottom: 2px solid #E9DEF7; }
 :root[data-theme="pixel"] .sg-toolbar-bare { border-bottom: none; }
-:root[data-theme="pixel"] .sg-times { font-family: var(--pl-font-time); font-size: 12px; }
 :root[data-theme="pixel"] .pl button.sg-btn { border: 2px solid var(--hdr-lilac, #D9CCF2); border-radius: 4px; box-shadow: 2px 2px 0 var(--hdr-lilac, #D9CCF2); }
-:root[data-theme="pixel"] .sg-time { font-family: var(--pl-font-time); font-size: 10px; letter-spacing: .02em; }
 :root[data-theme="pixel"] .sg-day-today::after { border-radius: 0; background: var(--px-frame); }
 :root[data-theme="pixel"] .sg-day strong { font-weight: 800; }
 :root[data-theme="pixel"] .sg-break { color: var(--px-frame); }
