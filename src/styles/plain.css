@@ -1082,7 +1082,9 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
 /* בעריכה הכפתור נשאר באותם צבעים, בלי היפוך (המשתמשת, 2026-10-13: "מבלבל בעין"). רק הטקסט מתחלף ל"סיום עריכה" */
 .pl button.sg-btn-on { color: var(--pl-accent-dark); }
 .sg-activities-day { margin-top: 20px; }
-.sg-scroll { overflow-x: auto; }
+/* מרווח של 8px מסביב ללוח, ושוליים שליליים כדי שהמיקום לא ישתנה: כרטיס בקצה שמתרומם או נלחץ (תזוזה וצל עד 8px)
+   נשאר בתוך אזור הגלילה, ולא מוסיף פס גלילה שמגדיל את המסגרת (באג, 2026-10-13: גיאומטריה בשישי) */
+.sg-scroll { overflow-x: auto; overflow-y: hidden; padding: 8px; margin: -8px; }
 .sg-grid { display: grid; gap: var(--sg-gap); min-width: calc(var(--sg-side) + 6 * var(--sg-col)); }
 .sg-side {
   position: sticky; inset-inline-start: 0; z-index: 1; display: flex; flex-direction: column; justify-content: center;
