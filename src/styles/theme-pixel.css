@@ -608,7 +608,6 @@
 :root[data-theme="pixel"] .sg-toolbar-bare { border-bottom: none; }
 :root[data-theme="pixel"] .sg-times { font-family: var(--pl-font-time); font-size: 12px; }
 :root[data-theme="pixel"] .pl button.sg-btn { border: 2px solid var(--hdr-lilac, #D9CCF2); border-radius: 4px; box-shadow: 2px 2px 0 var(--hdr-lilac, #D9CCF2); }
-:root[data-theme="pixel"] .pl button.sg-btn-on { border-color: #127567; background: #127567; box-shadow: none; }
 :root[data-theme="pixel"] .sg-time { font-family: var(--pl-font-time); font-size: 10px; letter-spacing: .02em; }
 :root[data-theme="pixel"] .sg-day-today::after { border-radius: 0; background: var(--px-frame); }
 :root[data-theme="pixel"] .sg-day strong { font-weight: 800; }

@@ -1079,7 +1079,8 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
   min-height: 36px; padding: 0 14px; border: 1px solid var(--pl-control); border-radius: var(--pl-r-pill);
   background: var(--pl-card); color: var(--pl-text); font-size: 14px; font-weight: 600; cursor: pointer;
 }
-.pl button.sg-btn-on { border-color: var(--pl-accent-dark); background: var(--pl-accent-dark); color: #FFF; }
+/* בעריכה הכפתור נשאר באותם צבעים, בלי היפוך (המשתמשת, 2026-10-13: "מבלבל בעין"). רק הטקסט מתחלף ל"סיום עריכה" */
+.pl button.sg-btn-on { color: var(--pl-accent-dark); }
 .sg-activities-day { margin-top: 20px; }
 .sg-scroll { overflow-x: auto; }
 .sg-grid { display: grid; gap: var(--sg-gap); min-width: calc(var(--sg-side) + 6 * var(--sg-col)); }
