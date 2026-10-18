@@ -56,7 +56,24 @@ export function prepareFile(file) {
 
 let fileKey = 0
 
-export default function ScheduleUpload({ member, onDraft, onManual, onClose }) {
+// הטקסטים לפי סוג ההעלאה: מערכת מלאה, או חוגים בלבד (מקטע "חוגים", 2026-10-18)
+const TEXT = {
+  all: {
+    title: 'העלאת מערכת של ', reading: 'קורא את המערכת של ', drop: 'צילום או קובץ של המערכת', more: 'למשל הצלצולים',
+    hint: 'אם הצלצולים בדף נפרד, מעלים את שניהם יחד. אחרי הקריאה המערכת מוצגת לבדיקה, ונשמרת רק כשמאשרים.',
+    empty: 'לא נמצאה מערכת',
+    steps: ['מזהה את הימים והשיעורים', 'מחפש את שעות הצלצולים', 'מסדר את המערכת לבדיקה']
+  },
+  activities: {
+    title: 'העלאת חוגים של ', reading: 'קורא את החוגים של ', drop: 'צילום או קובץ של החוגים', more: 'למשל חוג נוסף',
+    hint: 'למשל לוח אימונים או לוח חוגים. החוגים מתווספים למערכת, והשיעורים והצלצולים לא משתנים. אחרי הקריאה בודקים, ונשמר רק כשמאשרים.',
+    empty: 'לא נמצאו חוגים',
+    steps: ['מזהה את החוגים', 'מחפש ימים ושעות', 'מסדר את החוגים לבדיקה']
+  }
+}
+
+export default function ScheduleUpload({ member, scope = 'all', onDraft, onManual, onClose }) {
+  const t = TEXT[scope] || TEXT.all
   const input = useRef(null)
   const [files, setFiles] = useState([])   // [{ key, name, pdf, dataUrl }]
   const [reading, setReading] = useState(false)
@@ -91,11 +108,11 @@ export default function ScheduleUpload({ member, onDraft, onManual, onClose }) {
     setReading(true)
     setError('')
     try {
-      const draft = await api.schedule.extract({ memberId: member.id, images: files.map(f => f.dataUrl) })
+      const draft = await api.schedule.extract({ memberId: member.id, images: files.map(f => f.dataUrl), ...(scope === 'activities' ? { scope } : {}) })
       // לא נקרא כלום: ההסבר של Claude (למשל "התמונה ריקה"), אם יש
       if (!draft.items.length && !draft.periods.length) {
         const note = draft.warnings.map(w => w.note).filter(Boolean).join(' ')
-        setError(note ? 'לא נמצאה מערכת: ' + note : ERRORS.extract_failed)
+        setError(note ? t.empty + ': ' + note : ERRORS.extract_failed)
         setReading(false)
         return
       }
@@ -115,26 +132,26 @@ export default function ScheduleUpload({ member, onDraft, onManual, onClose }) {
   // בזמן הקריאה החלון לא נסגר, כדי שלא תישלח בקשה כפולה. הקבצים נשארים בתצוגה, עם פס סורק
   if (reading) {
     return (
-      <Modal title={'העלאת מערכת של ' + member.name} onClose={onClose} locked>
+      <Modal title={t.title + member.name} onClose={onClose} locked>
         <div className="pl-col su-reading" role="status">
           <div className="su-reading-files" aria-hidden="true">
             {files.map(f => <Thumb key={f.key} file={f} scanning />)}
           </div>
-          <strong>קורא את המערכת של {member.name}...</strong>
-          <ReadingSteps />
+          <strong>{t.reading}{member.name}...</strong>
+          <ReadingSteps steps={t.steps} />
         </div>
       </Modal>
     )
   }
 
   return (
-    <Modal title={'העלאת מערכת של ' + member.name} onClose={onClose}>
+    <Modal title={t.title + member.name} onClose={onClose}>
       <div className="pl-col su-upload">
         {fileInput}
         {files.length === 0 ? (
           <button className={'su-drop' + (over ? ' su-drop-over' : '')} onClick={pick} {...drop}>
             <Icon name="camera" className="su-drop-icon" />
-            <strong>צילום או קובץ של המערכת</strong>
+            <strong>{t.drop}</strong>
             <span className="pl-muted">לחיצה לבחירה, או גרירה לכאן · תמונה או PDF</span>
           </button>
         ) : (
@@ -152,14 +169,14 @@ export default function ScheduleUpload({ member, onDraft, onManual, onClose }) {
                 <button className="su-add" onClick={pick}>
                   <span className="su-add-plus" aria-hidden="true">+</span>
                   <span>עוד קובץ</span>
-                  <span className="pl-muted">למשל הצלצולים</span>
+                  <span className="pl-muted">{t.more}</span>
                 </button>
               </li>
             )}
           </ul>
         )}
 
-        <p className="pl-muted su-hint">אם הצלצולים בדף נפרד, מעלים את שניהם יחד. אחרי הקריאה המערכת מוצגת לבדיקה, ונשמרת רק כשמאשרים.</p>
+        <p className="pl-muted su-hint">{t.hint}</p>
 
         {error && (
           <div className="pl-col su-error" role="alert">
@@ -188,16 +205,15 @@ function Thumb({ file, scanning }) {
 }
 
 // מה קורה בזמן הקריאה (עד דקה): הודעה מתחלפת כל כמה שניות, כדי שיהיה ברור שזה עובד
-const STEPS = ['מזהה את הימים והשיעורים', 'מחפש את שעות הצלצולים', 'מסדר את המערכת לבדיקה']
-function ReadingSteps() {
+function ReadingSteps({ steps }) {
   const [step, setStep] = useState(0)
   useEffect(() => {
-    const t = setInterval(() => setStep(s => Math.min(s + 1, STEPS.length - 1)), 6000)
+    const t = setInterval(() => setStep(s => Math.min(s + 1, steps.length - 1)), 6000)
     return () => clearInterval(t)
-  }, [])
+  }, [steps])
   return (
     <ol className="su-steps">
-      {STEPS.map((label, i) => (
+      {steps.map((label, i) => (
         <li key={label} className={i < step ? 'su-step-done' : i === step ? 'su-step-now' : ''}>
           <span className="su-step-dot" aria-hidden="true">{i < step ? '✓' : ''}</span>{label}
         </li>

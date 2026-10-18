@@ -27,7 +27,9 @@ function warningText(w) {
 export default function ScheduleDraftBar({ draft, replacing, saving, error, onSave, onCancel }) {
   const lessons = draft.items.filter(i => i.kind === 'lesson').length
   const activities = draft.items.length - lessons
-  const counts = [
+  const onlyActivities = draft.scope === 'activities'
+  // חוגים בלבד: כמה חוגים חדשים נקראו. אחרת: מה יש בטיוטה
+  const counts = onlyActivities ? `${draft.readItems} חוגים חדשים` : [
     `${lessons} שיעורים`,
     activities ? `${activities} חוגים` : '',
     draft.readPeriods ? `${draft.periods.length} צלצולים` : ''
@@ -37,7 +39,7 @@ export default function ScheduleDraftBar({ draft, replacing, saving, error, onSa
     <section className="sd-bar" aria-label="טיוטה מהתמונה">
       <div className="sd-head">
         <div className="sd-title">
-          <strong>טיוטה מהתמונה</strong>
+          <strong>{onlyActivities ? 'חוגים מהתמונה' : 'טיוטה מהתמונה'}</strong>
           <span>{counts}</span>
         </div>
         <div className="sd-actions">
@@ -48,7 +50,8 @@ export default function ScheduleDraftBar({ draft, replacing, saving, error, onSa
       <p className="sd-hint">
         כך תיראה המערכת. לחיצה על שיעור או חוג משנה אותו, ותא ריק מוסיף שיעור.
         {replacing && ' השמירה תחליף את המערכת הקיימת.'}
-        {!draft.readPeriods && !draft.periods.length && ' לא נמצאו שעות צלצולים, ואפשר להוסיף אותן אחרי השמירה.'}
+        {onlyActivities && ' החוגים החדשים נוספו לחוגים הקיימים, והשיעורים לא משתנים.'}
+        {!onlyActivities && !draft.readPeriods && !draft.periods.length && ' לא נמצאו שעות צלצולים, ואפשר להוסיף אותן אחרי השמירה.'}
       </p>
       {draft.warnings.length > 0 && (
         <div className="sd-warnings">

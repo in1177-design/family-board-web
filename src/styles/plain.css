@@ -1246,3 +1246,6 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
   .su-choices { grid-template-columns: 1fr; }
   .pl button.su-choice { min-height: 0; }
 }
+
+/* חוגים: כשאין חוגים, "העלאת תמונה או קובץ" ו"הוספה ידנית" בשורה אחת (2026-10-18) */
+.sg-empty-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; }

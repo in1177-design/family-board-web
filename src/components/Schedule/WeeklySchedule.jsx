@@ -73,11 +73,21 @@ export default function WeeklySchedule({ member, canEdit }) {
   if (error) return <div className="pl"><p className="pl-muted">{error}</p></div>
   if (!data) return <div className="pl"><p className="pl-muted">טוען...</p></div>
 
-  // טיוטה: מה שנקרא מחליף את הקיים, רק אם נקרא (תמונה של צלצולים בלבד לא מוחקת שיעורים)
+  // טיוטה: מה שנקרא מחליף את הקיים, רק אם נקרא (תמונה של צלצולים בלבד לא מוחקת שיעורים).
+  // חוגים בלבד (upload === 'activities'): החוגים החדשים מתווספים לכל מה שיש, וחוג שכבר קיים (אותו שם, יום ושעה) לא נכפל
   const startDraft = (d) => {
+    const scope = upload === 'activities' ? 'activities' : 'all'
     setUpload(false)
     setDraftError('')
+    if (scope === 'activities') {
+      const key = (i) => [i.title.trim(), i.weekday, i.start_time].join('|')
+      const have = new Set(data.items.filter(i => i.kind === 'activity').map(key))
+      const added = d.items.filter(i => i.kind === 'activity' && !have.has(key(i))).map(i => ({ ...i, id: newDraftId() }))
+      setDraft({ scope, items: [...data.items, ...added], periods: data.periods, warnings: d.warnings, readItems: added.length, readPeriods: 0 })
+      return
+    }
     setDraft({
+      scope,
       items: d.items.length ? d.items.map(i => ({ ...i, id: newDraftId() })) : data.items,
       periods: d.periods.length ? d.periods : data.periods,
       warnings: d.warnings, readItems: d.items.length, readPeriods: d.periods.length
@@ -137,13 +147,15 @@ export default function WeeklySchedule({ member, canEdit }) {
     <div className="sg-actions">
       {weekToggle}
       {!draft && editLessons && <button className="sg-btn" onClick={() => setBells(true)}>צלצולים</button>}
-      {!draft && canEdit && !editLessons && <button className="sg-btn" onClick={() => setUpload(true)}>העלאה</button>}
+      {!draft && canEdit && !editLessons && <button className="sg-btn" onClick={() => setUpload('all')}>העלאה</button>}
       {!draft && editButton(editLessons, setEditLessons)}
     </div>
   )
+  const addActivity = () => setModalItem({ kind: 'activity', weekday: oneDay ? picked : today < 6 ? today : 0 })
   const activitiesActions = (
     <div className="sg-actions">
-      {editA && <button className="sg-btn" onClick={() => setModalItem({ kind: 'activity', weekday: oneDay ? picked : today < 6 ? today : 0 })}>+ חוג</button>}
+      {editA && <button className="sg-btn" onClick={addActivity}>+ חוג</button>}
+      {!draft && canEdit && !editActivities && <button className="sg-btn" onClick={() => setUpload('activities')}>העלאה</button>}
       {!draft && editButton(editActivities, setEditActivities)}
     </div>
   )
@@ -152,7 +164,8 @@ export default function WeeklySchedule({ member, canEdit }) {
   const modals = <>
     {modalItem && <ScheduleItemModal member={member} item={modalItem} items={view.items} onClose={() => setModalItem(null)}
       onSaved={draft ? () => {} : load} {...(draft ? { ops: draftOps } : {})} />}
-    {upload && <ScheduleUpload member={member} onClose={() => setUpload(false)} onManual={manual} onDraft={startDraft} />}
+    {upload && <ScheduleUpload member={member} scope={upload} onClose={() => setUpload(false)}
+      onManual={upload === 'activities' ? () => { setUpload(false); addActivity() } : manual} onDraft={startDraft} />}
     {bells && <ScheduleEditor member={member} data={data} onClose={() => setBells(false)} onSaved={load} />}
   </>
 
@@ -162,7 +175,7 @@ export default function WeeklySchedule({ member, canEdit }) {
         <section className="sg-frame su-empty">
           <strong className="sg-title">עוד אין מערכת שעות ל{member.name}</strong>
           <div className="su-choices">
-            <button className="su-choice" onClick={() => setUpload(true)}>
+            <button className="su-choice" onClick={() => setUpload('all')}>
               <Icon name="camera" className="su-choice-icon" />
               <strong>העלאת תמונה או קובץ</strong>
               <span className="pl-muted">צילום או PDF של המערכת, ואפשר גם של הצלצולים. בודקים ומתקנים לפני השמירה.</span>
@@ -181,7 +194,7 @@ export default function WeeklySchedule({ member, canEdit }) {
 
   return (
     <div className={'pl pl-schedule' + (draft ? ' pl-schedule-draft' : '')} style={{ maxWidth: 'var(--pl-page-max)', margin: '0 auto' }}>
-      {draft && <ScheduleDraftBar draft={draft} replacing={data.items.length > 0 && draft.readItems > 0}
+      {draft && <ScheduleDraftBar draft={draft} replacing={draft.scope === 'all' && data.items.length > 0 && draft.readItems > 0}
         saving={savingDraft} error={draftError} onSave={saveDraft} onCancel={cancelDraft} />}
       {oneDay ? <>
         <div className="sg-toolbar sg-toolbar-bare">{lessonsActions}</div>
@@ -211,7 +224,13 @@ export default function WeeklySchedule({ member, canEdit }) {
         <div className={'sg-toolbar' + (oneDay ? ' sg-toolbar-bare' : '')}><strong className="sg-title">חוגים</strong>{activitiesActions}</div>
         {editA && !draft && <p className="pl-muted pl-schedule-hint">לחיצה על חוג משנה את השם, השעה או הצבע.</p>}
         {noActivities
-          ? <p className="pl-muted">אין חוגים{canEdit ? '. אפשר להוסיף ב"עריכה".' : '.'}</p>
+          ? canEdit && !draft
+            ? <div className="sg-empty-actions">
+                <span className="pl-muted">אין חוגים.</span>
+                <button className="pl-link" onClick={() => setUpload('activities')}>העלאת תמונה או קובץ</button>
+                <button className="pl-link" onClick={addActivity}>הוספה ידנית</button>
+              </div>
+            : <p className="pl-muted">אין חוגים.</p>
           : oneDay
             ? shown.map(d => <DayActivities key={d.weekday} day={d} editing={editA} onPick={open} />)
             : <ActivitiesGrid days={days} editing={editA} onPick={open} />}
