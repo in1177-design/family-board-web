@@ -75,7 +75,9 @@ export const liveApi = {
     update:  ({ id, ...data }) => req('PUT', `/api/schedule/${id}`, data),
     delete:  (id) => req('DELETE', `/api/schedule/${id}`),
     setPeriods: ({ memberId, periods }) => req('PUT', `/api/schedule/periods?member_id=${memberId}`, periods),
-    replace: ({ memberId, items }) => req('PUT', `/api/schedule/replace?member_id=${memberId}`, items)
+    replace: ({ memberId, items }) => req('PUT', `/api/schedule/replace?member_id=${memberId}`, items),
+    // קריאת מערכת מתמונות (data URLs, עד 4). מחזיר טיוטה { periods, items, warnings }, בלי לשמור
+    extract: ({ memberId, images }) => req('POST', `/api/schedule/extract?member_id=${memberId}`, { images })
   },
   day: {
     get:      (memberId) => req('GET', `/api/day/${memberId}`),

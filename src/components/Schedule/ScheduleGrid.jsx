@@ -1,6 +1,6 @@
 import React from 'react'
 import Icon from '../shared/Icon'
-import { GROUPS, subjectStyle, subjectVars } from './subjects'
+import { subjectStyle, subjectVars } from './subjects'
 import { DAY_NAMES } from './WeeklySchedule'
 
 // המערכת השבועית כרשת כרטיסים (2026-10-13, לפי העיצוב של המשתמשת):
@@ -8,7 +8,8 @@ import { DAY_NAMES } from './WeeklySchedule'
 // כל שיעור: כרטיס בצבע של הקבוצה שלו (subjects.js), עם שם המורה, ואייקון רק אם ההורה בחר. שיעור כפול (אותו שיעור בשני שיעורים רצופים,
 // בלי הפסקה ביניהם) הוא כרטיס אחד בגובה שתי שורות. הפסקה: קו מקווקו עם האורך שלה.
 // החוגים בכרטיס נפרד מתחת, באותן עמודות.
-// editing: כל כרטיס הוא כפתור (onPick), ותא ריק מוסיף שיעור (onAdd)
+// editing: כל כרטיס הוא כפתור (onPick), ותא ריק מוסיף שיעור (onAdd).
+// flagged: תאים שלא נקראו בטיוטה מתמונה (Set של "יום|שיעור"): תא ריק כזה מסומן "?" בצהוב
 
 const range = (start, end) => start ? (end ? `${start}–${end}` : start) : ''
 const minutes = (t) => { const [h, m] = t.split(':').map(Number); return h * 60 + m }
@@ -29,15 +30,6 @@ function weekDates() {
 
 const columns = (days) => `var(--sg-side) repeat(${days.length}, minmax(var(--sg-col), 1fr))`
 
-export function Legend() {
-  return (
-    <div className="sg-legend" aria-label="קבוצות מקצועות">
-      {GROUPS.map(g => (
-        <span key={g.id} className="sg-chip" style={subjectVars(g)}>{g.label}</span>
-      ))}
-    </div>
-  )
-}
 
 // כרטיס של שיעור או חוג. במצב עריכה: כפתור
 function Card({ item, editing, onPick, double, activity, style }) {
@@ -59,7 +51,7 @@ function Card({ item, editing, onPick, double, activity, style }) {
   )
 }
 
-export function LessonsGrid({ days, periods, today, editing, onPick, onAdd }) {
+export function LessonsGrid({ days, periods, today, editing, onPick, onAdd, flagged }) {
   const dates = weekDates()
   const byNumber = new Map(periods.map(p => [p.period, p]))
   const numbers = [...new Set([
@@ -108,10 +100,14 @@ export function LessonsGrid({ days, periods, today, editing, onPick, onAdd }) {
       // שיעור נוסף באותו מספר כבר בתא (others), ויידלג בלולאה כי המספר תפוס
     }
     if (editing) {
-      numbers.filter(n => !taken.has(n)).forEach(n => cells.push(
-        <button key={`add-${d.weekday}-${n}`} className="sg-add" style={{ gridColumn: col, gridRow: rowOf.get(n) }}
-          onClick={() => onAdd(d.weekday, n)} aria-label={`הוספת שיעור ${n}, ${DAY_NAMES[d.weekday]}`}>+</button>
-      ))
+      numbers.filter(n => !taken.has(n)).forEach(n => {
+        const flag = flagged?.has(`${d.weekday}|${n}`)
+        cells.push(
+          <button key={`add-${d.weekday}-${n}`} className={'sg-add' + (flag ? ' sg-add-flag' : '')} style={{ gridColumn: col, gridRow: rowOf.get(n) }}
+            onClick={() => onAdd(d.weekday, n)} title={flag ? 'לא נקרא מהתמונה' : undefined}
+            aria-label={`${flag ? 'לא נקרא. ' : ''}הוספת שיעור ${n}, ${DAY_NAMES[d.weekday]}`}>{flag ? '?' : '+'}</button>
+        )
+      })
     }
     if (unnumbered) {
       const free = d.lessons.filter(l => l.period == null)

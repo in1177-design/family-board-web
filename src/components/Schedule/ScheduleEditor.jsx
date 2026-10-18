@@ -6,7 +6,7 @@ import { DAY_NAMES, DAY_SHORT } from './WeeklySchedule'
 
 // עריכת מערכת השעות של בן משפחה (2026-10-12), בחלון מודאלי: מערכת הצלצולים, ושיעורים וחוגים לפי יום.
 // עורכים עותק מקומי, ו"שמירה" מחליפה את הכל בבת אחת (PUT periods ו-replace), כך שאין מערכת חצי שמורה.
-// מורה ומיקום נשמרים, אבל עוד לא מוצגים במערכת
+// מורה ומיקום נשמרים, אבל עוד לא מוצגים במערכת. טיוטה מתמונה לא נפתחת כאן אלא במערכת עצמה (WeeklySchedule, 2026-10-18)
 const ERRORS = {
   bad_time: 'שעה לא תקינה, או שעת סיום לפני ההתחלה',
   bad_period: 'מספר שיעור לא תקין, או שחוזר פעמיים',
@@ -21,7 +21,8 @@ const newKey = () => 'new-' + (++tempId)
 export default function ScheduleEditor({ member, data, onClose, onSaved }) {
   const [periods, setPeriods] = useState(() => data.periods.map(p => ({ key: p.id, period: p.period, start_time: p.start_time, end_time: p.end_time })))
   const [items, setItems] = useState(() => data.items.map(i => ({ key: i.id, ...i })))
-  const [day, setDay] = useState(0)
+  // נפתח ביום הראשון שיש בו משהו
+  const [day, setDay] = useState(() => items.length ? Math.min(...items.map(i => i.weekday)) : 0)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
@@ -52,8 +53,8 @@ export default function ScheduleEditor({ member, data, onClose, onSaved }) {
       })
       await api.schedule.replace({
         memberId: member.id,
-        items: items.map(({ kind, weekday, period, start_time, end_time, title, teacher, location, color }) =>
-          ({ kind, weekday, period: period === '' ? null : period, start_time: start_time || null, end_time: end_time || null, title, teacher, location, ...(color ? { color } : {}) }))
+        items: items.map(({ kind, weekday, period, start_time, end_time, title, teacher, location, color, icon }) =>
+          ({ kind, weekday, period: period === '' ? null : period, start_time: start_time || null, end_time: end_time || null, title, teacher, location, ...(color ? { color } : {}), ...(icon ? { icon } : {}) }))
       })
       onSaved()
       onClose()
@@ -131,3 +132,4 @@ export default function ScheduleEditor({ member, data, onClose, onSaved }) {
     </Modal>
   )
 }
+

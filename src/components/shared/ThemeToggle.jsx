@@ -7,8 +7,24 @@ import { useStore } from '../../store'
 // בן משפחה שעוד לא בחר, ומסך הבית: מה שנבחר במכשיר (localStorage). בלי localStorage: עובד עד רענון
 const KEY = 'family_theme'
 const PIXEL = 'pixel'
+// עקיפה לבדיקות (פס הבדיקות, 2026-10-18): 'pixel' או 'refined' גובר על הבחירה של כל בן משפחה, בכל מסך.
+// נשמר רק במכשיר, ולא משנה את הפרופילים
+const TEST_KEY = 'family_theme_test'
+
+export function readTestTheme() {
+  try { const v = localStorage.getItem(TEST_KEY); return v === PIXEL || v === 'refined' ? v : null } catch { return null }
+}
+
+export function setTestTheme(value) {
+  try {
+    if (value) localStorage.setItem(TEST_KEY, value)
+    else localStorage.removeItem(TEST_KEY)
+  } catch { /* בלי שמירה: נשאר עד רענון */ }
+}
 
 export function readTheme() {
+  const test = readTestTheme()
+  if (test) return test === PIXEL ? PIXEL : null
   try { return localStorage.getItem(KEY) === PIXEL ? PIXEL : null } catch { return null }
 }
 
@@ -21,6 +37,8 @@ function saveDeviceTheme(theme) {
 
 // העיצוב של בן משפחה: מה שהוא בחר, ואם לא בחר, מה שנבחר במכשיר
 export function memberTheme(member) {
+  const test = readTestTheme()
+  if (test) return test === PIXEL ? PIXEL : null
   if (member?.theme === 'playful') return PIXEL
   if (member?.theme === 'refined') return null
   return readTheme()

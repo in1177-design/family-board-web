@@ -615,7 +615,6 @@
   border: 2px solid var(--sg-edge); border-radius: 2px; box-shadow: 3px 3px 0 var(--sg-edge);
 }
 :root[data-theme="pixel"] .sg-card strong { font-weight: 800; }
-:root[data-theme="pixel"] .sg-chip { border-width: 2px; border-radius: 2px; box-shadow: 2px 2px 0 var(--sg-edge); }
 :root[data-theme="pixel"] .pl button.sg-card { border: 2px solid var(--sg-edge); border-radius: 2px; background: var(--sg-bg); }
 :root[data-theme="pixel"] .pl button.sg-card-edit { box-shadow: 3px 3px 0 var(--sg-edge); }
 :root[data-theme="pixel"] .pl button.sg-card-edit:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--sg-edge); border-color: var(--sg-edge); background: var(--sg-bg); }
@@ -623,3 +622,24 @@
 :root[data-theme="pixel"] .pl button.sg-add:hover, :root[data-theme="pixel"] .pl button.sg-add:focus-visible { border-color: #D9CCF2; background: #F1EAFB; box-shadow: 3px 3px 0 #D9CCF2; transform: translate(-1px, -1px); }
 :root[data-theme="pixel"] .pl button.sg-add:active { transform: translate(2px, 2px); box-shadow: none; }
 :root[data-theme="pixel"] .pl button.sg-add { border-radius: 2px; }
+
+/* הכנסת מערכת שעות במשחקי (פרוסה ב2, 2026-10-18): כרטיסי בחירה עם מסגרת סגולה וצל מוסט */
+:root[data-theme="pixel"] .pl button.su-choice {
+  border: 2px solid var(--hdr-lilac, #D9CCF2); border-radius: 4px; background: #FFFEFA;
+  box-shadow: 3px 3px 0 var(--hdr-lilac, #D9CCF2);
+}
+:root[data-theme="pixel"] .pl button.su-choice:hover, :root[data-theme="pixel"] .pl button.su-choice:focus-visible {
+  background: #F1EAFB; transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--hdr-lilac, #D9CCF2);
+}
+:root[data-theme="pixel"] .pl button.su-choice:active { transform: translate(2px, 2px); box-shadow: none; }
+:root[data-theme="pixel"] .su-error, :root[data-theme="pixel"] .sd-warnings { border-radius: 2px; }
+:root[data-theme="pixel"] .sd-bar { border: 2px solid var(--px-frame); border-radius: 2px; background: #FFFEFA; box-shadow: 4px 4px 0 var(--hdr-lilac, #D9CCF2); }
+:root[data-theme="pixel"] .pl button.sg-add.sg-add-flag { border-radius: 2px; }
+:root[data-theme="pixel"] .pl button.su-drop, :root[data-theme="pixel"] .pl button.su-add {
+  border: 2px dashed var(--px-frame); border-radius: 2px; background: #FFFEFA;
+}
+:root[data-theme="pixel"] .pl button.su-drop:hover, :root[data-theme="pixel"] .pl button.su-add:hover,
+:root[data-theme="pixel"] .pl .su-drop-over { background: #F1EAFB; }
+:root[data-theme="pixel"] .su-thumb { border: 2px solid var(--hdr-lilac, #D9CCF2); border-radius: 2px; box-shadow: 3px 3px 0 var(--hdr-lilac, #D9CCF2); }
+:root[data-theme="pixel"] .pl button.su-remove { border-radius: 2px; }
+:root[data-theme="pixel"] .su-step-dot { border-radius: 2px; }

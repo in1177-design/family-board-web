@@ -299,6 +299,9 @@
 }
 :root nav.pl-switcher button.pl-switcher-item:hover { background: #2A2A2A; transform: none; }
 :root nav.pl-switcher button.pl-switcher-current { background: #FFF; border-color: #FFF; color: #111; }
+/* טוגל העיצוב בפס הבדיקות (2026-10-18): בסוף הפס, עם ✕ לחזרה לעיצוב של הפרופיל */
+.pl-switcher-theme { display: flex; gap: 4px; flex-shrink: 0; margin-inline-start: 8px; padding-inline-start: 8px; border-inline-start: 1px solid #444; }
+.pl-switcher-theme button.pl-switcher-item { white-space: nowrap; }
 
 /* טבלה */
 .pl-table {
@@ -1058,13 +1061,6 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
 .pl.pl-schedule { padding: 0; background: transparent; }
 @media (max-width: 700px) { .pl.pl-schedule { padding-inline: 4px; } }
 .pl-schedule { --sg-side: 96px; --sg-col: 118px; --sg-row: 58px; --sg-gap: 8px; }
-.sg-legend { display: flex; flex-wrap: wrap; gap: 8px; }
-.sg-chip {
-  display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px;
-  border: 1px solid var(--sg-edge); border-radius: var(--pl-r-pill); background: var(--sg-bg); color: var(--sg-ink);
-  font-size: 13px; font-weight: 700;
-}
-.sg-chip .pl-icon { width: 16px; height: 16px; }
 /* המסגרת הכללית: שורת כלים (מקרא וכפתורים), קו מפריד, ואז הלוח. הלוח נגלל לצד בתוך המסגרת */
 .sg-frame { padding: 14px; border: 1px solid var(--pl-line); border-radius: var(--pl-r-box); background: var(--pl-card); }
 .sg-frame + .sg-frame, .sg-frame + .sg-activities-day { margin-top: 20px; }
@@ -1150,4 +1146,103 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
 @media (max-width: 700px) {
   .pl-schedule { --sg-side: 78px; --sg-col: 112px; }
   .sg-frame { padding: 10px; }
+}
+
+/* הכנסת מערכת שעות (פרוסה ב2, 2026-10-18): שתי בחירות לילד בלי מערכת, חלון ההעלאה, והפס של הטיוטה בעורך */
+.su-empty { display: flex; flex-direction: column; gap: 14px; }
+.su-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.pl button.su-choice {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+  min-height: 132px; padding: 18px; text-align: start; white-space: normal;
+  border: 1px solid var(--pl-line); border-radius: var(--pl-r-box); background: var(--pl-card); font-weight: 400;
+}
+.pl button.su-choice strong { font-size: 1.05rem; }
+.pl button.su-choice:hover, .pl button.su-choice:focus-visible { border-color: var(--pl-accent); background: var(--pl-accent-soft); }
+.su-choice-icon { width: 28px; height: 28px; color: var(--pl-accent-dark); }
+.su-choice-icon svg { width: 100%; height: 100%; }
+/* חלון ההעלאה: אזור בחירה גדול, ואחרי הבחירה רשת של תמונות ממוזערות עם משבצת "+ עוד קובץ" */
+.su-upload { gap: 14px; }
+.pl button.su-drop {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; min-height: 190px; padding: 24px; white-space: normal; text-align: center; font-weight: 400;
+  border: 2px dashed var(--pl-control); border-radius: var(--pl-r-box); background: var(--pl-page);
+}
+.pl button.su-drop strong { font-size: 1.1rem; }
+.pl button.su-drop:hover, .pl button.su-drop:focus-visible, .pl .su-drop-over { border-color: var(--pl-accent); background: var(--pl-accent-soft); }
+.su-drop-icon { width: 44px; height: 44px; color: var(--pl-accent-dark); }
+.su-drop-icon svg { width: 100%; height: 100%; }
+.su-grid {
+  list-style: none; margin: 0; padding: 4px; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px;
+  border: 2px dashed transparent; border-radius: var(--pl-r-box);
+}
+.su-tile { position: relative; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.su-thumb {
+  position: relative; display: block; aspect-ratio: 3 / 4; overflow: hidden;
+  border: 1px solid var(--pl-line); border-radius: var(--pl-r-control); background: var(--pl-page);
+}
+.su-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.su-thumb-pdf { display: grid; place-items: center; width: 100%; height: 100%; font-weight: 700; color: var(--pl-warn); background: var(--pl-warn-soft); }
+.su-name { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pl button.su-remove {
+  position: absolute; top: 6px; inset-inline-end: 6px; min-height: 0; width: 28px; height: 28px; padding: 0;
+  border-radius: 50%; border: none; background: rgba(20, 24, 32, .72); color: #fff; font-size: 13px; line-height: 1;
+}
+.pl button.su-add {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  aspect-ratio: 3 / 4; height: auto; padding: 8px; white-space: normal; font-weight: 500;
+  border: 2px dashed var(--pl-control); border-radius: var(--pl-r-control); background: transparent;
+}
+.pl button.su-add:hover, .pl button.su-add:focus-visible { border-color: var(--pl-accent); background: var(--pl-accent-soft); }
+.su-add-plus { font-size: 28px; line-height: 1; color: var(--pl-accent-dark); }
+.su-hint { margin: 0; font-size: 13px; }
+.su-error { gap: 4px; align-items: flex-start; padding: 10px 12px; border-radius: var(--pl-r-control); background: var(--pl-warn-soft); color: var(--pl-warn); }
+.su-footer { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+/* בזמן הקריאה: התמונות עם פס סורק, ושלבים שמתקדמים */
+.su-reading { align-items: center; gap: 14px; padding: 12px 0 8px; text-align: center; }
+.su-reading-files { display: flex; justify-content: center; gap: 10px; }
+.su-reading-files .su-thumb { width: 96px; }
+.su-thumb-scan::after {
+  content: ''; position: absolute; inset-inline: 0; top: 0; height: 22%;
+  background: linear-gradient(to bottom, transparent, color-mix(in srgb, var(--pl-accent) 45%, transparent), transparent);
+  animation: su-scan 1.8s ease-in-out infinite alternate;
+}
+@keyframes su-scan { from { transform: translateY(-30%); } to { transform: translateY(380%); } }
+@media (prefers-reduced-motion: reduce) { .su-thumb-scan::after { animation: none; top: 39%; } }
+.su-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; text-align: start; }
+.su-steps li { display: flex; align-items: center; gap: 8px; color: var(--pl-muted); }
+.su-steps li.su-step-now { color: var(--pl-text); font-weight: 600; }
+.su-steps li.su-step-done { color: var(--pl-accent-dark); }
+.su-step-dot {
+  display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; font-size: 12px; color: #fff;
+  border: 2px solid var(--pl-line); background: var(--pl-card);
+}
+.su-step-now .su-step-dot { border-color: var(--pl-accent); animation: su-pulse 1.2s ease-in-out infinite; }
+.su-step-done .su-step-dot { border-color: var(--pl-accent); background: var(--pl-accent); }
+@keyframes su-pulse { 50% { box-shadow: 0 0 0 4px var(--pl-accent-soft); } }
+@media (prefers-reduced-motion: reduce) { .su-step-now .su-step-dot { animation: none; } }
+/* טיוטה מתמונה במערכת עצמה (2026-10-18): פס למעלה עם מה שנקרא, מה לבדוק, ושמירה. תא שלא נקרא: "?" בצהוב */
+.sd-bar {
+  display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; padding: 14px 16px;
+  border: 1px solid var(--pl-accent); border-radius: var(--pl-r-box); background: var(--pl-accent-soft);
+}
+.sd-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.sd-title { display: flex; flex-direction: column; gap: 2px; }
+.sd-title strong { font-size: 1.1rem; }
+.sd-title span, .sd-hint { color: var(--pl-muted); font-size: 14px; }
+.sd-hint { margin: 0; }
+.sd-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.sd-warnings { padding: 10px 12px; border-radius: var(--pl-r-control); background: var(--pl-warn-soft); color: var(--pl-warn); font-size: 14px; }
+.sd-warnings ul { margin: 4px 0 0; padding-inline-start: 20px; }
+.sd-error { margin: 0; color: var(--pl-error); font-weight: 600; }
+.pl button.sg-add.sg-add-flag { opacity: 1; border: 2px dashed var(--pl-warn); background: var(--pl-warn-soft); color: var(--pl-warn); font-weight: 700; }
+@media (max-width: 700px) {
+  .sd-actions { width: 100%; }
+  .sd-actions > * { flex: 1; }
+}
+@media (max-width: 700px) {
+  .su-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .su-name { font-size: 12px; }
+  .pl button.su-drop { min-height: 150px; }
+  .su-choices { grid-template-columns: 1fr; }
+  .pl button.su-choice { min-height: 0; }
 }

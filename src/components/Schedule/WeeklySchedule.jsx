@@ -4,7 +4,10 @@ import PixelCard from '../shared/PixelCard'
 import { useNarrow } from '../MyDay/MyDay'
 import ScheduleEditor from './ScheduleEditor'
 import ScheduleItemModal from './ScheduleItemModal'
-import { LessonsGrid, ActivitiesGrid, Legend } from './ScheduleGrid'
+import ScheduleUpload from './ScheduleUpload'
+import ScheduleDraftBar from './ScheduleDraftBar'
+import { buildWeek } from './week'
+import { LessonsGrid, ActivitiesGrid } from './ScheduleGrid'
 import { subjectStyle, subjectVars } from './subjects'
 import Icon from '../shared/Icon'
 
@@ -13,6 +16,10 @@ import Icon from '../shared/Icon'
 // השעות מחושבות בשרת (week, מ-lib/schedule.js). בטלפון: יום אחד עם בורר ימים, ו"כל השבוע" פותח את הטבלאות.
 // canEdit: לכל טבלה כפתור "עריכה". במצב עריכה כל תא לחיץ, ונפתח חלון לשם, שעה וצבע (ScheduleItemModal).
 // תא ריק בטבלת השיעורים מוסיף שיעור. מערכת הצלצולים: "צלצולים" בעריכת השיעורים (ScheduleEditor)
+// הכנסת מערכת (פרוסה ב2, 2026-10-18): לילד בלי מערכת, שתי בחירות: העלאת תמונה או קובץ (ScheduleUpload), או הכנסה ידנית (ScheduleEditor).
+// לילד עם מערכת: "העלאה" בשורת הכלים.
+// הטיוטה מהתמונה מוצגת במערכת עצמה, במצב עריכה, עם פס "טיוטה" למעלה (המשתמשת, 2026-10-18: לא אהבה את העורך כמסך אישור).
+// השינויים בטיוטה נשמרים בעותק מקומי (draftOps), ורק "שמירת המערכת" כותבת לשרת
 export const DAY_NAMES = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת']
 export const DAY_SHORT = ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳']
 
@@ -27,6 +34,21 @@ const range = (start, end) => start ? (end ? `${start}–${end}` : start) : ''
 // הצבע של שיעור או חוג (subjects.js): לאייקון המספר בתצוגת יום
 const tint = (item) => { const st = subjectStyle(item); return { ...subjectVars(st), background: st.color, color: st.ink } }
 
+let draftId = 0
+const newDraftId = () => 'draft-' + (++draftId)
+// פריט לשמירה בשרת: רק השדות של הטבלה
+const forSave = ({ kind, weekday, period, start_time, end_time, title, teacher, location, color, icon }) => ({
+  kind, weekday, period: period ?? null, start_time: start_time || null, end_time: end_time || null,
+  title, teacher: teacher || null, location: location || null, ...(color ? { color } : {}), ...(icon ? { icon } : {})
+})
+const SAVE_ERRORS = {
+  bad_time: 'יש שעה לא תקינה, או שעת סיום לפני ההתחלה.',
+  bad_period: 'יש מספר שיעור לא תקין.',
+  missing_title: 'יש שיעור או חוג בלי שם.',
+  lesson_needs_period_or_time: 'יש שיעור בלי מספר ובלי שעה.',
+  activity_needs_time: 'יש חוג בלי שעה.'
+}
+
 export default function WeeklySchedule({ member, canEdit }) {
   const narrow = useNarrow()
   const [data, setData] = useState(null)
@@ -37,24 +59,70 @@ export default function WeeklySchedule({ member, canEdit }) {
   const [editActivities, setEditActivities] = useState(false)
   const [modalItem, setModalItem] = useState(null)
   const [bells, setBells] = useState(false)
+  const [upload, setUpload] = useState(false)
+  // טיוטה מתמונה: { items, periods, warnings, readItems, readPeriods }. items עם id זמני
+  const [draft, setDraft] = useState(null)
+  const [savingDraft, setSavingDraft] = useState(false)
+  const [draftError, setDraftError] = useState('')
 
   const load = () => api.schedule.get(member.id)
     .then(d => { setData(d); setError('') })
     .catch(e => setError('לא הצלחתי לטעון את המערכת. ' + (e.message || '')))
-  useEffect(() => { setData(null); setEditLessons(false); setEditActivities(false); load() }, [member.id])
+  useEffect(() => { setData(null); setDraft(null); setEditLessons(false); setEditActivities(false); load() }, [member.id])
 
   if (error) return <div className="pl"><p className="pl-muted">{error}</p></div>
   if (!data) return <div className="pl"><p className="pl-muted">טוען...</p></div>
 
+  // טיוטה: מה שנקרא מחליף את הקיים, רק אם נקרא (תמונה של צלצולים בלבד לא מוחקת שיעורים)
+  const startDraft = (d) => {
+    setUpload(false)
+    setDraftError('')
+    setDraft({
+      items: d.items.length ? d.items.map(i => ({ ...i, id: newDraftId() })) : data.items,
+      periods: d.periods.length ? d.periods : data.periods,
+      warnings: d.warnings, readItems: d.items.length, readPeriods: d.periods.length
+    })
+  }
+  const draftOps = {
+    create: ({ member_id, ...body }) => { setDraft(dr => ({ ...dr, items: [...dr.items, { ...body, id: newDraftId() }] })); return Promise.resolve() },
+    update: ({ id, ...body }) => { setDraft(dr => ({ ...dr, items: dr.items.map(i => i.id === id ? { ...i, ...body } : i) })); return Promise.resolve() },
+    delete: (id) => { setDraft(dr => ({ ...dr, items: dr.items.filter(i => i.id !== id) })); return Promise.resolve() }
+  }
+  const saveDraft = async () => {
+    setSavingDraft(true)
+    setDraftError('')
+    try {
+      if (draft.readPeriods) {
+        await api.schedule.setPeriods({ memberId: member.id, periods: draft.periods.map(({ period, start_time, end_time }) => ({ period, start_time, end_time })) })
+      }
+      await api.schedule.replace({ memberId: member.id, items: draft.items.map(forSave) })
+      setDraft(null)
+      load()
+    } catch (e) {
+      setDraftError(SAVE_ERRORS[e.message] || 'לא הצלחתי לשמור. ' + (e.message || ''))
+    } finally {
+      setSavingDraft(false)
+    }
+  }
+  const cancelDraft = () => { if (confirm('לבטל את הטיוטה? שום דבר לא יישמר.')) setDraft(null) }
+
+  // מה שמוצג: הטיוטה, או המערכת מהשרת
+  const view = draft ? { items: draft.items, periods: draft.periods, week: buildWeek(draft.items, draft.periods) } : data
+  const editL = !!draft || editLessons
+  const editA = !!draft || editActivities
+  const flagged = draft && new Set(draft.warnings.filter(w => w.weekday != null && w.period != null).map(w => w.weekday + '|' + w.period))
+
   const today = israelWeekday()
   // א׳–ו׳ תמיד, שבת רק אם יש בה משהו
-  const days = data.week.filter(d => d.weekday < 6 || hasContent(d))
+  const days = view.week.filter(d => d.weekday < 6 || hasContent(d))
   const noLessons = !days.some(d => d.lessons.length)
   const noActivities = !days.some(d => d.activities.length)
   const oneDay = narrow && !all
+  const empty = canEdit && !draft && noLessons && noActivities && !data.periods.length
+  const manual = () => { setUpload(false); setBells(true) }
   const shown = oneDay ? days.filter(d => d.weekday === picked) : days
   // פריט מהשרת (עם start/end מחושבים) לחלון: רק השדות של הפריט עצמו
-  const open = (item) => setModalItem(data.items.find(i => i.id === item.id) || item)
+  const open = (item) => setModalItem(view.items.find(i => i.id === item.id) || item)
 
   const editButton = (on, set) => canEdit && (
     <button className={'sg-btn' + (on ? ' sg-btn-on' : '')} aria-pressed={on} onClick={() => set(v => !v)}>
@@ -68,20 +136,53 @@ export default function WeeklySchedule({ member, canEdit }) {
   const lessonsActions = (
     <div className="sg-actions">
       {weekToggle}
-      {editLessons && <button className="sg-btn" onClick={() => setBells(true)}>צלצולים</button>}
-      {editButton(editLessons, setEditLessons)}
+      {!draft && editLessons && <button className="sg-btn" onClick={() => setBells(true)}>צלצולים</button>}
+      {!draft && canEdit && !editLessons && <button className="sg-btn" onClick={() => setUpload(true)}>העלאה</button>}
+      {!draft && editButton(editLessons, setEditLessons)}
     </div>
   )
   const activitiesActions = (
     <div className="sg-actions">
-      {editActivities && <button className="sg-btn" onClick={() => setModalItem({ kind: 'activity', weekday: oneDay ? picked : today < 6 ? today : 0 })}>+ חוג</button>}
-      {editButton(editActivities, setEditActivities)}
+      {editA && <button className="sg-btn" onClick={() => setModalItem({ kind: 'activity', weekday: oneDay ? picked : today < 6 ? today : 0 })}>+ חוג</button>}
+      {!draft && editButton(editActivities, setEditActivities)}
     </div>
   )
 
   // בלי הכותרת "מערכת שבועית" (המשתמשת, 2026-10-13). המקרא וכפתורי העריכה בשורה אחת בתוך המסגרת, מעל הלוח
+  const modals = <>
+    {modalItem && <ScheduleItemModal member={member} item={modalItem} items={view.items} onClose={() => setModalItem(null)}
+      onSaved={draft ? () => {} : load} {...(draft ? { ops: draftOps } : {})} />}
+    {upload && <ScheduleUpload member={member} onClose={() => setUpload(false)} onManual={manual} onDraft={startDraft} />}
+    {bells && <ScheduleEditor member={member} data={data} onClose={() => setBells(false)} onSaved={load} />}
+  </>
+
+  if (empty) {
+    return (
+      <div className="pl pl-schedule" style={{ maxWidth: 'var(--pl-page-max)', margin: '0 auto' }}>
+        <section className="sg-frame su-empty">
+          <strong className="sg-title">עוד אין מערכת שעות ל{member.name}</strong>
+          <div className="su-choices">
+            <button className="su-choice" onClick={() => setUpload(true)}>
+              <Icon name="camera" className="su-choice-icon" />
+              <strong>העלאת תמונה או קובץ</strong>
+              <span className="pl-muted">צילום או PDF של המערכת, ואפשר גם של הצלצולים. בודקים ומתקנים לפני השמירה.</span>
+            </button>
+            <button className="su-choice" onClick={manual}>
+              <Icon name="pencil" className="su-choice-icon" />
+              <strong>הכנסה ידנית</strong>
+              <span className="pl-muted">צלצולים, שיעורים וחוגים לפי יום.</span>
+            </button>
+          </div>
+        </section>
+        {modals}
+      </div>
+    )
+  }
+
   return (
-    <div className="pl pl-schedule" style={{ maxWidth: 'var(--pl-page-max)', margin: '0 auto' }}>
+    <div className={'pl pl-schedule' + (draft ? ' pl-schedule-draft' : '')} style={{ maxWidth: 'var(--pl-page-max)', margin: '0 auto' }}>
+      {draft && <ScheduleDraftBar draft={draft} replacing={data.items.length > 0 && draft.readItems > 0}
+        saving={savingDraft} error={draftError} onSave={saveDraft} onCancel={cancelDraft} />}
       {oneDay ? <>
         <div className="sg-toolbar sg-toolbar-bare">{lessonsActions}</div>
         <div className="pl-row pl-schedule-days" role="tablist" aria-label="יום בשבוע">
@@ -93,31 +194,30 @@ export default function WeeklySchedule({ member, canEdit }) {
             </button>
           ))}
         </div>
-        {editLessons && <p className="pl-muted pl-schedule-hint">לחיצה על שיעור משנה אותו.</p>}
-        {shown.map(d => <DayLessons key={d.weekday} day={d} isToday={d.weekday === today} editing={editLessons} onPick={open}
+        {editL && !draft && <p className="pl-muted pl-schedule-hint">לחיצה על שיעור משנה אותו.</p>}
+        {shown.map(d => <DayLessons key={d.weekday} day={d} isToday={d.weekday === today} editing={editL} onPick={open}
           onAdd={() => addLesson(d.weekday, Math.max(0, ...d.lessons.map(l => l.period || 0)) + 1)} />)}
       </> : (
         <section className="sg-frame">
-          <div className="sg-toolbar"><Legend />{lessonsActions}</div>
-          {editLessons && <p className="pl-muted pl-schedule-hint">לחיצה על שיעור משנה אותו. לחיצה על תא ריק מוסיפה שיעור.</p>}
-          {noLessons && !editLessons
+          <div className="sg-toolbar">{lessonsActions}</div>
+          {editL && !draft && <p className="pl-muted pl-schedule-hint">לחיצה על שיעור משנה אותו. לחיצה על תא ריק מוסיפה שיעור.</p>}
+          {noLessons && !editL
             ? <p className="pl-muted">עוד אין שיעורים{canEdit ? '. אפשר להוסיף ב"עריכה".' : '.'}</p>
-            : <LessonsGrid days={days} periods={data.periods} today={today} editing={editLessons} onPick={open} onAdd={addLesson} />}
+            : <LessonsGrid days={days} periods={view.periods} today={today} editing={editL} onPick={open} onAdd={addLesson} flagged={flagged} />}
         </section>
       )}
 
       <section className={oneDay ? 'sg-activities-day' : 'sg-frame sg-frame-activities'}>
         <div className={'sg-toolbar' + (oneDay ? ' sg-toolbar-bare' : '')}><strong className="sg-title">חוגים</strong>{activitiesActions}</div>
-        {editActivities && <p className="pl-muted pl-schedule-hint">לחיצה על חוג משנה את השם, השעה או הצבע.</p>}
+        {editA && !draft && <p className="pl-muted pl-schedule-hint">לחיצה על חוג משנה את השם, השעה או הצבע.</p>}
         {noActivities
           ? <p className="pl-muted">אין חוגים{canEdit ? '. אפשר להוסיף ב"עריכה".' : '.'}</p>
           : oneDay
-            ? shown.map(d => <DayActivities key={d.weekday} day={d} editing={editActivities} onPick={open} />)
-            : <ActivitiesGrid days={days} editing={editActivities} onPick={open} />}
+            ? shown.map(d => <DayActivities key={d.weekday} day={d} editing={editA} onPick={open} />)
+            : <ActivitiesGrid days={days} editing={editA} onPick={open} />}
       </section>
 
-      {modalItem && <ScheduleItemModal member={member} item={modalItem} items={data.items} onClose={() => setModalItem(null)} onSaved={load} />}
-      {bells && <ScheduleEditor member={member} data={data} onClose={() => setBells(false)} onSaved={load} />}
+      {modals}
     </div>
   )
 }

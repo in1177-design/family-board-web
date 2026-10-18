@@ -11,7 +11,8 @@ import IconPicker from '../shared/IconPicker'
 // "שינוי לכל השיעורים בשם הזה": השם, המורה והצבע עוברים לכל הפריטים מאותו סוג עם אותו שם (למשל כל המתמטיקה).
 // השעה והיום משתנים רק בפריט שנלחץ.
 // item: פריט קיים, או טיוטה ({ kind, weekday, period }) מלחיצה על תא ריק או על "+ חוג". items: כל הפריטים של בן המשפחה
-// הצבעים: קבוצות המקצועות (subjects.js). "לפי השם": בלי צבע שמור, והצבע לפי שם השיעור
+// הצבעים: קבוצות המקצועות (subjects.js). "לפי השם": בלי צבע שמור, והצבע לפי שם השיעור.
+// ops: לאן נשמר השינוי. ברירת מחדל: השרת (api.schedule). בטיוטה מתמונה (2026-10-18): עותק מקומי, שנשמר רק ב"שמירת המערכת"
 export const SCHEDULE_COLORS = COLOR_CHOICES
 
 const ERRORS = {
@@ -22,7 +23,7 @@ const ERRORS = {
   bad_color: 'הצבע לא תקין'
 }
 
-export default function ScheduleItemModal({ member, item, items = [], onClose, onSaved }) {
+export default function ScheduleItemModal({ member, item, items = [], onClose, onSaved, ops = api.schedule }) {
   const isNew = !item.id
   const lesson = item.kind === 'lesson'
   const [title, setTitle] = useState(item.title || '')
@@ -65,12 +66,12 @@ export default function ScheduleItemModal({ member, item, items = [], onClose, o
       // האייקון נשלח רק כששונה, כדי ששמירה תעבוד גם לפני שמריצים את 012
       ...iconChange
     }
-    if (isNew) return api.schedule.create({ member_id: member.id, ...body })
-    await api.schedule.update({ id: item.id, ...body })
+    if (isNew) return ops.create({ member_id: member.id, ...body })
+    await ops.update({ id: item.id, ...body })
     // לכל השאר באותו שם: רק שם, מורה וצבע. כל השאר נשאר שלהם
     if (toAll) {
       for (const other of sameName) {
-        await api.schedule.update({
+        await ops.update({
           id: other.id, kind: other.kind, weekday: other.weekday, period: other.period,
           start_time: other.start_time, end_time: other.end_time, location: other.location,
           title, teacher: teacher || null, color, ...iconChange
@@ -80,7 +81,7 @@ export default function ScheduleItemModal({ member, item, items = [], onClose, o
   })
   const remove = () => {
     if (!confirm(`למחוק את "${item.title}"?`)) return
-    run(() => api.schedule.delete(item.id))
+    run(() => ops.delete(item.id))
   }
 
   return (
