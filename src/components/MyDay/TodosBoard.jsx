@@ -3,20 +3,23 @@ import { useStore, api } from '../../store'
 import TodoForm from './TodoForm'
 import { TodoCard } from './TodosSection'
 import MemberTabs from '../shared/MemberTabs'
+import PixelCard from '../shared/PixelCard'
+import Icon from '../shared/Icon'
 
 // היום לפי שעון ישראל
 const israelToday = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jerusalem' }).format(new Date())
 
 // מסך המשימות בפאנל ההורים: המשימות הפתוחות של כל בן משפחה, הורים וילדים.
 // מחליף את מסך המשימות הישן (החלטה 2026-10-07)
-export default function TodosBoard() {
+// fixedMemberId: לוח של בן משפחה אחד, בלי הבחירה למעלה (לשוניות הילד ב"ילדים", 2026-10-18)
+export default function TodosBoard({ fixedMemberId } = {}) {
   const { members, activeMemberId } = useStore()
   const [todos, setTodos] = useState(null)
   const [error, setError] = useState('')
   const [editing, setEditing] = useState(null) // { todo } או { memberId }
   // בן משפחה אחד בכל פעם, עם בחירה למעלה (המשתמשת, 2026-10-09)
   const [memberId, setMemberId] = useState(() => members[0]?.id)
-  const member = members.find(m => m.id === memberId) || members[0]
+  const member = members.find(m => m.id === (fixedMemberId || memberId)) || members[0]
   const today = israelToday()
 
   const load = () => api.todos.getAll().then(setTodos).catch(e => setError(e.message))
@@ -52,16 +55,23 @@ export default function TodosBoard() {
       {error && <p className="pl-error">{error}</p>}
       {!todos && !error && <p>טוען…</p>}
 
-      <MemberTabs members={members} value={member?.id} onChange={setMemberId}
-        count={m => (todos || []).filter(t => t.member_id === m.id && !t.done_at).length} />
+      {!fixedMemberId && <MemberTabs members={members} value={member?.id} onChange={setMemberId}
+        count={m => (todos || []).filter(t => t.member_id === m.id && !t.done_at).length} />}
 
       {todos && member && (() => {
         const list = todos.filter(t => t.member_id === member.id).sort(order)
         return (
-          <div className="pl-section pl-col" style={{ gap: 8, marginTop: 16 }}>
-            <div className="pl-row" style={{ justifyContent: 'space-between' }}>
-              <strong>המשימות של {member.name}</strong>
-              <span className="pl-chip">{list.filter(t => !t.done_at).length} פתוחות</span>
+          // כרטיס באותו עיצוב כמו החלונות של "היום של" (המשתמשת, 2026-10-18). הסדר לפי תאריך ושעה, בלי גרירה
+          <PixelCard className="pl-col pl-win pl-win-todos" style={{ gap: 10, marginTop: 16 }}>
+            <div className="pl-fold-head wb-head">
+              <div className="pl-win-head">
+                <Icon name="check" className="pl-win-icon-line" />
+                <div>
+                  <strong style={{ fontSize: 'var(--pl-size-h3)' }}>המשימות של {member.name}</strong>
+                  <div className="pl-muted" style={{ fontSize: 'var(--pl-size-sm)' }}>לפי תאריך ושעה</div>
+                </div>
+              </div>
+              <span className="pl-chip pl-chip-accent">{list.filter(t => !t.done_at).length} פתוחות</span>
             </div>
             {list.length === 0 && <div className="pl-muted">אין משימות פתוחות.</div>}
             {list.map(t => (
@@ -71,7 +81,7 @@ export default function TodosBoard() {
             <button className="pl-link" style={{ alignSelf: 'flex-start' }} onClick={() => setEditing({ memberId: member.id })}>
               + הוסף משימה ל{member.name}
             </button>
-          </div>
+          </PixelCard>
         )
       })()}
 

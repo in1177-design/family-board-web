@@ -34,7 +34,7 @@ export const DAYS_RULES = [
   { id: 'every_day',         label: 'כל יום' },
   { id: 'school_days',       label: 'ימי לימודים' },
   { id: 'weekend',           label: 'סופ״ש' },
-  { id: 'before_school_day', label: 'לפני יום לימודים' }
+  { id: 'before_school_day', label: 'לפני לימודים' } // השם קוצר (המשתמשת, 2026-10-19)
 ]
 
 // הימים שכלל מכסה בשבוע רגיל, בלי חופשות. לתיבות הימים בטופס.

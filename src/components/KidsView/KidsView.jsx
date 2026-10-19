@@ -10,7 +10,8 @@ const TABS = [
   { id: 'myday',    label: 'היום שלי',  text: 'היום שלי', icon: 'sun' },
   // מערכת שבועית במקום היומן (2026-10-12). WeeklyCalendar (Google) נשאר בקוד עד ההחלטה על Google
   { id: 'schedule', label: 'מערכת שבועית', text: 'מערכת שבועית', icon: 'calendar' },
-  { id: 'points',   label: '⭐ ניקוד',   text: 'ניקוד',    icon: 'star' }
+  // "היכל תהילה" במקום "ניקוד" (המשתמשת, 2026-10-18)
+  { id: 'points',   label: '⭐ היכל תהילה', text: 'היכל תהילה', icon: 'star' }
 ]
 
 export default function KidsView() {
@@ -34,6 +35,8 @@ export default function KidsView() {
   }, [member?.google_calendar_id, activeMemberId])
 
   if (!member) return null
+
+
 
   return (
     <div style={{

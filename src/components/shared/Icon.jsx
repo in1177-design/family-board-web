@@ -12,8 +12,10 @@ export const hasIcon = (name) => !!PIXEL[name]
 // השמות לבחירה בטופס: של סדרת הפיקסלים. לכל אחד יש גם אייקון קו
 export const ICON_NAMES = Object.keys(PIXEL).sort()
 
-export default function Icon({ name, className = '' }) {
-  const pixel = useThemeName() === 'pixel'
+// line: תמיד אייקון קו, גם במשחקי (למשל השעון בלוח ההרגלים, 2026-10-19)
+export default function Icon({ name, className = '', line }) {
+  const theme = useThemeName()
+  const pixel = !line && theme === 'pixel'
   // אייקון שיש רק בסדרה אחת (למשל sunset, רק בקו): מה שיש
   const svg = (pixel ? PIXEL[name] || LINE[name] : LINE[name] || PIXEL[name])
   if (!svg) return null

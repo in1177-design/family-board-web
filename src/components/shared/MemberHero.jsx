@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { guard } from './unsaved'
 import { api, useStore } from '../../store'
 import { daySummary } from '../MyDay/MyDay'
 import { memberPhoto } from './memberPhoto'
 import Icon from './Icon'
+import NavMenu from './NavMenu'
 import ThemeToggle, { useThemeName } from './ThemeToggle'
 import ProfileModal from './ProfileModal'
 import { useCountUp } from './celebrate'
@@ -80,7 +82,7 @@ export default function MemberHero({ member, summary, end, tabs, current, onPick
     <>
     <header className="hdr" style={vars}>
       <div className="hdr-top">
-        <button className="hdr-back" onClick={() => setActiveView('home')} aria-label="חזרה" title="חזרה למסך הבית">→</button>
+        <button className="hdr-back" onClick={() => guard(() => setActiveView('home'))} aria-label="חזרה" title="חזרה למסך הבית">→</button>
         <div className="hdr-avatar">
           {photo ? <img src={photo} alt="" /> : <span className="mh-avatar">{member.avatar}</span>}
         </div>
@@ -109,7 +111,9 @@ export default function MemberHero({ member, summary, end, tabs, current, onPick
       {tabs && (
         <div className="hdr-nav">
           <nav aria-label="ניווט ראשי" style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}>
-            {tabs.map(t => (
+            {tabs.map(t => t.menu
+              ? <NavMenu key={t.id} tab={t} active={current === t.id} btnClass="hdr-nav-btn" />
+              : (
               <button key={t.id} className="hdr-nav-btn" aria-current={current === t.id ? 'page' : undefined}
                 onClick={() => current !== t.id && onPick(t.id)}>
                 <Icon name={t.icon} />{t.text}
@@ -124,7 +128,7 @@ export default function MemberHero({ member, summary, end, tabs, current, onPick
         עם →, הברכה וההתקדמות, הנקודות ו-☰. בגובה 0 בדף, כדי שלא יזיז כלום. במחשב לא מוצג */}
     <div className={'hdr-mini-wrap' + (stuck ? ' hdr-mini-on' : '')} style={vars} aria-hidden={!stuck}>
       <div className="hdr-mini">
-        <button className="hdr-back" onClick={() => setActiveView('home')} aria-label="חזרה" title="חזרה למסך הבית" tabIndex={stuck ? 0 : -1}>→</button>
+        <button className="hdr-back" onClick={() => guard(() => setActiveView('home'))} aria-label="חזרה" title="חזרה למסך הבית" tabIndex={stuck ? 0 : -1}>→</button>
         <div className="hdr-mini-body">
           <strong>{greeting}, {member.name}!</strong>
           {percent !== null && <DayProgress parts={today.parts} percent={percent} />}
@@ -218,7 +222,8 @@ export function AppBar({ tabs, current, onPick, member }) {
         <ThemeToggle member={member} />
       </div>
       <div className="pl-appbar-tabs">
-        {tabs.map(t => (
+        {/* לשונית עם menu (למשל "ילדים" אצל ההורה) נפתחת לתפריט */}
+        {tabs.map(t => t.menu ? <NavMenu key={t.id} tab={t} active={current === t.id} btnClass={'pl-tab' + (current === t.id ? ' pl-tab-on' : '')} /> : (
           <button
             key={t.id}
             className={'pl-tab' + (current === t.id ? ' pl-tab-on' : '')}

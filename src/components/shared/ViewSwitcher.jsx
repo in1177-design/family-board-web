@@ -1,6 +1,7 @@
 import React from 'react'
 import { useStore } from '../../store'
 import { memberPhoto } from './memberPhoto'
+import { guard } from './unsaved'
 import { useThemeName, applyTheme, memberTheme, readTestTheme, setTestTheme } from './ThemeToggle'
 
 // בורר משתמשים בראש הדף: מעבר מהיר לתצוגה של כל בן משפחה, מכל מסך.
@@ -40,7 +41,7 @@ export default function ViewSwitcher({ guideOpen, onGuide }) {
     <button
       key={id}
       className={'pl-switcher-item' + (current === id ? ' pl-switcher-current' : '')}
-      onClick={onClick}
+      onClick={() => guard(onClick)}
     >
       {photo && <img className="pl-switcher-photo" src={photo} alt="" />}
       {label}

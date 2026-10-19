@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { guard } from '../shared/unsaved'
 import { useStore } from '../../store'
 import PointsManager from './PointsManager'
 import Settings from './Settings'
 import FamilyOverview from './FamilyOverview'
 import WeeklySchedule from '../Schedule/WeeklySchedule'
-import MemberTabs from '../shared/MemberTabs'
+import KidsToday from '../Schedule/KidsToday'
 import RoutinesBoard from '../Routines/RoutinesBoard'
 import StepForm from '../Routines/StepForm'
 import MyDay from '../MyDay/MyDay'
@@ -15,13 +16,22 @@ import { memberPhoto } from '../shared/memberPhoto'
 import DailyLeaderboard from '../Points/DailyLeaderboard'
 import StyleGuide from '../Design/StyleGuide'
 
-// החלטה 2026-10-07: ההגדרות, ההרגלים והמשימות עברו מהלשוניות לתפריט שבפס העליון
+// החלטה 2026-10-07: ההגדרות, ההרגלים והמשימות עברו מהלשוניות לתפריט שבפס העליון.
+// הסדר (המשתמשת, 2026-10-18): היום שלי, ילדים, מערכת שבועית, היכל תהילה. "סקירה" עברה לתפריט ☰, כי לא בשימוש.
+// "מערכת שבועית" של ההורה עצמו, ו"ילדים" נפתח לרשימת הילדים. ParentCalendar (Google) נשאר בקוד עד ההחלטה על Google
 const TABS = [
-  { id: 'overview',  label: '🏠 סקירה',  text: 'סקירה',    icon: 'home' },
-  // מערכת שבועית במקום היומן (2026-10-12). ParentCalendar (Google) נשאר בקוד עד ההחלטה על Google
-  { id: 'schedule',  label: 'מערכת שבועית', text: 'מערכת שבועית', icon: 'calendar' },
   { id: 'myday',     label: 'היום שלי', text: 'היום שלי', icon: 'sun' },
-  { id: 'points',    label: '⭐ ניקוד',  text: 'ניקוד',    icon: 'star' }
+  { id: 'kids',      label: 'ילדים', text: 'ילדים', icon: 'smile' },
+  { id: 'schedule',  label: 'מערכת שבועית', text: 'מערכת שבועית', icon: 'calendar' },
+  { id: 'points',    label: '⭐ היכל תהילה', text: 'היכל תהילה', icon: 'star' }
+]
+
+// הלשוניות מתחת ל"ילדים" כשנבחר ילד (המשתמשת, 2026-10-18):
+// "היום של [שם]": "היום שלי" של הילד, כמו שהוא רואה אותו. "עריכת הרגלים ומשימות": שני הלוחות באותו דף
+const KID_TABS = [
+  { id: 'day',      text: kid => 'היום של ' + kid.name },
+  { id: 'edit',     text: () => 'עריכת הרגלים ומשימות' },
+  { id: 'schedule', text: () => 'מערכת שעות' }
 ]
 
 // היום לפי שעון ישראל
@@ -29,7 +39,7 @@ const israelToday = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jer
 
 export default function ParentView() {
   const { loadTasks, members, logout, activeMemberId } = useStore()
-  const [tab, setTab] = useState('overview')
+  const [tab, setTab] = useState('myday')
   // מה נפתח מהתפריט, במקום הלשונית: 'routines', 'todos', 'settings',
   // או 'guide' (מדריך סגנון). מעבדת הסגנונות כדף נפרד הוסרה (2026-10-12): כל מה שבה נפתח מתוך המדריך
   const [opened, setOpened] = useState(null)
@@ -49,14 +59,29 @@ export default function ParentView() {
   // ההורה שנבחר. אם אין, ההורה הראשון
   const parent = members.find(m => m.id === activeMemberId) || members.find(m => m.role === 'parent')
 
-  const pickTab = (id) => { setOpened(null); setTab(id) }
+  // מעבר מסך עובר דרך guard: אם יש טיוטה שלא נשמרה, קודם שואלים (unsaved.js)
+  const pickTab = (id) => guard(() => { setOpened(null); setTab(id) })
+
+  // "ילדים" (המשתמשת, 2026-10-18): בתפריט "כל הילדים" (המערכת של היום, עמודה לכל ילד) ואז הילדים.
+  // ילד שנבחר: המערכת המלאה שלו עם עריכה, ועל הלשונית התמונה והשם שלו במקום הסמיילי ו"ילדים"
+  const kids = members.filter(m => m.role !== 'parent')
+  const [kidId, setKidId] = useState(null)
+  const kid = kids.find(m => m.id === kidId) || null
+  const showKid = tab === 'kids' && !opened && kid
+  // לשוניות הילד (המשתמשת, 2026-10-18): שורה מתחת ללשוניות הראשיות. נפתח קודם "היום של [שם]"
+  const [kidTab, setKidTab] = useState('day')
+  const pickKid = id => guard(() => { setOpened(null); setKidId(id); setTab('kids'); setKidTab('day') })
+  const tabs = TABS.map(t => t.id !== 'kids' ? t : {
+    ...t, text: showKid ? kid.name : t.text, face: showKid ? kid : null,
+    menu: { members: kids, value: kid?.id ?? null, onSelect: pickKid, allLabel: 'כל הילדים' }
+  })
 
   return (
     <div style={{
       height: '100%', display: 'flex', flexDirection: 'column',
       background: 'var(--bg)', overflow: 'hidden'
     }}>
-      <AppBar tabs={TABS} current={opened ? null : tab} onPick={pickTab} member={parent} />
+      <AppBar tabs={tabs} current={opened || tab === 'overview' ? null : tab} onPick={pickTab} member={parent} />
 
       {/* Content: ה-Hero גולל יחד עם הדף, כמו אצל הילד */}
       <div className="pl-under-tabs" style={{ flex: 1, overflow: 'auto' }}>
@@ -64,11 +89,12 @@ export default function ParentView() {
         <MemberHero
           member={parent}
           summary={summary}
-          tabs={TABS} current={opened ? null : tab} onPick={pickTab}
-          end={<ParentMenu onPick={w => w === 'todo' ? setAddTodo(true) : w === 'step' ? setAddStep(true) : setOpened(w)} onLogout={logout} />}
+          tabs={tabs} current={opened || tab === 'overview' ? null : tab} onPick={pickTab}
+          end={<ParentMenu onPick={w => w === 'todo' ? setAddTodo(true) : w === 'step' ? setAddStep(true) : w === 'overview' ? pickTab('overview') : guard(() => setOpened(w))} onLogout={() => guard(logout)} />}
         />
       )}
       <div style={{ padding: '1.5rem' }}>
+      <div className="parent-page">
         {opened === 'routines' && <RoutinesBoard />}
         {opened === 'todos'    && <TodosBoard />}
         {opened === 'settings' && <Settings />}
@@ -76,60 +102,32 @@ export default function ParentView() {
 
         {!opened && <>
           {tab === 'overview'  && <FamilyOverview />}
-          {tab === 'schedule'  && <ScheduleOf />}
-          {tab === 'myday'     && activeMemberId && <DayOf viewerId={activeMemberId} onSummary={setSummary} />}
+          {tab === 'schedule'  && parent && <WeeklySchedule key={parent.id} member={parent} canEdit />}
+          {tab === 'kids'      && (kid ? <>
+            <div className="pl pl-bare kid-tabs" role="tablist" aria-label={'הלוחות של ' + kid.name}>
+              {KID_TABS.map(t => (
+                <button key={t.id} role="tab" aria-selected={kidTab === t.id}
+                  className={'kid-tab' + (kidTab === t.id ? ' kid-tab-on' : '')} onClick={() => guard(() => setKidTab(t.id))}>
+                  {t.text(kid)}
+                </button>
+              ))}
+            </div>
+            {kidTab === 'day'      && <MyDay key={kid.id} memberId={kid.id} viewerId={activeMemberId} hideHero />}
+            {kidTab === 'edit'     && <div className="kid-edit">
+              <RoutinesBoard key={'r' + kid.id} fixedMemberId={kid.id} />
+              <TodosBoard key={'t' + kid.id} fixedMemberId={kid.id} />
+            </div>}
+            {kidTab === 'schedule' && <WeeklySchedule key={kid.id} member={kid} canEdit />}
+          </> : <KidsToday kids={kids} onPick={pickKid} />)}
+          {tab === 'myday'     && activeMemberId && <MyDay key={activeMemberId} memberId={activeMemberId} viewerId={activeMemberId} hideHero onSummary={setSummary} />}
           {tab === 'points'    && <><DailyLeaderboard currentId={activeMemberId} /><PointsManager /></>}
         </>}
         {addStep && <StepForm onClose={() => setAddStep(false)} />}
         {addTodo && <TodoForm memberId={activeMemberId} byId={activeMemberId} today={israelToday()} onClose={() => setAddTodo(false)} />}
       </div>
       </div>
+      </div>
     </div>
-  )
-}
-
-// "היום שלי" בפאנל ההורים, עם בורר של כל בני המשפחה (החלטה 2026-10-07):
-// ההורה רואה את היום של כל ילד בלי לצאת מהפאנל. ברירת המחדל: היום של ההורה עצמו
-function DayOf({ viewerId, onSummary }) {
-  const { members } = useStore()
-  const [memberId, setMemberId] = useState(viewerId)
-  const own = memberId === viewerId
-  useEffect(() => { if (!own) onSummary(null) }, [own, onSummary])
-
-  return (
-    <>
-      <div className="pl pl-bare pl-row" style={{ justifyContent: 'center', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-        {members.map(m => (
-          <button
-            key={m.id}
-            className={'pl-switcher-item' + (m.id === memberId ? ' pl-switcher-current' : '')}
-            onClick={() => setMemberId(m.id)}
-          >
-            {memberPhoto(m) && <img className="pl-switcher-photo" src={memberPhoto(m)} alt="" />}
-            {m.name}
-          </button>
-        ))}
-      </div>
-      {/* key: יום חדש לכל בן משפחה, בלי טפסים פתוחים מהקודם */}
-      <MyDay key={memberId} memberId={memberId} viewerId={viewerId} hideHero onSummary={own ? onSummary : undefined} />
-    </>
-  )
-}
-
-// מערכת שבועית בפאנל ההורים: בחירת ילד למעלה (כמו בלוחות הניהול), וההורה עורך
-function ScheduleOf() {
-  const { members } = useStore()
-  const kids = members.filter(m => m.role !== 'parent')
-  const [memberId, setMemberId] = useState(kids[0]?.id)
-  const member = kids.find(m => m.id === memberId) || kids[0]
-  if (!member) return <div className="pl"><p className="pl-muted">אין ילדים במשפחה.</p></div>
-  return (
-    <>
-      <div className="pl pl-bare" style={{ maxWidth: 'var(--pl-page-max)', margin: '0 auto 16px' }}>
-        <MemberTabs members={kids} value={member.id} onChange={setMemberId} />
-      </div>
-      <WeeklySchedule key={member.id} member={member} canEdit />
-    </>
   )
 }
 
@@ -162,6 +160,7 @@ function ParentMenu({ onPick, onLogout }) {
       </button>
       {open && (
         <div className="pl-menu-list">
+          <button onClick={() => pick('overview')}>🏠 סקירה</button>
           <button onClick={() => pick('routines')}>הרגלים</button>
           <button onClick={() => pick('todos')}>משימות</button>
           <button onClick={() => pick('step')}>+ הוסף הרגל</button>

@@ -634,6 +634,7 @@
 :root[data-theme="pixel"] .pl button.su-choice:active { transform: translate(2px, 2px); box-shadow: none; }
 :root[data-theme="pixel"] .su-error, :root[data-theme="pixel"] .sd-warnings { border-radius: 2px; }
 :root[data-theme="pixel"] .sd-bar { border: 2px solid var(--px-frame); border-radius: 2px; background: #FFFEFA; box-shadow: 4px 4px 0 var(--hdr-lilac, #D9CCF2); }
+:root[data-theme="pixel"] .sd-float { border: 2px solid var(--px-frame); border-radius: 2px; background: #FFFEFA; box-shadow: 4px 4px 0 var(--px-frame); }
 :root[data-theme="pixel"] .pl button.sg-add.sg-add-flag { border-radius: 2px; }
 :root[data-theme="pixel"] .pl button.su-drop, :root[data-theme="pixel"] .pl button.su-add {
   border: 2px dashed var(--px-frame); border-radius: 2px; background: #FFFEFA;
@@ -643,3 +644,48 @@
 :root[data-theme="pixel"] .su-thumb { border: 2px solid var(--hdr-lilac, #D9CCF2); border-radius: 2px; box-shadow: 3px 3px 0 var(--hdr-lilac, #D9CCF2); }
 :root[data-theme="pixel"] .pl button.su-remove { border-radius: 2px; }
 :root[data-theme="pixel"] .su-step-dot { border-radius: 2px; }
+
+/* חלון עריכת חוג במשחקי (2026-10-18) */
+:root[data-theme="pixel"] .pl button.sim-day { border: 2px solid var(--hdr-lilac, #D9CCF2); border-radius: 2px; box-shadow: 2px 2px 0 var(--hdr-lilac, #D9CCF2); }
+:root[data-theme="pixel"] .pl button.sim-day-on { background: var(--pl-accent); border-color: var(--pl-accent); color: #fff; }
+:root[data-theme="pixel"] .pl button.sim-delete { border-radius: 2px; }
+:root[data-theme="pixel"] .sim-section { border-top-width: 2px; border-top-style: dashed; border-top-color: var(--hdr-lilac, #D9CCF2); }
+:root[data-theme="pixel"] .sim-section:first-child { border-top: none; }
+:root[data-theme="pixel"] .sim-footer { border-top: 2px dashed var(--hdr-lilac, #D9CCF2); }
+:root[data-theme="pixel"] .pl-modal-head-feature { background: #F3EAD9; border-bottom: 2px solid var(--hdr-lilac, #D9CCF2); }
+:root[data-theme="pixel"] .pl-modal-eyebrow { color: #14806F; }
+:root[data-theme="pixel"] .pl .pl-modal-head-feature button.pl-icon-button { border: 2px solid var(--hdr-lilac, #D9CCF2); border-radius: 2px; background: #FFFEFA; color: var(--px-frame); }
+:root[data-theme="pixel"] .pl button.sim-day-on { border-bottom: 4px solid #0E5F52; }
+
+/* עריכת ההרגלים (WindowsBoard, 2026-10-18): כל הרגל במסגרת פיקסלים */
+:root[data-theme="pixel"] .wb-row { border: 2px solid var(--hdr-lilac, #D9CCF2); border-radius: 4px; }
+:root[data-theme="pixel"] .pl .wb-edit-icon button.pl-icon-pick-btn {
+  box-sizing: border-box; width: calc(var(--pl-icon-size) + 8px); height: calc(var(--pl-icon-size) + 8px); padding: 2px;
+  border: 2px solid var(--pl-line); border-radius: 8px; background: #FFF4E4; color: var(--px-frame);
+}
+
+/* לוח עריכת ההרגלים (WindowsBoard): הצבעים המדויקים מהעיצוב שהמשתמשת צירפה, רק במשחקי (2026-10-19) */
+:root[data-theme="pixel"] .wb-thead { color: #9B8CC4; font-weight: 500; }
+:root[data-theme="pixel"] .wb-row { min-height: 60px; padding: 10px 14px; border: 2px solid #D9CCF2; border-radius: 6px; background: #FFFFFF; transition: background .12s, border-color .12s, box-shadow .12s; }
+:root[data-theme="pixel"] .wb-row:not(.wb-row-edit):hover { background: #FFF6E3; border-color: #BFE3EF; }
+:root[data-theme="pixel"] .pl .wb-row:not(.wb-row-edit):hover > .wb-handle { background: #D8F3EC; color: #1F6B5A; }
+:root[data-theme="pixel"] .wb-name .pl-step-title { font-weight: 700; font-size: 15px; color: #2E1F5E; }
+:root[data-theme="pixel"] .wb-day-on, :root[data-theme="pixel"] .pl .wb-days button.wb-day-on { background: #D5F5EC; color: #1F6B5A; font-weight: 700; }
+:root[data-theme="pixel"] .wb-day, :root[data-theme="pixel"] .pl .wb-days button.wb-day { background: #F3F0FA; color: #BDB4D3; }
+:root[data-theme="pixel"] .wb-cell { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; color: #2E1F5E; }
+:root[data-theme="pixel"] .pl button.wb-delete { width: 32px; height: 32px; color: #7B6BA8; }
+:root[data-theme="pixel"] .pl button.wb-delete:hover { background: #F3F0FA; }
+:root[data-theme="pixel"] .wb-row-edit { border-color: #D9CCF2; box-shadow: none; background: #FFFFFF; }
+:root[data-theme="pixel"] .pl .wb-row-edit .wb-input, :root[data-theme="pixel"] .pl .wb-row-edit select.wb-input { height: 38px; min-height: 38px; border: 1.5px solid #D9CCF2; border-radius: 10px; background-color: #FFFFFF; color: #2E1F5E; }
+:root[data-theme="pixel"] .pl .wb-row-edit select.wb-input { border-color: #D9CCF2; }
+:root[data-theme="pixel"] .pl .wb-row-edit .wb-input:focus { border-color: #8B6FD6; outline: none; box-shadow: 0 0 0 3px #EDE6FB; }
+:root[data-theme="pixel"] .pl .wb-stepper button { width: 28px; height: 28px; border: 1.5px solid #D9CCF2; color: #2E1F5E; background: #FFFFFF; }
+:root[data-theme="pixel"] .wb-stepper-value { min-width: 40px; font-size: 15px; font-weight: 700; color: #2E1F5E; }
+:root[data-theme="pixel"] .pl button.wb-save { color: #1FA67A; font-size: 26px; font-weight: 400; }
+:root[data-theme="pixel"] .pl button.wb-save + .wb-delete { color: #9A93AE; font-size: 18px; }
+:root[data-theme="pixel"] .pl button.wb-add-btn {
+  margin-inline-start: auto; min-height: 36px; padding: 0 16px; border: none; border-radius: 6px;
+  background: #1F8A70; color: #FFFFFF; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 2px 0 #176B57;
+}
+:root[data-theme="pixel"] .pl button.wb-add-btn:hover { background: #197A63; }
+:root[data-theme="pixel"] .pl .wb-window-edit .wb-input { width: 108px; height: 32px; min-height: 32px; padding: 0 8px; border: 1.5px solid #D9CCF2; border-radius: 10px; background: #FFFFFF; font-size: 13px; }

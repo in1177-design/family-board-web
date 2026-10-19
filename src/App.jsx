@@ -7,6 +7,7 @@ import SetupWizard from './components/shared/SetupWizard'
 import LoginScreen from './components/shared/LoginScreen'
 import Loader from './components/shared/Loader'
 import ViewSwitcher from './components/shared/ViewSwitcher'
+import UnsavedPrompt from './components/shared/UnsavedPrompt'
 import { ToastProvider } from './components/shared/Toast'
 import ThemeToggle, { useThemeName, applyTheme, memberTheme } from './components/shared/ThemeToggle'
 import StyleGuide from './components/Design/StyleGuide'
@@ -52,6 +53,7 @@ function AppContent() {
   return (
     <>
       <ViewSwitcher guideOpen={guide} onGuide={setGuide} />
+      <UnsavedPrompt />
       <div style={{ flex: 1, minHeight: 0 }}>{guide ? <GuidePage /> : view}</div>
     </>
   )

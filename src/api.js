@@ -59,6 +59,8 @@ export const liveApi = {
     addStep:    (s) => req('POST', '/api/routines/steps', s),
     updateStep: ({ id, ...data }) => req('PUT', `/api/routines/steps/${id}`, data),
     moveStep:   ({ id, dir }) => req('POST', `/api/routines/steps/${id}/move`, { dir }),
+    // הסדר החדש של חלון אחד, מגרירה (2026-10-18). הרגל שנגרר מחלון אחר עובר לחלון הזה
+    setWindowOrder: ({ memberId, timeOfDay, stepIds }) => req('PUT', '/api/routines/window-order', { member_id: memberId, time_of_day: timeOfDay, step_ids: stepIds }),
     deleteStep: (id) => req('DELETE', `/api/routines/steps/${id}`)
   },
   todos: {

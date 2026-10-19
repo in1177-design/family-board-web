@@ -35,14 +35,16 @@ const columns = (days) => `var(--sg-side) repeat(${days.length}, minmax(var(--sg
 function Card({ item, editing, onPick, double, activity, style }) {
   const s = subjectStyle(item)
   const Tag = editing ? 'button' : 'div'
-  const sub = [item.teacher, double && 'שיעור כפול'].filter(Boolean).join(' · ')
+  // גם המיקום (2026-10-18). בשיעור, בלי מיקום: בית הספר, ולא כותבים כלום
+  const sub = [item.teacher, item.location, double && 'שיעור כפול'].filter(Boolean).join(' · ')
   return (
     <Tag className={'sg-card' + (activity ? ' sg-card-activity' : '') + (editing ? ' sg-card-edit' : '')}
       style={{ ...subjectVars(s), ...style }} onClick={editing ? () => onPick(item) : undefined}
       aria-label={editing ? `עריכת ${item.title}, ${DAY_NAMES[item.weekday]}` : undefined}>
       <span className="sg-card-text">
-        {activity && <span className="sg-time">{range(item.start, item.end)}</span>}
+        {/* בחוג: השם, ואז השעה מודגשת וצמודה לימין, ואז המדריך והמיקום (המשתמשת, 2026-10-18) */}
         <strong>{item.title}</strong>
+        {activity && <span className="sg-time">{range(item.start, item.end)}</span>}
         {sub && <span className="sg-sub">{sub}</span>}
         {!activity && item.start_time && <span className="sg-time sg-time-own">{range(item.start, item.end)}</span>}
       </span>

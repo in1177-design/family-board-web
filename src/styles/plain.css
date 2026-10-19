@@ -402,6 +402,13 @@
     border-top: 1px solid var(--pl-line);
   }
   .pl-appbar-tabs .pl-tab { flex: 1; }
+  /* חמש לשוניות אצל ההורה (עם "ילדים", 2026-10-18): אייקון מעל הטקסט וטקסט קטן, כדי שייכנסו ב-375 */
+  .pl-appbar-tabs { gap: 4px; }
+  .pl-appbar-tabs .pl-tab, .pl-appbar-tabs .nav-menu { flex: 1 1 0; min-width: 0; }
+  .pl .pl-appbar-tabs .pl-tab { flex-direction: column; gap: 2px; padding: 4px 2px; font-size: 12px; }
+  .pl-appbar-tabs .pl-tab > span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  .pl-appbar-tabs .nav-menu-arrow { display: none; }
+  .pl-appbar .nav-menu-list { right: auto; left: 50%; transform: translateX(-50%); }
   /* בטלפון נשאר למעלה רק כפתור העיצוב */
   .pl.pl-appbar { padding: 4px 8px; border: none; }
   /* מקום לפס התחתון, כדי שלא יסתיר את סוף הדף */
@@ -740,6 +747,180 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
   color: var(--pl-text); font: inherit; cursor: pointer;
 }
 .pl-member-tab img, .pl-member-tab-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; display: inline-flex; align-items: center; justify-content: center; }
+/* לשונית "ילדים" שנפתחת לתפריט (NavMenu, 2026-10-18). בכותרת התפריט נפתח למטה, בפס התחתון בטלפון למעלה */
+.nav-menu { position: relative; display: flex; }
+.nav-menu > button { width: 100%; }
+.nav-menu-arrow { font-size: 12px; opacity: .7; }
+.nav-menu-list { left: auto; right: 0; top: calc(100% + 6px); z-index: 30; min-width: 200px; padding: 6px; box-shadow: 0 8px 24px rgba(0, 0, 0, .1); }
+.pl-appbar .nav-menu-list { top: auto; bottom: calc(100% + 6px); }
+.pl-appbar-tabs .nav-menu { flex: 1; }
+/* בלי .pl מסביב (בכותרת), ולכן סגנון מלא לכפתורי הרשימה */
+.nav-menu-list button {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px; padding: 6px 10px;
+  border: none; border-radius: var(--pl-r-input); background: none; color: var(--pl-text);
+  font: inherit; font-size: 15px; text-align: right; cursor: pointer;
+}
+.nav-menu-list button:hover { background: var(--pl-soft); }
+.nav-menu-list img, .nav-menu-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.nav-menu-face { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+span.nav-menu-face { display: inline-flex; align-items: center; justify-content: center; font-size: 15px; }
+.nav-menu-all { background: var(--pl-soft); }
+.nav-menu-all .pl-icon { width: 16px; height: 16px; }
+/* כל דף בפאנל ההורים ברוחב קבוע של עד 1200px, באמצע (המשתמשת, 2026-10-18) */
+.parent-page { width: 100%; max-width: var(--pl-page-max); margin-inline: auto; }
+.parent-page > .pl, .parent-page .kid-edit > .pl { max-width: none; }
+.kid-edit { display: flex; flex-direction: column; gap: 24px; }
+/* עריכת ההרגלים בחלונות כמו "היום של", עם גרירה (WindowsBoard, 2026-10-18) */
+.wb-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; cursor: default; }
+.wb-list { display: flex; flex-direction: column; gap: 8px; min-height: 48px; border-radius: var(--pl-r-box); }
+.wb-list-over { outline: 2px dashed var(--pl-accent); outline-offset: 2px; }
+.wb-empty { padding: 12px 4px; }
+/* טבלה לרוחב: החלונות אחד מתחת לשני, ובכל שורה עמודות קבועות: ידית, שם, ימים, משך, שעה, נקודות, פח */
+.wb-stack { display: flex; flex-direction: column; gap: 16px; }
+.wb-grid { display: grid; grid-template-columns: 18px minmax(160px, 1fr) 270px 110px 104px 104px 32px 32px; align-items: center; column-gap: 20px; }
+.wb-thead { padding: 0 14px; font-size: 12px; font-weight: 600; color: var(--pl-muted); }
+.wb-row { padding: 10px 14px; border: 1px solid var(--pl-line); border-radius: var(--pl-r-box); background: var(--pl-card); }
+.wb-cell { font-size: 13px; color: var(--pl-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* בטלפון: השם בשורה משלו, והעמודות האחרות מתחתיו, בלי כותרות */
+@media (max-width: 700px) {
+  .wb-thead { display: none; }
+  .wb-grid.wb-row { grid-template-columns: 28px minmax(0, 1fr) auto auto 32px 32px; grid-template-areas: "h n n n e d" "h days dur time pts pts"; column-gap: 10px; row-gap: 4px; }
+  .wb-row > :nth-child(1) { grid-area: h; } .wb-row > :nth-child(2) { grid-area: n; } .wb-row > :nth-child(3) { grid-area: days; }
+  .wb-row > :nth-child(4) { grid-area: dur; } .wb-row > :nth-child(5) { grid-area: time; } .wb-row > :nth-child(6) { grid-area: pts; } .wb-row > :nth-child(7) { grid-area: e; } .wb-row > :nth-child(8) { grid-area: d; }
+}
+.pl button.wb-handle, span.wb-handle {
+  flex-shrink: 0; width: 28px; min-height: 36px; padding: 0; border: none; background: none;
+  color: var(--pl-muted); font-size: 16px; letter-spacing: -3px; cursor: grab; touch-action: none;
+}
+.pl button.wb-handle:active { cursor: grabbing; }
+/* השם כבר לא כפתור (העריכה ב-✎), ולכן הכלל על כל .wb-name: אייקון ושם באותו קו, עם רווח */
+.wb-name { display: flex; align-items: center; gap: 10px; min-width: 0; line-height: 1.3; }
+.wb-name .pl-item-icon { flex-shrink: 0; }
+.wb-name .pl-step-title { min-width: 0; overflow-wrap: anywhere; }
+.wb-name .pl-step-name { display: flex; flex-direction: column; min-width: 0; }
+.wb-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin-top: 3px; font-size: 12px; color: var(--pl-muted); }
+.wb-days { display: inline-flex; gap: 2px; }
+.wb-day, .wb-day-on { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 4px; font-size: 10px; line-height: 1; }
+.wb-day { color: var(--pl-control, #C9C6D6); }
+.wb-day-on { background: var(--pl-accent-soft); color: var(--pl-accent-dark, var(--pl-accent)); font-weight: 700; }
+.wb-meta-item { white-space: nowrap; }
+.pl button.wb-delete { display: grid; place-items: center; flex-shrink: 0; width: 28px; height: 28px; min-height: 0; padding: 0; border: none; border-radius: var(--pl-r-control); background: none; color: var(--pl-muted); cursor: pointer; }
+.pl button.wb-delete:hover { color: var(--pl-danger, #C0392B); background: var(--pl-soft); }
+.wb-delete .pl-icon, .wb-delete svg { width: 16px; height: 16px; }
+.wb-ghost { opacity: .35; }
+/* שורה בעריכה: אותן עמודות, עם שדות. מתחת: עוד הגדרות, ביטול ושמירה */
+.wb-row-edit { border-color: var(--pl-accent); box-shadow: 0 0 0 2px var(--pl-accent-soft); }
+.pl .wb-input { width: 100%; min-width: 0; min-height: 34px; padding: 4px 8px; font-size: 14px; }
+/* שורה אחת בעריכה: אייקון, שם, בורר מהיר, ימים, משך, שעה, נקודות, ✓ ו-✕ */
+.wb-edit-days { display: flex; align-items: center; gap: 10px; min-width: 0; }
+/* האייקון בגובה של השדות (34px), באמצע העמודה שלו, כדי שלא ייגע בשם */
+.wb-edit-icon { display: flex; align-items: center; justify-content: center; }
+.pl .wb-edit-icon button.pl-icon-pick-btn { width: 34px; height: 34px; min-height: 34px; border-radius: var(--pl-r-control); }
+.wb-edit-icon .pl-icon-pick .pl-icon { width: 20px; height: 20px; }
+/* כל השדות בשורה באותו סגנון מעוגל ובאותו גובה. רשימות נפתחות מינימליות: חץ קטן, בלי מסגרת כבדה (המשתמשת, 2026-10-18) */
+.pl .wb-row-edit .wb-input { height: 34px; min-height: 34px; padding: 0 10px; border: 1px solid var(--pl-line); border-radius: var(--pl-r-control); background: var(--pl-card); font-size: 14px; }
+.pl .wb-row-edit select.wb-input {
+  appearance: none; -webkit-appearance: none; padding-inline: 10px 24px; cursor: pointer;
+  background: var(--pl-soft) url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%276%27%3E%3Cpath d=%27M1 1l4 4 4-4%27 fill=%27none%27 stroke=%27%23888%27 stroke-width=%271.5%27/%3E%3C/svg%3E") no-repeat left 9px center;
+  border-color: transparent;
+}
+.pl .wb-row-edit select.wb-input:hover { border-color: var(--pl-line); }
+.pl .wb-edit-name { width: 100%; max-width: 240px; }
+.pl .wb-rule { width: auto; min-width: 0; }
+.pl .wb-edit-duration { width: 100%; }
+.pl .wb-edit-time { width: 100%; }
+/* הימים בעריכה נראים בדיוק כמו אחרי השמירה: אותו גודל ואותם צבעים, רק לחיצים */
+.pl .wb-days button { width: 16px; height: 16px; min-height: 0; padding: 0; border: none; border-radius: 4px; font-size: 10px; line-height: 1; cursor: pointer; }
+.pl .wb-days button.wb-day { background: none; color: var(--pl-control, #C9C6D6); }
+.pl .wb-days button.wb-day-on { background: var(--pl-accent-soft); color: var(--pl-accent-dark, var(--pl-accent)); font-weight: 700; }
+.wb-stepper { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.pl .wb-stepper button { width: 26px; height: 26px; min-height: 0; padding: 0; border: 1px solid var(--pl-line); border-radius: 50%; background: var(--pl-card); font-size: 15px; line-height: 1; cursor: pointer; }
+.wb-stepper-value { min-width: 36px; text-align: center; font-size: 13px; font-variant-numeric: tabular-nums; }
+.pl button.wb-save { color: var(--pl-accent); font-size: 18px; font-weight: 700; }
+.wb-row-edit .sd-error { display: block; margin-top: 6px; }
+@media (max-width: 900px) { .wb-grid.wb-edit-line { display: flex; flex-wrap: wrap; gap: 10px; } .pl .wb-edit-name { flex-basis: 100%; max-width: none; order: -1; } }
+.wb-overlay { box-shadow: 0 10px 24px rgba(0, 0, 0, .15); cursor: grabbing; }
+.wb-add { align-self: flex-start; }
+/* הצבעים מהעיצוב (משתני העיצוב, כדי שהדף ילך לפי העיצוב שבחר בן המשפחה, 2026-10-19). הצבעים המדויקים מהתמונה: רק במשחקי, ב-theme-pixel.css */
+/* שלושת המצבים של שורת הרגל, לפי העיצוב של המשתמשת (2026-10-18): רגיל, מעבר עכבר ועריכה.
+   מסגרת לילך, אייקון בריבוע, שם מודגש, ימים בריבועי מנטה, משך/שעה/נקודות מודגשים, עיפרון ופח בקו */
+.wb-thead { color: var(--pl-muted); font-weight: 500; }
+.wb-row { min-height: 60px; padding: 10px 14px; border: 2px solid var(--pl-line); border-radius: 6px; background: var(--pl-card); transition: background .12s, border-color .12s, box-shadow .12s; }
+.wb-row:not(.wb-row-edit):hover { background: var(--pl-soft); border-color: var(--pl-accent); }
+/* בהובר הפס הטורקיז יושב מתחת לנקודות הגרירה (המשתמשת, 2026-10-18): הידית נמתחת לקצה ולכל הגובה של השורה */
+.pl .wb-row > .wb-handle, .pl .wb-edit-line > .wb-handle { align-self: stretch; justify-self: start; width: 32px; margin-block: -10px; margin-inline-start: -14px; padding: 0; border-start-start-radius: 4px; border-end-start-radius: 4px; }
+span.wb-handle { display: grid; place-items: center; }
+/* השם קרוב לנקודות: מצמצמים את הרווח שאחרי עמודת הידית */
+.wb-grid > .wb-name { margin-inline-start: -10px; }
+.wb-handle-off { opacity: .35; cursor: default; }
+.pl .wb-row:not(.wb-row-edit):hover > .wb-handle { background: var(--pl-accent-soft); color: var(--pl-accent-dark, var(--pl-accent)); }
+/* האייקון בדיוק בגודל ובסגנון של "היום של" (המשתמשת, 2026-10-18): במעודן אייקון קו של 24px, במשחקי ריבוע של 32px עם מסגרת אחת */
+.wb-icon-box { display: contents; }
+/* בעריכה האייקון והשם לא זזים: כפתור האייקון בגודל ובסגנון של הריבוע, והטקסט בשדה מתחיל איפה שהשם היה */
+/* בעריכה כפתור האייקון באותו גודל בדיוק, כדי שלא יזוז: במעודן 24px בלי מסגרת, במשחקי הריבוע של 32px (theme-pixel.css) */
+.pl .wb-edit-icon button.pl-icon-pick-btn { width: var(--pl-icon-size); height: var(--pl-icon-size); min-height: 0; border: none; border-radius: 4px; background: none; color: var(--pl-muted); cursor: pointer; }
+.pl .wb-edit-icon button.pl-icon-pick-btn:hover { background: var(--pl-soft); }
+.wb-name .pl-step-title { padding-inline-start: 11.5px; }
+.pl .wb-row-edit .wb-edit-name { flex: 1; max-width: 240px; }
+.wb-name .pl-step-title { font-weight: 700; font-size: 15px; color: var(--pl-text); }
+.wb-days { gap: 3px; }
+.wb-day, .wb-day-on, .pl .wb-days button { width: 18px; height: 18px; border-radius: 3px; font-size: 10px; }
+.wb-day-on, .pl .wb-days button.wb-day-on { background: var(--pl-accent-soft); color: var(--pl-accent-dark, var(--pl-accent)); font-weight: 700; }
+.wb-day, .pl .wb-days button.wb-day { background: var(--pl-soft); color: var(--pl-control, #C9C6D6); }
+.wb-cell { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; color: var(--pl-text); }
+.wb-cell-icon, .wb-cell-icon svg { width: 16px; height: 16px; }
+.wb-star { font-size: 12px; }
+.pl button.wb-delete { width: 32px; height: 32px; color: var(--pl-muted); }
+.wb-delete .pl-icon, .wb-delete svg { width: 22px; height: 22px; }
+.pl button.wb-delete:hover { background: var(--pl-soft); }
+/* עריכה: מסגרת לילך כמו ברגיל, שדות לבנים מעוגלים עם מסגרת, ✓ ירוק גדול ו-✕ אפור */
+.wb-row-edit { border-color: var(--pl-line); box-shadow: none; background: var(--pl-card); }
+.pl .wb-row-edit .wb-input, .pl .wb-row-edit select.wb-input { height: 38px; min-height: 38px; border: 1.5px solid var(--pl-line); border-radius: 10px; background-color: var(--pl-card); color: var(--pl-text); }
+.pl .wb-row-edit select.wb-input { border-color: var(--pl-line); }
+.pl .wb-row-edit .wb-input:focus { border-color: var(--pl-accent); outline: none; box-shadow: 0 0 0 3px var(--pl-accent-soft); }
+.pl .wb-stepper button { width: 28px; height: 28px; border: 1.5px solid var(--pl-line); color: var(--pl-text); background: var(--pl-card); }
+.wb-stepper-value { min-width: 40px; font-size: 15px; font-weight: 700; color: var(--pl-text); }
+.pl button.wb-save { color: var(--pl-accent); font-size: 26px; font-weight: 400; }
+.pl button.wb-save + .wb-delete { color: var(--pl-muted); font-size: 18px; }
+/* חלון הזמן בכותרת של כל חלון, עם "שינוי" (WindowTime, 2026-10-18) */
+/* כותרת החלון: שם ומשפט, שעות, מספר ההרגלים, ו"הוסף הרגל" בצד השני (העיצוב של המשתמשת, 2026-10-19) */
+.wb-head { gap: 56px; padding-block: 14px; }
+.wb-stat { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.wb-stat-num { font-size: 20px; font-weight: 500; color: var(--pl-text); font-variant-numeric: tabular-nums; }
+.wb-stat-label { font-size: 12px; color: var(--pl-muted); }
+.pl button.wb-window-range {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 0; padding: 0; border: none; background: none; cursor: pointer;
+  font-size: 20px; font-weight: 500; color: var(--pl-text); font-variant-numeric: tabular-nums;
+}
+.wb-window-pen, .wb-window-pen svg { width: 14px; height: 14px; opacity: 0; transition: opacity .12s; color: var(--pl-muted); }
+.pl button.wb-window-range:hover .wb-window-pen, .pl button.wb-window-range:focus-visible .wb-window-pen { opacity: 1; }
+.wb-window { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.pl button.wb-add-btn {
+  margin-inline-start: auto; min-height: 36px; padding: 0 16px; border: none; border-radius: 6px;
+  background: var(--pl-accent); color: #FFFFFF; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 2px 0 transparent;
+}
+.pl button.wb-add-btn:hover { background: var(--pl-accent-dark, var(--pl-accent)); }
+@media (max-width: 700px) { .wb-head { flex-wrap: wrap; gap: 12px 24px; } }
+.pl .wb-window-edit .wb-input { width: 108px; height: 32px; min-height: 32px; padding: 0 8px; border: 1.5px solid var(--pl-line); border-radius: 10px; background: var(--pl-card); font-size: 13px; }
+.wb-window-edit .sd-error { flex-basis: 100%; }
+/* לשוניות הילד מתחת ללשוניות הראשיות: משימות, הרגלים, מערכת שעות (2026-10-18) */
+.pl.kid-tabs { display: flex; gap: 4px; max-width: var(--pl-page-max); margin: 0 auto 16px; border-bottom: 1px solid var(--pl-line); }
+.pl button.kid-tab { min-height: 40px; padding: 8px 16px; border: none; border-bottom: 3px solid transparent; border-radius: 0; background: none; color: var(--pl-muted); font-weight: 600; margin-bottom: -1px; }
+.pl button.kid-tab:hover { color: var(--pl-text); }
+.pl button.kid-tab-on { color: var(--pl-accent-dark, var(--pl-accent)); border-bottom-color: var(--pl-accent); }
+/* "כל הילדים": המערכת של היום, עמודה לכל ילד (KidsToday). בטלפון אחת מתחת לשנייה */
+.kt-title { margin: 0 0 12px; font-size: 18px; }
+.kt-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; align-items: start; }
+.kt-col { display: flex; flex-direction: column; gap: 12px; }
+.pl button.kt-kid { display: flex; align-items: center; gap: 10px; width: 100%; padding: 4px; border: none; background: none; text-align: right; cursor: pointer; }
+.pl button.kt-kid:hover strong { text-decoration: underline; }
+.kt-kid img, .kt-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: inline-flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.kt-kid strong { font-size: 17px; }
+.kt-go { margin-inline-start: auto; color: var(--pl-muted); }
+.kt-block { display: flex; flex-direction: column; gap: 6px; }
+.kt-block + .kt-block { padding-top: 10px; border-top: 1px solid var(--pl-line); }
+.kt-sub { display: block; font-size: 12px; font-weight: 400; color: var(--pl-muted); }
+.nav-menu-list button.nav-menu-on { background: var(--pl-accent-soft); font-weight: 600; }
 .pl button.pl-member-tab.pl-member-tab-on { border-color: var(--pl-accent); background: var(--pl-accent-soft); font-weight: 600; }
 /* מחיקה מהירה בלוח: אדום כשמצביעים */
 .pl button.pl-quick-delete { color: var(--pl-muted); }
@@ -1048,7 +1229,8 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
   width: 40px; height: 40px; min-height: 0; padding: 0; border: 2px solid var(--pl-line); border-radius: 50%; box-shadow: none;
 }
 .pl button.pl-schedule-swatch-none { background: linear-gradient(135deg, transparent 46%, var(--pl-line) 46% 54%, transparent 54%), var(--pl-card); }
-.pl button.pl-schedule-swatch-on { border-color: var(--pl-accent-dark); box-shadow: 0 0 0 2px var(--pl-card), 0 0 0 4px var(--pl-accent-dark); }
+/* צבע שנבחר: מסגרת אחת בחוץ, והפנימית לבנה (המשתמשת, 2026-10-18) */
+.pl button.pl-schedule-swatch-on { border-color: #fff; box-shadow: 0 0 0 2px var(--pl-accent-dark); }
 .pl-schedule-item-modal input[type=time] { width: 120px; }
 .pl-schedule-to-all { align-items: flex-start; gap: 10px; padding: 10px 12px; border: 1px solid var(--pl-line); border-radius: var(--pl-r-box); background: var(--pl-soft); }
 .pl-schedule-to-all input { margin-top: 3px; }
@@ -1070,6 +1252,15 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
 }
 .sg-toolbar-bare { border-bottom: none; padding-bottom: 0; margin-bottom: 10px; }
 .sg-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-inline-start: auto; }
+/* שורת הראש אצל ההורה: בחירת הילד מימין, כפתורי ההוספה והעריכה משמאל */
+.sg-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 16px; }
+/* תפריט "עריכה": קבוצות עם כותרת, ולכל פריט שורת הסבר */
+.sg-edit-list { top: calc(100% + 6px); min-width: 260px; padding: 6px; gap: 4px; box-shadow: 0 8px 24px rgba(0, 0, 0, .08); }
+.sg-edit-group { display: flex; flex-direction: column; }
+.sg-edit-group + .sg-edit-group { margin-top: 4px; padding-top: 6px; border-top: 1px solid var(--pl-line); }
+.sg-edit-title { padding: 4px 10px; font-size: 12px; color: var(--pl-muted); }
+.pl .sg-edit-list button { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; padding: 8px 10px; height: auto; background: none; }
+.pl .sg-edit-list button .pl-muted { font-size: 12px; }
 .sg-title { font-size: 16px; }
 .pl button.sg-btn {
   min-height: 36px; padding: 0 14px; border: 1px solid var(--pl-control); border-radius: var(--pl-r-pill);
@@ -1114,7 +1305,7 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
 .sg-icon { flex-shrink: 0; color: var(--sg-ink); }
 .sg-icon svg { width: 22px; height: 22px; }
 .sg-card-activity { flex: 0 0 auto; }
-.sg-card-activity .sg-time { color: var(--sg-ink); }
+.sg-card-activity .sg-time { color: var(--sg-ink); font-size: 13px; font-weight: 800; align-self: flex-start; }
 .sg-grid-activities { grid-auto-rows: auto; }
 .sg-activities-label { flex-direction: column; align-items: center; gap: 4px; color: var(--sg-ink, var(--pl-text)); }
 .sg-stack { justify-content: flex-start; }
@@ -1225,7 +1416,6 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
   display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; padding: 14px 16px;
   border: 1px solid var(--pl-accent); border-radius: var(--pl-r-box); background: var(--pl-accent-soft);
 }
-.sd-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 .sd-title { display: flex; flex-direction: column; gap: 2px; }
 .sd-title strong { font-size: 1.1rem; }
 .sd-title span, .sd-hint { color: var(--pl-muted); font-size: 14px; }
@@ -1234,8 +1424,21 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
 .sd-warnings { padding: 10px 12px; border-radius: var(--pl-r-control); background: var(--pl-warn-soft); color: var(--pl-warn); font-size: 14px; }
 .sd-warnings ul { margin: 4px 0 0; padding-inline-start: 20px; }
 .sd-error { margin: 0; color: var(--pl-error); font-weight: 600; }
+/* הפס הדבוק לתחתית (2026-10-18): שמירה וביטול קרובים גם כשגוללים לחוגים. בטלפון: מעל פס הלשוניות התחתון */
+.sd-float {
+  position: sticky; bottom: var(--sd-float-bottom, 12px); z-index: 15;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px;
+  margin-top: 16px; padding: 12px 16px;
+  border: 1px solid var(--pl-accent); border-radius: var(--pl-r-box); background: var(--pl-card);
+  box-shadow: 0 6px 24px rgba(20, 24, 32, .16);
+}
+.sd-float-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.sd-float-text > span { color: var(--pl-muted); font-size: 14px; }
 .pl button.sg-add.sg-add-flag { opacity: 1; border: 2px dashed var(--pl-warn); background: var(--pl-warn-soft); color: var(--pl-warn); font-weight: 700; }
 @media (max-width: 700px) {
+  /* פס הלשוניות התחתון כבר מפנה מקום: לגלילה יש ריפוד של 80px בתחתית (.pl-under-tabs) */
+  .pl-schedule { --sd-float-bottom: 8px; }
+  .sd-float { padding: 10px 12px; }
   .sd-actions { width: 100%; }
   .sd-actions > * { flex: 1; }
 }
@@ -1249,3 +1452,55 @@ button.mh-photo-button { background: none; border: none; padding: 0; cursor: poi
 
 /* חוגים: כשאין חוגים, "העלאת תמונה או קובץ" ו"הוספה ידנית" בשורה אחת (2026-10-18) */
 .sg-empty-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; }
+
+/* חלון עריכת שיעור או חוג, בעיצוב מחדש (2026-10-18): אייקון ליד השם, מדריך ומיקום, ימים ככפתורים, שעות עם תוויות, מחיקה עם פח */
+.sim-name { display: flex; align-items: center; gap: 8px; }
+.sim-name input { flex: 1; min-width: 0; }
+.sim-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.sim-pair input { width: 100%; }
+.sim-days { display: flex; flex-wrap: wrap; gap: 6px; }
+.pl button.sim-day {
+  min-width: 44px; min-height: 44px; padding: 0 10px; border-radius: 50%; font-weight: 600;
+  border: 1px solid var(--pl-control); background: var(--pl-card);
+}
+.pl button.sim-day-on { background: var(--pl-accent); border-color: var(--pl-accent); color: var(--pl-card); }
+.sim-times { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 12px; }
+.sim-time { gap: 4px; }
+.sim-time > span { font-size: 13px; color: var(--pl-muted); }
+.sim-time-arrow { padding-bottom: 10px; color: var(--pl-muted); }
+.sim-length { align-self: center; margin-top: 18px; }
+.pl button.sim-delete {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 12px;
+  border: 1px solid transparent; background: transparent; color: var(--pl-error); font-weight: 600;
+}
+.pl button.sim-delete:hover, .pl button.sim-delete:focus-visible { border-color: var(--pl-error); background: var(--pl-warn-soft); }
+.sim-delete .pl-icon { width: 18px; height: 18px; }
+.sim-delete .pl-icon svg { width: 100%; height: 100%; }
+@media (max-width: 700px) {
+  .sim-pair { grid-template-columns: 1fr; }
+  .pl button.sim-day { min-width: 40px; min-height: 40px; }
+}
+
+/* חלון עריכת חוג לפי הסקיצה (2026-10-18): חלקים עם כותרת וקו, "(רשות)", ✓, סיכום, וכפתורים */
+.pl-schedule-item-modal { gap: 0 !important; }
+.sim-section { display: flex; flex-direction: column; gap: 12px; padding: 16px 0; border-top: 1px solid var(--pl-line); }
+.sim-section:first-child { padding-top: 0; border-top: none; }
+.sim-section h3 { margin: 0; font-size: 1rem; }
+.sim-optional { font-weight: 400; color: var(--pl-muted); font-size: 13px; }
+.sim-check { font-weight: 700; margin-inline-end: 2px; }
+.pl button.sim-day { border-radius: var(--pl-r-control); }
+.pl button.pl-schedule-swatch { display: grid; place-items: center; color: var(--pl-text); }
+.sim-swatch { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
+.sim-to-all { align-items: flex-start; gap: 10px; cursor: pointer; }
+.sim-to-all input { margin-top: 3px; }
+.sim-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding-top: 16px; border-top: 1px solid var(--pl-line); }
+.pl-schedule-item-modal > [role=alert] { margin: 0 0 12px; }
+
+/* כותרת חלון עם שורה קטנה מעליה (eyebrow, 2026-10-18): רקע צבעוני, שם גדול, ✕ במסגרת */
+.pl-modal-head-feature { align-items: flex-start; padding: 16px 16px 16px var(--pl-pad); background: var(--pl-soft); }
+.pl-modal-titles { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pl-modal-eyebrow { font-size: 13px; font-weight: 600; color: var(--pl-accent-dark); }
+.pl-modal-head-feature h2 { font-size: 1.5rem; line-height: 1.25; overflow-wrap: anywhere; }
+.pl .pl-modal-head-feature button.pl-icon-button { flex-shrink: 0; width: 40px; height: 40px; border: 1px solid var(--pl-line); border-radius: var(--pl-r-control); background: var(--pl-card); }
+/* יום נבחר בחלון החוג: קו תחתון חזק (המשתמשת, 2026-10-18, במקום ✓) */
+.pl button.sim-day-on { border-bottom: 4px solid var(--pl-accent-dark); }
